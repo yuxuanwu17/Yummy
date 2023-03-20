@@ -24,5 +24,7 @@ urlpatterns = [
     path('reserve', views.reserve_action, name='reserve'),
     path('order', views.order_action, name='order'),
     path('option', views.option_action, name='option'),
+    path('summary', views.summary_action, name='summary'),
+    path('profile', views.profile_action, name='profile'),
 
 ]

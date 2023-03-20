@@ -79,3 +79,13 @@ def order_action(request):
 @login_required
 def option_action(request):
     return render(request, 'Yummy/option.html', {})
+
+
+@login_required
+def summary_action(request):
+    return render(request, 'Yummy/summary.html', {})
+
+
+@login_required
+def profile_action(request):
+    return render(request, 'Yummy/profile.html', {})
