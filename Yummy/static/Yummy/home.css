@@ -49,3 +49,22 @@
     -webkit-overflow-scrolling: touch;
 }
 
+.category_text {
+    text-align: center;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    color: #f96b06;
+}
+
+
+img {
+    float: left;
+    width: 220px;
+    height: 225px;
+    object-fit: cover;
+
+}
+
+.plus_sign {
+    font-size: large;
+    font-weight: bold;
+}

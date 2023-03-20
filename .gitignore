@@ -5,7 +5,4 @@ migrations
 venv
 my_env
 .idea
-*.jpg
-*.jfif
-*.png
 !picture.jpg
