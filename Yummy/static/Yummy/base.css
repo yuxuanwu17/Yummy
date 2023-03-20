@@ -40,3 +40,30 @@
     top:80px;
     font-size: 18px;
 }
+
+#id_order_option {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#id_page_title {
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+#id_nav_order {
+    text-align: center;
+}
+
+#id_takeout_button {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.table_number {
+    text-align: center;
+    margin-top: 20px;
+}
+

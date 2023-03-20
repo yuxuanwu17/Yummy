@@ -1,0 +1,23 @@
+{% extends "Yummy/base.html" %}
+{% load static %}
+
+
+{% block content %}
+<h1 id="id_page_title" class="fw-light">Team 1 restaurant</h1>
+
+<h3 id="id_order_option">Is this order take-out or dine in?</h3>
+<div id="id_takeout_button">
+    <a href="{% url 'order' %}">
+        <button id="id_nav_order">Take out</button>
+    </a>
+</div>
+
+<form class="table_number" method="post" action="{% url 'order' %}">
+    <label>Please enter your table number if you are dining in:</label>
+    <input id="id_table_number_input" type="text" name="table_number">
+    <button id="id_table_number_button" type="submit">Submit</button>
+    {% csrf_token %}
+</form>
+
+
+{% endblock %}
