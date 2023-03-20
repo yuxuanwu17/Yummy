@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
+
 # from phonenumber_field.modelfields import PhoneNumberField
 
 # https://stackoverflow.com/questions/19130942/whats-the-best-way-to-store-a-phone-number-in-django-models
@@ -10,7 +11,7 @@ from django.contrib.auth import authenticate
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=20, label='Username')
-    password = forms.CharField(max_length=200, label = 'Password', widget=forms.PasswordInput())
+    password = forms.CharField(max_length=200, label='Password', widget=forms.PasswordInput())
 
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.
@@ -31,17 +32,16 @@ class LoginForm(forms.Form):
 
 
 class RegisterForm(forms.Form):
-    username   = forms.CharField(max_length=20, label='Username')
-    password   = forms.CharField(max_length=200,
-                                 label='Password', 
-                                 widget=forms.PasswordInput())
-    confirm_password    = forms.CharField(max_length=200,
-                                 label='Confirm Password',  
-                                 widget=forms.PasswordInput())
+    username = forms.CharField(max_length=20, label='Username')
+    password = forms.CharField(max_length=200,
+                               label='Password',
+                               widget=forms.PasswordInput())
+    confirm_password = forms.CharField(max_length=200,
+                                       label='Confirm Password',
+                                       widget=forms.PasswordInput())
     first_name = forms.CharField(max_length=20, label='First Name')
-    last_name  = forms.CharField(max_length=20, label='Last Name')
-    phone_number   = forms.CharField(max_length=50,
-                                 widget = forms.CharField(), label='Phone Number')
+    last_name = forms.CharField(max_length=20, label='Last Name')
+    phone_number = forms.CharField(max_length=50, label='Phone Number')
 
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.
