@@ -1,32 +1,45 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" href="../../static/Yummy/base.css">
-        <link rel="shortcut icon" href="#"/>
-        <title> {% block title %} WEconnect {% endblock %} </title>
-    </head>
-    <body>
-        <div id="id_header_div" class="header"> 
-            <div id="id_site_name">
-                Yummy!
-            </div>
-            <a href="{% url 'register' %}" id="id_nav_global_stream"> 
-                Register
-            </a>
-            <a href="{% url 'login' %}" id="id_nav_follower_stream"> 
-                Login 
-            </a>
-        </div>
-        
-        <div class="posts" id="posts">
-            {% block posts_header %}
-            {% endblock %}
-        </div>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../../static/Yummy/base.css">
+    <link rel="shortcut icon" href="#"/>
+    <title> {% block title %} WEconnect {% endblock %} </title>
+</head>
 
-        <div class="content" id="content">
-            {% block content %}
-            {% endblock %}
-        </div>
-    </body>
+<div id="id_header_div" class="header">
+    <div id="id_site_name">
+        Yummy!
+    </div>
+</div>
+{% if not user.is_authenticated %}
+    <div>
+        {# if not log in, show the register and login #}
+        <a href="{% url 'register' %}" id="id_nav_global_stream">
+            Register
+        </a>
+        <a href="{% url 'login' %}" id="id_nav_follower_stream">
+            Login
+        </a>
+    </div>
+
+{% else %}
+    <div>
+
+        <a href="{% url 'logout' %}" id="id_nav_follower_stream">
+            Logout
+        </a>
+    </div>
+
+{% endif %}
+<div class="posts" id="posts">
+    {% block posts_header %}
+    {% endblock %}
+</div>
+
+<div class="content" id="content">
+    {% block content %}
+    {% endblock %}
+</div>
+</body>
 </html>

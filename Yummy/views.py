@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404, render, redirect
@@ -25,6 +26,12 @@ def login_action(request):
 
     login(request, new_user)
     return redirect(reverse('home'))
+
+
+@login_required
+def logout_action(request):
+    logout(request)
+    return redirect(reverse('login'))
 
 
 def register_action(request):
