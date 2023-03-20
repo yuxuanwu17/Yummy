@@ -68,7 +68,9 @@ def global_action(request):
 
 @login_required
 def reserve_action(request):
-    return render(request, 'Yummy/reserve.html', {})
+    context = {}
+    context['form'] = ReservationForm
+    return render(request, 'Yummy/reserve.html', context)
 
 
 @login_required

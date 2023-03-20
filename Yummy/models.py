@@ -51,3 +51,12 @@ class Table(models.Model):
     orders = models.ManyToManyField(Order, related_name="table")
     customer = models.ForeignKey(User, on_delete=models.PROTECT)
     open_time = models.DateTimeField()
+
+class Reservation(models.Model):
+    num_customers = models.IntegerField(blank=False)
+    table = models.ForeignKey(Table, on_delete=models.PROTECT)
+    first_name = models.CharField(max_length=200, editable=True, blank=False)
+    last_name = models.CharField(max_length=200, editable=True, blank=False)
+    phone_number = models.CharField(max_length=200, editable=True, blank=False)
+    comment = models.CharField(max_length=200, editable=True, blank=True)
+    

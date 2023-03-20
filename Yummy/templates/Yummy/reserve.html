@@ -1,3 +1,60 @@
-<h1>
-    YOU ARE IN THE "RESERVE" PAGE
-</h1>
+{% extends "Yummy/home.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="../../static/Yummy/reserve.css">
+{% endblock %}
+
+{% block posts_header %}
+<section class="py-5 text-center container">
+    <div class="row py-lg-5">
+        <div class="col-lg-6 col-md-8 mx-auto">
+            <h1 class="fw-light">Reserve Your Table</h1>
+            <p class="lead text-muted">
+                Enjoy your food
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+
+{% block content %}
+
+<section class="reservation">
+    <div id="step1">
+        <span class="step title"> Step 1: find a table </span>
+        <form>
+            <span>Date: <input id="reserve_date" /></span>
+            <br>
+            <span>Time: <input id="reserve_time" /></span>
+            <br>
+            <span>Number of people: <input id="reserve_number_people" /></span>
+        </form>
+        <p>
+            <a href="{% url 'reserve' %}" class="btn btn-primary my-2">Find</a>
+        </p>
+    </div>
+
+    <div id="step2">
+        <span class="step title"> Step 2: your details </span>
+        <form>
+            {% for field in form.visible_fields %}
+            {% csrf_token %}
+            <div>
+                <span>{{field.label_tag}}</span>
+                <span>{{field}}</span>
+            </div>
+            {% endfor %}
+            {% csrf_token %}
+        </form>
+        <p>
+            <a href="{% url 'reserve' %}" class="btn btn-primary my-2">Reserve</a>
+        </p>
+    </div>
+
+
+
+</section>
+
+{% endblock %}
