@@ -40,3 +40,76 @@
     top:80px;
     font-size: 18px;
 }
+
+#id_order_option {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#id_page_title {
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+#id_nav_order {
+    text-align: center;
+}
+
+#id_takeout_button {
+    margin-top: 20px;
+    text-align: center;
+}
+
+
+#id_order_summary_table {
+    text-align: center;
+    margin-top: 30px;
+}
+
+#id_menu_button {
+    text-align: left;
+    margin-left: 50px;
+    margin-top: 20px;
+    height: 30px;
+    font-size: large;
+}
+
+#id_table_number {
+    text-align: right;
+    margin-top: 20px;
+    margin-right: 50px;
+    font-weight: bold;
+    font-size: larger;
+
+}
+
+.quantity_input {
+    width:80px;
+}
+
+table.summary_table {
+    font-family: Tahoma, Geneva, sans-serif;
+    width: 100%;
+    text-align: center;
+  }
+  table.summary_table td, table.summary_table th {
+    padding: 5px 5px;
+  }
+  table.summary_table tbody td {
+    font-size: 15px;
+  }
+  table.summary_table tr:nth-child(even) {
+    background:bisque;
+  }
+  table.summary_table thead {
+    background: #e69b22;
+    border-bottom: 2px solid #444444;
+  }
+  table.summary_table thead th {
+    font-size: 20px;
+    font-weight: bold;
+    color: #000000;
+    text-align: center;
+  }

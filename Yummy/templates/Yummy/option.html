@@ -1,0 +1,30 @@
+{% extends "Yummy/base.html" %}
+{% load static %}
+
+
+{% block content %}
+<section class="py-5 text-center container">
+    <div class="row py-lg-5">
+        <div class="col-lg-6 col-md-8 mx-auto">
+            <h1 class="fw-light">Team 1 restaurant</h1>
+            <p class="lead text-muted">
+                Is this order take-out or dine in?
+            </p>
+            <p>
+                <a href="{% url 'order' %}" class="btn btn-primary my-2">Take Out</a>
+                <a class="btn btn-secondary my-2">Dine In</a>
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- if dine in button is clicked, show the form below to let user enter table number -->
+<form class="table_number" method="post" action="{% url 'order' %}">
+    <label>Please enter your table number if you are dining in:</label>
+    <input id="id_table_number_input" type="text" name="table_number">
+    <button id="id_table_number_button" type="submit">Submit</button>
+    {% csrf_token %}
+</form>
+
+
+{% endblock %}

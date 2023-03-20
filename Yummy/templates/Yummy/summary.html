@@ -1,0 +1,68 @@
+{% extends "Yummy/base.html" %}
+{% load static %}
+
+
+{% block content %}
+
+<h1 id="id_page_title" class="fw-light">Cart</h1>
+
+<div id="id_menu_button">
+    <a href="{% url 'home' %}">
+        <button id="id_nav_home">Menu</button>
+    </a>
+</div>
+
+<div id="id_table_number">
+    <a>
+        Table 1
+    </a>
+</div>
+
+
+<table id="id_order_summary_table" class="summary_table">
+    <thead>
+    <tr>
+    <th>Image</th>
+    <th>Dish Name</th>
+    <th>&nbsp;</th>
+    <th>Quantity</th>
+    <th>&nbsp;</th>
+    <th>Price</th>
+    <th>&nbsp;</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>
+        <img id="id_dish_picture_1" src="{% static 'img/Fried-pork-dumplings.jpg' %}"
+        width="220px"
+        style="align-content: center"">
+    </td>
+    <td>Fried Pork Dumplings</td>
+    <td><button> - </button></td>
+    <td><input class="quantity_input" type="number">  </td>
+    <td><button> + </button></td>
+    <td>$10</td>
+    <td><button>Remove</button></td>
+    </tr>
+    <tr>
+    <td>
+        <img id="id_dish_picture_1" src="{% static '/img/Scallion-pancakes.png' %}"
+        width="220px"
+        style="align-content: center"">
+    </td>
+    <td>Scallion Pancakes</td>
+    <td><button> - </button></td>
+    <td><input class="quantity_input" type="number"></td>
+    <td><button> + </button></td>
+    <td>$15</td>
+    <td><button>Remove</button></td>
+    </tr>
+
+    </tbody>
+    </table>
+
+
+
+
+{% endblock %}

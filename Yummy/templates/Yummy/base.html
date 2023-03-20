@@ -31,7 +31,9 @@
 
 {% else %}
     <div>
-
+        <a href="{% url 'profile' %}" id="id_nav_profile">
+            {{user.first_name}} {{user.last_name}}
+        </a>
         <a href="{% url 'logout' %}" id="id_nav_follower_stream">
             Logout
         </a>
