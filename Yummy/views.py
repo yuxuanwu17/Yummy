@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User
 from Yummy.models import *
+from .forms import *
 
 # Create your views here.
 def login_action(request):
