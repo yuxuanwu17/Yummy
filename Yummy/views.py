@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404, render, redirect
@@ -24,6 +25,12 @@ def login_action(request):
                             password=form.cleaned_data['password'])
 
     login(request, new_user)
+    return redirect(reverse('home'))
+
+
+@login_required
+def logout_action(request):
+    logout(request)
     return redirect(reverse('home'))
 
 
@@ -56,4 +63,14 @@ def register_action(request):
 
 # Create your views here.
 def global_action(request):
-    return render(request, 'Yummy/base.html', {})
+    return render(request, 'Yummy/home.html', {})
+
+
+@login_required
+def reserve_action(request):
+    return render(request, 'Yummy/reserve.html', {})
+
+
+@login_required
+def order_action(request):
+    return render(request, 'Yummy/order.html', {})

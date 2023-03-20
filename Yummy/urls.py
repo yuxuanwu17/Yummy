@@ -16,9 +16,12 @@ Including another URLconf
 from Yummy import views
 from django.urls import path
 
-
 urlpatterns = [
     path('', views.global_action, name='home'),
     path('login', views.login_action, name='login'),
     path('register', views.register_action, name='register'),
+    path('logout', views.logout_action, name='logout'),
+    path('reserve', views.reserve_action, name='reserve'),
+    path('order', views.order_action, name='order'),
+
 ]
