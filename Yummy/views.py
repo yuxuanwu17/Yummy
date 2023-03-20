@@ -63,4 +63,4 @@ def register_action(request):
 
 # Create your views here.
 def global_action(request):
-    return render(request, 'Yummy/base.html', {})
+    return render(request, 'Yummy/home.html', {})

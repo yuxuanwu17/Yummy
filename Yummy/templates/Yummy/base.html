@@ -1,10 +1,16 @@
 <!doctype html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../../static/Yummy/base.css">
     <link rel="shortcut icon" href="#"/>
     <title> {% block title %} WEconnect {% endblock %} </title>
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/album/">
+    <link href="../../static/Yummy/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'Yummy/home.css' %}" rel="stylesheet" type="text/css">
+    <script src="../../static/Yummy/dist/js/bootstrap.bundle.min.js"></script>
+
 </head>
 
 <div id="id_header_div" class="header">
