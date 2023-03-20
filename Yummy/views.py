@@ -31,7 +31,7 @@ def login_action(request):
 @login_required
 def logout_action(request):
     logout(request)
-    return redirect(reverse('login'))
+    return redirect(reverse('home'))
 
 
 def register_action(request):
