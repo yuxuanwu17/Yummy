@@ -58,8 +58,13 @@
 
 img {
     float: left;
-    width:  220px;
+    width: 220px;
     height: 225px;
     object-fit: cover;
 
+}
+
+.plus_sign {
+    font-size: large;
+    font-weight: bold;
 }
