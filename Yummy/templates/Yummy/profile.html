@@ -1,0 +1,24 @@
+{% extends "Yummy/base.html" %}
+{% load static %}
+
+
+{% block content %}
+
+<h1 id="id_page_title" class="fw-light">Profile of {{user.first_name}} {{user.last_name}}</h1>
+
+<div id="id_menu_button">
+    <a href="{% url 'home' %}">
+        <button id="id_nav_home">Menu</button>
+    </a>
+</div>
+
+<div>
+    <a href="{% url 'logout' %}" id="id_nav_follower_stream">
+        Logout
+    </a>
+</div>
+
+
+
+
+{% endblock %}
