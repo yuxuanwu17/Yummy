@@ -55,3 +55,11 @@
     color: #f96b06;
 }
 
+
+img {
+    float: left;
+    width:  220px;
+    height: 225px;
+    object-fit: cover;
+
+}
