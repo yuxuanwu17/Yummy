@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404, render, redirect
+from django.urls import reverse
 from django.contrib.auth.models import User
 from Yummy.models import *
 from .forms import *
@@ -30,7 +31,7 @@ def login_action(request):
 
     login(request, user)
 
-    return redirect('option')
+    return redirect('home')
 
 
 def register_action(request):
@@ -56,7 +57,7 @@ def register_action(request):
     new_profile = Profile(user=request.user, phone_number=form.cleaned_data['phone_number'])
     new_profile.save()
 
-    return redirect('option')
+    return redirect('home')
 
 
 # Create your views here.
