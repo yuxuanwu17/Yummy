@@ -64,3 +64,13 @@ def register_action(request):
 # Create your views here.
 def global_action(request):
     return render(request, 'Yummy/home.html', {})
+
+
+@login_required
+def reserve_action(request):
+    return render(request, 'Yummy/reserve.html', {})
+
+
+@login_required
+def order_action(request):
+    return render(request, 'Yummy/order.html', {})
