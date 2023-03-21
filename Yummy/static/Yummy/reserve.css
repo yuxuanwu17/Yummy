@@ -23,3 +23,10 @@ input {
     text-align: center;
     font-family: Tahoma, Geneva, sans-serif;
 }
+
+.dish_pic {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
