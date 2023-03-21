@@ -93,6 +93,6 @@ def summary_action(request):
 def profile_action(request):
     return render(request, 'Yummy/profile.html', {})
 
-@login_required
+
 def dish_action(request):
     return render(request, 'Yummy/dish.html', {})
