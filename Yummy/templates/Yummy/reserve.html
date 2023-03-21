@@ -23,7 +23,7 @@
 
 <section class="reservation">
     <div id="step1">
-        <span class="step title"> Step 1: find a table </span>
+        <span class="step-title"> Step 1: find a table </span>
         <form>
             <span>Date: <input id="reserve_date" /></span>
             <br>
@@ -37,7 +37,7 @@
     </div>
 
     <div id="step2">
-        <span class="step title"> Step 2: your details </span>
+        <span class="step-title"> Step 2: your details </span>
         <form>
             {% for field in form.visible_fields %}
             {% csrf_token %}
