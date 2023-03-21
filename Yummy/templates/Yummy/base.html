@@ -16,7 +16,7 @@
 
 <div id="id_header_div" class="header">
     <div id="id_site_name">
-        Yummy!
+        <a href="{% url 'home' %}" class="title">Yummy!</a>
     </div>
     {% if not user.is_authenticated %}
         {# if not log in, show the register and login #}

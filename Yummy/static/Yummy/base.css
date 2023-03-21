@@ -263,3 +263,11 @@ label {
     justify-content: center;
     text-align: left;
 }
+
+a.title {
+    color: #000000;
+    position: absolute;
+    font-weight: bold;
+    font-size: 34px;
+    text-decoration: none;
+}
