@@ -15,6 +15,16 @@ img {
     margin-right: auto;
 }
 
+.dish_picture_a {
+    float: left;
+    width: 220px;
+    height: 225px;
+    object-fit: cover;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .plus_sign {
     font-size: large;
     font-weight: bold;
