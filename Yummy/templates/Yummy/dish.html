@@ -11,13 +11,19 @@
     <div class="row py-lg-5">
         <div class="col-lg-6 col-md-8 mx-auto">
             <h1 class="fw-light">Cucumber Salad &#129388;</h1>
+            <div class="dish_pic">
+                    <a href="{% url 'dish' %}">
+                        <img id="id_user_picture" src="{% static 'img/cucumber-salad.png' %}" width="100%" height="100%"
+                            style="align-content: center">
+                    </a>
+            </div>
             <p class="lead text-muted">
                 Loaded with cherry tomatoes, red onions, chickpeas and more, with a bright, lemony flavor!
             </p>
             <p id="calories" class="lead text-muted">
                 300kcal
             </p>
-            
+
         </div>
     </div>
 </section>
@@ -25,7 +31,6 @@
 
 
 {% block content %}
-
 <section class="dish">
     $20.00 &emsp; &emsp;
     <div class="btn-group">
