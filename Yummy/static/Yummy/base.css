@@ -1,43 +1,48 @@
 #id_header_div {
-    width:98vw;
-    height:100px;
+    width: 100vw;
+    height: 120px;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    background-color:#e69b22;
+    background-color: #e69b22;
 }
+
 #id_site_name {
-    color:#000000;
-    position:absolute; 
-    left:60px; 
-    top:35px;
+    color: #000000;
+    position: absolute;
+    left: 60px;
+    top: 35px;
     font-weight: bold;
     font-size: 34px;
 }
+
 #id_nav_profile {
-    color:#000000;
-    position:absolute; 
-    right:60px; 
-    top:20px;
+    color: #000000;
+    position: absolute;
+    right: 60px;
+    top: 20px;
     font-size: 18px;
 }
+
 #id_nav_global_stream {
-    color:#000000;
-    position:absolute; 
-    right:205px; 
-    top:80px;
+    color: #000000;
+    position: absolute;
+    right: 205px;
+    top: 80px;
     font-size: 18px;
 }
+
 #id_nav_follower_stream {
-    color:#000000;
-    position:absolute; 
-    right:125px; 
-    top:80px;
+    color: #000000;
+    position: absolute;
+    right: 125px;
+    top: 80px;
     font-size: 18px;
 }
+
 #id_nav_logout {
-    color:#000000;
-    position:absolute; 
-    right:60px; 
-    top:80px;
+    color: #000000;
+    position: absolute;
+    right: 60px;
+    top: 80px;
     font-size: 18px;
 }
 
@@ -76,40 +81,197 @@
     font-size: large;
 }
 
-#id_table_number {
-    text-align: right;
-    margin-top: 20px;
-    margin-right: 50px;
-    font-weight: bold;
-    font-size: larger;
+div.form_1
+{
+    display: block;
+    text-align: center;
+}
 
+#id_table_number_form {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    font-size: larger;
+}
+
+#id_table_number_input {
+    width: 50px;
+    height: 38px;
+    font-size: x-large;
+    font-weight: bold;
 }
 
 .quantity_input {
-    width:80px;
+    width: 80px;
 }
 
 table.summary_table {
     font-family: Tahoma, Geneva, sans-serif;
     width: 100%;
     text-align: center;
-  }
-  table.summary_table td, table.summary_table th {
+}
+
+table.summary_table td, table.summary_table th {
     padding: 5px 5px;
-  }
-  table.summary_table tbody td {
+}
+
+table.summary_table tbody td {
     font-size: 15px;
-  }
-  table.summary_table tr:nth-child(even) {
-    background:bisque;
-  }
-  table.summary_table thead {
+}
+
+table.summary_table tr:nth-child(even) {
+    background: bisque;
+}
+
+table.summary_table thead {
     background: #e69b22;
     border-bottom: 2px solid #444444;
-  }
-  table.summary_table thead th {
+}
+
+table.summary_table thead th {
     font-size: 20px;
-    font-weight: bold;
     color: #000000;
     text-align: center;
-  }
+}
+
+#id_login_link {
+    color: #000000;
+    position: absolute;
+    right: 125px;
+    top: 80px;
+    font-size: 18px;
+}
+
+#id_register_button {
+    background-color: white;
+    border-radius: 10px;
+    font-size: 18px;
+    margin: 4px 2px;
+    width: 80px;
+    height: 40px;
+    margin: 0;
+    position: absolute;
+    top: 90%;
+    left: 47%;
+}
+
+#id_register_button:active {
+    background-color: red;
+}
+
+#id_register_link {
+    color: #000000;
+    position: absolute;
+    right: 125px;
+    top: 80px;
+    font-size: 18px;
+}
+
+
+#id_header_div {
+    width: 100vw;
+    height: 120px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    background-color: #e69b22;
+}
+
+#id_site_name {
+    color: #000000;
+    position: absolute;
+    left: 60px;
+    top: 35px;
+    font-weight: bold;
+    font-size: 34px;
+}
+
+#id_page_name {
+    text-align: center;
+    margin: 40px auto;
+    font-weight: bold;
+    font-size: 22px;
+}
+
+#id_register_link {
+    color: #000000;
+    position: absolute;
+    right: 125px;
+    top: 80px;
+    font-size: 18px;
+}
+
+#id_login_button {
+    background-color: white;
+    border-radius: 10px;
+    font-size: 18px;
+    margin: 4px 2px;
+    width: 80px;
+    height: 40px;
+    margin: 0;
+    position: absolute;
+    top: 66%;
+    left: 47%;
+}
+
+#id_login_button:active {
+    background-color: red;
+}
+
+label {
+    font-size: 18px;
+}
+
+input {
+    width: 120%;
+    font-size: 18px;
+    line-height: 30px;
+}
+
+#id_header_div {
+    width: 100vw;
+    height: 120px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    background-color: #e69b22;
+}
+
+#id_site_name {
+    color: #000000;
+    position: absolute;
+    left: 60px;
+    top: 35px;
+    font-weight: bold;
+    font-size: 34px;
+}
+
+#id_page_name {
+    text-align: center;
+    margin: 40px auto;
+    font-weight: bold;
+    font-size: 22px;
+}
+
+#id_login_link {
+    color: #000000;
+    position: absolute;
+    right: 125px;
+    top: 80px;
+    font-size: 18px;
+}
+
+
+#id_register_button:active {
+    background-color: red;
+}
+
+table {
+    display: flex;
+    justify-content: center;
+    text-align: left;
+}
+
+
+input {
+    width: 120%;
+    font-size: 18px;
+    line-height: 30px;
+}
