@@ -1,28 +1,13 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" href="../../static/Yummy/login.css">
-        <title> {% block title %} Yummy {% endblock %} </title>
-    </head>
-    <body>
-        <div id="id_header_div" class="header"> 
-            <div id="id_site_name">
-                Yummy
-            </div>
-            <a id="id_register_link" href="{% url 'register' %}">
-                Register
-            </a>
-        </div>
-        <div id="id_page_name">
-            Login
-        </div>
-        <form method="post" action="login" class="row1">
-            <table>
-                {{form}}
-            </table>
-            {% csrf_token %}
-            <button type="submit" id="id_login_button">Submit</button>
-        </form>
-    </body>
-</html>
+{% extends "Yummy/base.html" %}
+{% block content %}
+    <div id="id_page_name">
+        Login
+    </div>
+    <form method="post" action="login" class="row1">
+        <table>
+            {{ form }}
+        </table>
+        {% csrf_token %}
+        <button type="submit" id="id_login_button">Submit</button>
+    </form>
+{% endblock %}
