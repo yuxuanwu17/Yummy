@@ -221,11 +221,6 @@ label {
     font-size: 18px;
 }
 
-input {
-    width: 120%;
-    font-size: 18px;
-    line-height: 30px;
-}
 
 #id_header_div {
     width: 100vw;
@@ -261,17 +256,4 @@ input {
 
 #id_register_button:active {
     background-color: red;
-}
-
-table {
-    display: flex;
-    justify-content: center;
-    text-align: left;
-}
-
-
-input {
-    width: 120%;
-    font-size: 18px;
-    line-height: 30px;
 }
