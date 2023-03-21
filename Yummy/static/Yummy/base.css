@@ -81,13 +81,23 @@
     font-size: large;
 }
 
-#id_table_number {
-    text-align: right;
-    margin-top: 20px;
-    margin-right: 50px;
-    font-weight: bold;
-    font-size: larger;
+div.form_1
+{
+    display: block;
+    text-align: center;
+}
 
+#id_table_number_form {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+    text-align: center;
+    font-size: larger;
+}
+
+#id_table_number_input {
+    width: 50px;
 }
 
 .quantity_input {
