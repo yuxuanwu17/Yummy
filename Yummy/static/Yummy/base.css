@@ -119,7 +119,6 @@ table.summary_table thead {
 
 table.summary_table thead th {
     font-size: 20px;
-    font-weight: bold;
     color: #000000;
     text-align: center;
 }
@@ -206,12 +205,6 @@ table.summary_table thead th {
     background-color: red;
 }
 
-table {
-    display: flex;
-    justify-content: center;
-    text-align: center;
-}
-
 label {
     font-size: 18px;
 }
@@ -264,9 +257,6 @@ table {
     text-align: left;
 }
 
-label {
-    font-size: 18px;
-}
 
 input {
     width: 120%;
