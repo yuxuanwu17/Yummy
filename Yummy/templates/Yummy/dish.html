@@ -1,0 +1,51 @@
+{% extends "Yummy/home.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="../../static/Yummy/reserve.css">
+{% endblock %}
+
+{% block posts_header %}
+<section class="py-5 text-center container">
+
+    <div class="row py-lg-5">
+        <div class="col-lg-6 col-md-8 mx-auto">
+            <h1 class="fw-light">Cucumber Salad &#129388;</h1>
+            <p class="lead text-muted">
+                Loaded with cherry tomatoes, red onions, chickpeas and more, with a bright, lemony flavor!
+            </p>
+            <p id="calories" class="lead text-muted">
+                300kcal
+            </p>
+            
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+
+{% block content %}
+
+<section class="dish">
+    $20.00 &emsp; &emsp;
+    <div class="btn-group">
+        <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary"><span
+                class="plus_sign"
+        >+</span></button>
+
+    </div>
+</section>
+
+<section class="comments">
+    Comments:
+    <div id="comment_dish_user">
+        This is so delicious!
+        -
+        <span>
+            Yanyu Chen
+        </span>
+    </div>
+</section>
+
+{% endblock %}
