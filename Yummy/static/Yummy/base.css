@@ -257,3 +257,9 @@ label {
 #id_register_button:active {
     background-color: red;
 }
+
+.login_register_table {
+    display: flex;
+    justify-content: center;
+    text-align: left;
+}
