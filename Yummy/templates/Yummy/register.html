@@ -1,28 +1,29 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" href="../../static/Yummy/register.css">
-        <title> {% block title %} Yummy {% endblock %} </title>
-    </head>
-    <body>
-        <div id="id_header_div" class="header"> 
-            <div id="id_site_name">
-                Yummy
-            </div>
-            <a id="id_login_link" href="{% url 'login' %}">
-                Login
-            </a>
-        </div>
-        <div id="id_page_name">
-            Register
-        </div>
-        <form method="post" action="register" class="row1">
-            <table>
-                {{form}}
-            </table>
-            {% csrf_token %}
-            <button type="submit" id="id_register_button">Submit</button>
-        </form>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../../static/Yummy/register.css">
+    <title> {% block title %} Yummy {% endblock %} </title>
+</head>
+<body>
+<div id="id_header_div" class="header">
+    <div id="id_site_name">
+        Yummy
+    </div>
+    <a id="id_login_link" href="{% url 'login' %}">
+        Login
+    </a>
+</div>
+<div id="id_page_name">
+    Register
+</div>
+<form method="post" action="register" class="row1">
+{#<form method="post" action="{% url 'register' %}">#}
+    <table>
+        {{ form }}
+    </table>
+    {% csrf_token %}
+    <button type="submit" id="id_register_button">Submit</button>
+</form>
+</body>
 </html>

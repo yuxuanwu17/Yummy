@@ -32,7 +32,7 @@ class LoginForm(forms.Form):
 
 
 class RegisterForm(forms.Form):
-    username = forms.CharField(max_length=20, label='Username')
+    username = forms.CharField(max_length=20)
     password = forms.CharField(max_length=200,
                                label='Password',
                                widget=forms.PasswordInput())
@@ -51,9 +51,9 @@ class RegisterForm(forms.Form):
         cleaned_data = super().clean()
 
         # Confirms that the two password fields match
-        password = cleaned_data.get('password')
-        confirm = cleaned_data.get('confirm_password')
-        if password and confirm and password != confirm:
+        password1 = cleaned_data.get('password')
+        password2 = cleaned_data.get('confirm_password')
+        if password1 and password2 and password1 != password2:
             raise forms.ValidationError("Passwords did not match.")
 
         # We must return the cleaned data we got from our parent.
