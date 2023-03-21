@@ -28,9 +28,9 @@
 <!-- if dine in button is clicked, show the form below to let user enter table number -->
 <div id="id_table_number_div" class="form_1" style="visibility:hidden">
     <form id="id_table_number_form method="post" action="{% url 'order' %}">
-        <label>Please enter your table number if you are dining in:</label>
+        <label class="lead text-muted">Please enter your table number if you are dining in:</label>
         <input id="id_table_number_input" type="text" name="table_number">
-        <button id="id_table_number_button" type="submit">Submit</button>
+        <button id="id_table_number_button" class="lead text-muted" type="submit">Submit</button>
         {% csrf_token %}
     </form>
 </div>
