@@ -37,13 +37,13 @@ def logout_action(request):
 def register_action(request):
     context = {}
     if request.method == "GET":
-        context['form'] = RegisterForm
+        context['form'] = RegisterForm()
         return render(request, "Yummy/register.html", context)
 
     form = RegisterForm(request.POST)
+    context['form'] = form
     if not form.is_valid():
         context['message'] = form.errors
-        context['form'] = RegisterForm
         return render(request, "Yummy/register.html", context)
 
     user = User.objects.create_user(username=form.cleaned_data['username'],
@@ -52,7 +52,8 @@ def register_action(request):
                                     last_name=form.cleaned_data['last_name'])
 
     user.save()
-
+    user = authenticate(username=form.cleaned_data['username'],
+                        password=form.cleaned_data['password'])
     login(request, user)
     # Create profile for this new user
     new_profile = Profile(user=request.user, phone_number=form.cleaned_data['phone_number'])
