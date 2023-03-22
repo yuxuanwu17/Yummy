@@ -1,0 +1,5 @@
+- Create models and forms
+- Implement Register and login function
+- UI - Home page and Menu page
+- UI - Reserve page and Dish page
+- UI - Option page and Summary page
