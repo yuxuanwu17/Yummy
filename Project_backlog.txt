@@ -1,0 +1,14 @@
+- Register function
+	New customers can register a new account to use this Yummy application. Also, users may also
+	choose to log in using their Google account. To register, users need to type in their first name, last name, password, username, and phone number.
+- Login function
+	Customers can log in using their username and password. After logging in, users will be automatically directed to the menu page, where they can place an order or reserve a table or just browse the menu.
+- Reservation function
+	Customers can reserve a table after typing in the number of people in the group, reservation time, and date. After making a reservation, the admin user (host) will receive a message about the reservation details.
+- Order function
+	If the customers choose to order, there are two buttons where they can choose to take out or dine in. If the customer selected dine-in, the page will prompt the user to enter the table number. After submitting the table number, the website will redirect the user to the order page. Customers can add a dish to their order by clicking the “+” button and clicking the “favorite” button to add the dish to their favorite list under the logged-in user identity
+- View dish detail
+	Customers can check the detailed information about the specific dish. Users are allowed to make comments under the dishes, add the dishes to their order or use the “favorite” button to collect the
+	dishes.
+- Check out function
+	Customers can view their order summary, including the quantity, unit price, and total price, and send the order to the restaurant. Users on this page could modify the quantity of dishes they ordered or remove dishes they do not want.
