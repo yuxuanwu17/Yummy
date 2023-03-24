@@ -2,6 +2,10 @@
 {% load static %}
 
 
+{% block extra_css %}
+<link rel="stylesheet" href="../../static/Yummy/option.css">
+{% endblock %}
+
 {% block content %}
 
 <script>
@@ -30,7 +34,10 @@
     <form id="id_table_number_form method="post" action="{% url 'order' %}">
         <label class="lead text-muted">Please enter your table number if you are dining in:</label>
         <input id="id_table_number_input" type="text" name="table_number">
-        <button id="id_table_number_button" class="lead text-muted" type="submit">Submit</button>
+        <div>
+            <button id="id_table_number_button" class="btn btn-secondary my-2" type="submit">Submit</button>
+        </div>
+        
         {% csrf_token %}
     </form>
 </div>

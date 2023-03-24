@@ -1,0 +1,25 @@
+div.form_1
+{
+    display: block;
+    text-align: center;
+}
+
+#id_table_number_form {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    font-size: larger;
+}
+
+#id_table_number_input {
+    width: 50px;
+    height: 38px;
+    font-size: x-large;
+    font-weight: bold;
+}
+
+
+#id_table_number_div {
+text-align: center;
+}
