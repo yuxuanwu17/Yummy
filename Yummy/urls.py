@@ -27,5 +27,6 @@ urlpatterns = [
     path('summary', views.summary_action, name='summary'),
     path('profile', views.profile_action, name='profile'),
     path('dish', views.dish_action, name='dish'),
+    path('test', views.test_action, name='test'),
 
 ]

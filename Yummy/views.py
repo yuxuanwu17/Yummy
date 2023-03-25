@@ -85,7 +85,6 @@ def test_action(request):
         response_data['food'].append(my_item)
     return render(request, 'Yummy/home_test.html', response_data)
 
-    return render(request, 'Yummy/home_test.html', {})
 
 
 @login_required

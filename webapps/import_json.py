@@ -13,6 +13,9 @@ def import_data_from_json_file(json_file_path):
 
     for item in json_data:
         category, _ = Category.objects.get_or_create(name=item['category'])
+        # check if food with the same name already exists
+        if Food.objects.filter(name=item['name']).exists():
+            continue
         food = Food(
             name=item['name'],
             price=item['price'],
@@ -24,4 +27,3 @@ def import_data_from_json_file(json_file_path):
         )
         # Save the instance before assigning the image
         food.save()
-
