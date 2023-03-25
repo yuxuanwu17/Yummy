@@ -49,7 +49,20 @@ img {
   
   /* CUSTOMIZE THE CAROUSEL
   -------------------------------------------------- */
-  
+  .overlay { 
+    color:#fff;
+    position:absolute;
+    z-index:12;
+    top:35%;
+    left: 0;
+    right: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    width:60%;
+    text-align:center;
+  }
+
+
   /* Carousel base class */
   .carousel {
     margin-bottom: 4rem;
