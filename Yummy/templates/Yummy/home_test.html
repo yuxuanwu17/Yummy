@@ -84,55 +84,63 @@
 {% endblock %}
 
 {% block content %}
+    <!-- <script type="text/javascript">
+        var categ_list = [1,2,3];
+        var food_list = [4,5,6];
+        for(var i = 0; i < categ_list.length; i++) {
+            document.createElement("'<div>'+categ_list[i]+'</div>'");
+            console.log(food_list[i]);
+        }
+        // alert(food_list[0]['name'])
+    </script> -->
+        {% for food in foods %}
+        <div class="category_text">
+            <h1>
+                {{ food.0.category.name }}
+            </h1>
+            <br>
+        </div>
+            {% for f in food %}
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                <div class="category" id={{ f.name }}>
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <a href="{% url 'dish' %}" class="dish_picture_a">
+                                <img id="id_user_picture" src="{% static f.picture_dir %}" width="100%"
+                                    height="100%" style="align-content: center">
+                            </a>
 
-    {#    vege#}
-    &#x1F96C;
-    {#    chilli#}
-    &#x1F336;&#xFE0F;
-
-    <h1>
-        {{ foods }}
-    </h1>
-    {% for food in foods %}
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-            <div class="category" id={{ food.name }}>
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <a href="{% url 'dish' %}" class="dish_picture_a">
-                            <img id="id_user_picture" src="{% static food.picture_dir %}" width="100%"
-                                 height="100%" style="align-content: center">
-                        </a>
-
-                        <div class="card-body text-center ">
-                            <p class="card-text fw-bold">
-                                {{ food.name }}
-                            </p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary"><span
-                                            class="plus_sign"
-                                    >+</span></button>
+                            <div class="card-body text-center ">
+                                <p class="card-text fw-bold">
+                                    {{ f.name }}
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary"><span
+                                                class="plus_sign"
+                                        >+</span></button>
+                                    </div>
+                                    <div class="btn-group">
+                                        {% if f.is_vegetarian %}
+                                            <button type="button" class="btn btn-light disabled" disabled>
+                                                &#x1F96C;
+                                            </button>
+                                        {% endif %}
+                                        {% if f.is_spicy %}
+                                            <button type="button" class="btn btn-light   disabled" disabled>
+                                                &#x1F336;&#xFE0F;
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                    <small class="text-muted fs-2"> $ {{ f.price }} </small>
                                 </div>
-                                <div class="btn-group">
-                                    {% if food.is_vegetarian %}
-                                        <button type="button" class="btn btn-light disabled" disabled>
-                                            &#x1F96C;
-                                        </button>
-                                    {% endif %}
-                                    {% if food.is_spicy %}
-                                        <button type="button" class="btn btn-light   disabled" disabled>
-                                            &#x1F336;&#xFE0F;
-                                        </button>
-                                    {% endif %}
-                                </div>
-                                <small class="text-muted fs-2"> $ {{ food.price }} </small>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        {% endfor %}
     {% endfor %}
 {% endblock %}
 

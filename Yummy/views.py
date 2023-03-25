@@ -71,6 +71,9 @@ def global_action(request):
 
 def test_action(request):
     response_data = collections.defaultdict(list)
+    # {'Meat': [{}, {}], 'Soup': [{}, {}], 'categories' = ['Meat', 'Soup']}
+
+    # {'categories' : ['meat', 'soup'], 'foods': [[{}, {}], []]}
     for model_item in Food.objects.all():
         my_item = {
             "name": model_item.name,
@@ -82,14 +85,22 @@ def test_action(request):
             "is_spicy": model_item.is_spicy,
             "is_vegetarian": model_item.is_vegetarian
         }
-        response_data['foods'].append(my_item)
-
+        if model_item.category.name not in response_data['categories']:
+            response_data['categories'].append(model_item.category.name)
+        curr_index = response_data['categories'].index(model_item.category.name)
+        if curr_index >= len(response_data['foods']):
+            response_data['foods'].append([my_item])
+        else:
+            response_data['foods'][curr_index].append(my_item)
     # order_map: define the order of category order
 
     # get all the category objects
-    category_list = ['Appetizer', 'Vegetable', 'Meat', 'Soup', 'Dessert', 'Snack', 'Rice & Noodles']
-
+    #category_list = response_data.keys()
+    #print(category_list)
+    #response_data['categories'] = category_list
     # response_data.append(category)
+    # response_data['n'] = range(len(response_data['categories']))
+    print(response_data)
     return render(request, 'Yummy/home_test.html', response_data)
 
 
