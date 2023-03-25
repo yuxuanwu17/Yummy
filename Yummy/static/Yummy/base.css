@@ -7,21 +7,17 @@
 }
 
 #id_register_button {
-    /* background-color: white; */
-    border-radius: 10px;
     font-size: 18px;
-    margin: 4px 2px;
+    /* margin: 4px 2px; */
     width: 80px;
     height: 40px;
     margin: 0;
-    position: absolute;
-    top: 90%;
-    left: 47%;
+    text-align: center;
+    /* position: absolute; */
+    /* top: 90%;
+    left: 45%; */
 }
 
-#id_register_button:active {
-    background-color: red;
-}
 
 #id_register_link {
     color: #000000;
@@ -67,7 +63,7 @@ label {
 #id_page_name {
     text-align: center;
     margin: 40px auto;
-    font-weight: bold;
+    /* font-weight: bold; */
     font-size: 22px;
 }
 
