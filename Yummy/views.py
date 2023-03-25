@@ -83,6 +83,13 @@ def test_action(request):
             "is_vegetarian": model_item.is_vegetarian
         }
         response_data['foods'].append(my_item)
+
+    # order_map: define the order of category order
+
+    # get all the category objects
+    category_list = ['Appetizer', 'Vegetable', 'Meat', 'Soup', 'Dessert', 'Snack', 'Rice & Noodles']
+
+    # response_data.append(category)
     return render(request, 'Yummy/home_test.html', response_data)
 
 
