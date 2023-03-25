@@ -85,38 +85,55 @@
 
 {% block content %}
 
-{#    vege#}
-&#x1F96C;
-{#    chilli#}
-&#x1F336;&#xFE0F;
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-        <div class="category" id="cucumber-salad">
-            <div class="col">
-                <div class="card shadow-sm">
-                    <a href="{% url 'dish' %}" class="dish_picture_a">
-                        <img id="id_user_picture" src="{% static 'img/cucumber-salad.png' %}" width="100%"
-                             height="100%" style="align-content: center">
-                    </a>
+    {#    vege#}
+    &#x1F96C;
+    {#    chilli#}
+    &#x1F336;&#xFE0F;
 
-                    <div class="card-body">
-                        <p class="card-text">
-                            Loaded with cherry tomatoes, red onions, chickpeas and more, with a bright, lemony flavor!
-                        </p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary"><span
-                                        class="plus_sign"
-                                >+</span></button>
+    <h1>
+        {{ foods }}
+    </h1>
+    {% for food in foods %}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            <div class="category" id={{ food.name }}>
+                <div class="col">
+                    <div class="card shadow-sm">
+                        <a href="{% url 'dish' %}" class="dish_picture_a">
+                            <img id="id_user_picture" src="{% static food.picture_dir %}" width="100%"
+                                 height="100%" style="align-content: center">
+                        </a>
 
+                        <div class="card-body text-center ">
+                            <p class="card-text fw-bold">
+                                {{ food.name }}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary"><span
+                                            class="plus_sign"
+                                    >+</span></button>
+                                </div>
+                                <div class="btn-group">
+                                    {% if food.is_vegetarian %}
+                                        <button type="button" class="btn btn-light disabled" disabled>
+                                            &#x1F96C;
+                                        </button>
+                                    {% endif %}
+                                    {% if food.is_spicy %}
+                                        <button type="button" class="btn btn-light   disabled" disabled>
+                                            &#x1F336;&#xFE0F;
+                                        </button>
+                                    {% endif %}
+                                </div>
+                                <small class="text-muted fs-2"> $ {{ food.price }} </small>
                             </div>
-                            <small class="text-muted fs-2"> 20$</small>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endfor %}
 {% endblock %}
 
 

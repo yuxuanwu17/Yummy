@@ -20,6 +20,7 @@ def import_data_from_json_file(json_file_path):
             name=item['name'],
             price=item['price'],
             description=item['description'],
+            picture_dir=item['picture_dir'],
             category=category,
             calories=item['calories'],
             is_spicy=bool(item['is_spicy']),

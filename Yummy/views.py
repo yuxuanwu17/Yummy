@@ -82,9 +82,8 @@ def test_action(request):
             "is_spicy": model_item.is_spicy,
             "is_vegetarian": model_item.is_vegetarian
         }
-        response_data['food'].append(my_item)
+        response_data['foods'].append(my_item)
     return render(request, 'Yummy/home_test.html', response_data)
-
 
 
 @login_required
