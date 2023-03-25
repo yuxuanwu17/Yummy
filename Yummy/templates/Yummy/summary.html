@@ -9,65 +9,78 @@
 
 {% block content %}
 
-<h1 id="id_page_title" class="fw-light">Cart</h1>
-
-<div id="id_menu_button">
-    <a href="{% url 'home' %}">
-        <button id="id_nav_home">Menu</button>
-    </a>
+<div class="py-5 text-center container">
+    <h1 id="id_page_title" class="fw-light">Cart</h1>
+    <p class="fs-5 fw-light-bolder">Your table number is: 5</p>
 </div>
 
-<div id="id_table_number">
-    <a>
-        Table 1
-    </a>
-</div>
-
-
-<table id="id_order_summary_table" class="summary_table">
+<table class="table table-striped align-middle text-center">
     <thead>
-    <tr>
-    <th>Image</th>
-    <th>Dish Name</th>
-    <th>&nbsp;</th>
-    <th>Quantity</th>
-    <th>&nbsp;</th>
-    <th>Price</th>
-    <th>&nbsp;</th>
-    </tr>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Image</th>
+        <th scope="col">Dish Name</th>
+        <th scope="col">&nbsp;</th>
+        <th scope="col">Quantity</th>
+        <th scope="col">&nbsp;</th>
+        <th scope="col">Price</th>
+        <th scope="col">&nbsp;</th>
+      </tr>
     </thead>
-    <tbody>
-    <tr>
-    <td>
-        <img id="id_dish_picture_1" src="{% static 'img/Fried-pork-dumplings.jpg' %}"
-        width="220px"
-        style="align-content: center">
-    </td>
-    <td>Fried Pork Dumplings</td>
-    <td><button> - </button></td>
-    <td><input class="quantity_input" type="number">  </td>
-    <td><button> + </button></td>
-    <td>$10</td>
-    <td><button>Remove</button></td>
-    </tr>
-    <tr>
-    <td>
-        <img id="id_dish_picture_1" src="{% static '/img/Scallion-pancakes.png' %}"
-        width="220px"
-        style="align-content: center">
-    </td>
-    <td>Scallion Pancakes</td>
-    <td><button> - </button></td>
-    <td><input class="quantity_input" type="number"></td>
-    <td><button> + </button></td>
-    <td>$15</td>
-    <td><button>Remove</button></td>
-    </tr>
-
+    <tbody class="table-group-divider fs-5">
+      <tr>
+        <th scope="row">1</th>
+        <td>
+            <img id="id_dish_picture_1" src="{% static 'img/Fried-pork-dumplings.jpg' %}"
+            width="50px"
+            style="align-content: center">
+        </td>
+        <td>Fried Pork Dumplings</td>
+        <td><button type="button" class="btn btn-outline-dark"> - </button></td>
+        <td><input class="quantity_input" type="number" placeholder="1"></td>
+        <td><button type="button" class="btn btn-outline-dark"> + </button></td>
+        <td>$10</td>
+        <td><button type="button" class="btn btn-outline-dark"">Remove</button></td>
+      </tr>
+      <tr>
+        <th scope="row">2</th>
+        <td>
+            <img id="id_dish_picture_1" src="{% static '/img/Scallion-pancakes.png' %}"
+            width="100px"
+            style="align-content: center">
+        </td>
+        <td>Scallion Pancakes</td>
+        <td><button type="button" class="btn btn-outline-dark"> - </button></td>
+        <td><input class="quantity_input" type="number" placeholder="1"></td>
+        <td><button type="button" class="btn btn-outline-dark"> + </button></td>
+        <td>$15</td>
+        <td><button type="button" class="btn btn-outline-dark">Remove</button></td>
+      </tr>
+      <tr>
+        <th scope="row"></th>
+        <td colspan="5" class="fs-5 text-end">Tax(7%)</td>
+        <td class="fs-5 text-center">$1.75</td>
+        <td></td>
+      </tr>
+      <tr>
+        <th scope="row"></th>
+        <td colspan="5" class="fs-5 text-end">Tip</td>
+        <td class="fs-5 text-center">$5</td>
+        <td></td>
+      </tr>
+      <tr>
+        <th scope="row"></th>
+        <td colspan="5" class="fs-4 fw-bold text-end">Total</td>
+        <td class="fs-4 fw-bold text-center">$31.75</td>
+        <td></td>
+      </tr>
+      <tr>
+        <th scope="row"></th>
+        <td colspan="6" class="fs-4 fw-bold text-end"></td>
+        <td><button type="button" class="btn btn-dark btn-lg">Check out</button></td>
+      </tr>
     </tbody>
-    </table>
-
-
+  </table>
 
 
 {% endblock %}

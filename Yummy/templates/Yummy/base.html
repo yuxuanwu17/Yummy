@@ -10,33 +10,56 @@
     <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/album/">
     <link href="../../static/Yummy/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="../../static/Yummy/dist/js/bootstrap.bundle.min.js"></script>
+
     {% block extra_css %}
     {% endblock %}
 </head>
 
-<div id="id_header_div" class="header">
-    <div id="id_site_name">
-        <a href="{% url 'home' %}" class="title">Yummy!</a>
-    </div>
-    {% if not user.is_authenticated %}
+<nav class="navbar navbar-expand-lg" style="background-color: #f0be6f;">
+    <div class="container-fluid">
+      <img src="{% static 'img/noodles.png' %}" style="width: 40px; height: 40px;">
+      <a class="navbar-brand fs-1 fw-bolder" href="{% url 'home' %}">Yummy!</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link fs-5 fw-light active" aria-current="page" href="{% url 'home' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link fs-5 fw-light" href="{% url 'reserve' %}">Reservation</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link fs-5 fw-light" href="{% url 'option' %}">Order</a>
+          </li>
+        </ul>
+        {% if not user.is_authenticated %}
         {# if not log in, show the register and login #}
-        <a href="{% url 'register' %}" id="id_nav_global_stream">
-            Register
-        </a>
-        <a href="{% url 'login' %}" id="id_nav_follower_stream">
-            Login
-        </a>
+        <div class="col-md-3 text-end">
+            <a href="{% url 'register' %}" id="id_nav_global_stream">
+                <button type="button" class="btn btn-outline-dark my-3">Register</button>
+            </a>
+            <a href="{% url 'login' %}" id="id_nav_follower_stream">
+                <button type="button" class="btn btn-outline-dark my-3">Login</button>
+            </a>
+        </div>
 
     {% else %}
-        <a href="{% url 'profile' %}" id="id_nav_profile">
-            {{ user.first_name }} {{ user.last_name }}
-        </a>
-        <a href="{% url 'logout' %}" id="id_nav_follower_stream">
-            Logout
-        </a>
+        <div class="col-md-3 text-end">
+            <a href="{% url 'profile' %}" id="id_nav_profile">
+                <button type="button" class="btn btn-outline-dark my-3">{{ user.first_name }} {{ user.last_name }}</button>
+            </a>
 
+            <a href="{% url 'logout' %}" id="id_nav_follower_stream">
+                <button type="button" class="btn btn-outline-dark my-3">Logout</button>
+            </a>
+        </div>
     {% endif %}
-</div>
+      </div>
+    </div>
+  </nav>
+
 
 <div class="posts" id="posts">
     {% block posts_header %}
