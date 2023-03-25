@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Cucumber Salad",
+    "price": 7,
+    "description": "Loaded with cherry tomatoes, red onions, chickpeas and more, with a bright, lemony flavor!",
+    "picture_dir": "img/cucumber-salad.png",
+    "category": "Appetizer",
+    "calories": 300,
+    "is_spicy": 0,
+    "is_vegetarian": 1
+  }
+]

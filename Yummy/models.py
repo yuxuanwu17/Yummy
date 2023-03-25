@@ -15,8 +15,7 @@ class Food(models.Model):
     name = models.CharField(max_length=500)
     price = models.FloatField()
     description = models.CharField(max_length=500)
-    picture = models.ImageField()
-    content_type = models.CharField(max_length=50)
+    picture_dir = models.CharField(max_length=500)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
     calories = models.FloatField()
     # 1 for spicy and 0 for non-spicy
@@ -52,6 +51,7 @@ class Table(models.Model):
     customer = models.ForeignKey(User, on_delete=models.PROTECT)
     open_time = models.DateTimeField()
 
+
 class Reservation(models.Model):
     num_customers = models.IntegerField(blank=False)
     table = models.ForeignKey(Table, on_delete=models.PROTECT)
@@ -59,4 +59,3 @@ class Reservation(models.Model):
     last_name = models.CharField(max_length=200, editable=True, blank=False)
     phone_number = models.CharField(max_length=200, editable=True, blank=False)
     comment = models.CharField(max_length=200, editable=True, blank=True)
-    

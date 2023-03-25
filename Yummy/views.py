@@ -1,3 +1,5 @@
+import collections
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
@@ -65,6 +67,25 @@ def register_action(request):
 # Create your views here.
 def global_action(request):
     return render(request, 'Yummy/home.html', {})
+
+
+def test_action(request):
+    response_data = collections.defaultdict(list)
+    for model_item in Food.objects.all():
+        my_item = {
+            "name": model_item.name,
+            "price": model_item.price,
+            "description": model_item.description,
+            "picture_dir": model_item.picture_dir,
+            "category": model_item.category,
+            "calories": model_item.calories,
+            "is_spicy": model_item.is_spicy,
+            "is_vegetarian": model_item.is_vegetarian
+        }
+        response_data['food'].append(my_item)
+    return render(request, 'Yummy/home_test.html', response_data)
+
+    return render(request, 'Yummy/home_test.html', {})
 
 
 @login_required
