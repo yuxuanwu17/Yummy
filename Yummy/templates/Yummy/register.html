@@ -1,13 +1,16 @@
 {% extends "Yummy/base.html" %}
 {% block content %}
-    <div id="id_page_name">
-        Register
+<div id="id_page_name" class="text-center">
+    <h1 class="fw-light">Register</h1>
+</div>
+    <div class="text-center">
+        <form method="post" action="register" class="row1">
+            <table class="login_register_table">
+                {{ form }}
+            </table>
+            {% csrf_token %}
+            <button class="btn btn-outline-dark my-4" type="submit">Submit</button>
+        </form>
     </div>
-    <form method="post" action="register" class="row1">
-        <table class="login_register_table">
-            {{ form }}
-        </table>
-        {% csrf_token %}
-        <button type="submit" id="id_register_button" class="btn btn-secondary">Submit</button>
-    </form>
+
 {% endblock %}
