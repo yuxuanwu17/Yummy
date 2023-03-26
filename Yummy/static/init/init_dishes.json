@@ -98,5 +98,55 @@
     "calories": 400,
     "is_spicy": 0,
     "is_vegetarian": 0
+  },
+  {
+    "name": "Fried Pork Dumplings",
+    "price": 9,
+    "description": "Filled with ground pork, napa cabbage, chives, soy sauce and more.",
+    "picture_dir": "img/Fried-pork-dumplings.jpg",
+    "category": "Snack",
+    "calories": 400,
+    "is_spicy": 0,
+    "is_vegetarian": 0
+  },
+  {
+    "name": "Pumpkin Pancake",
+    "price": 9,
+    "description": "A thin, flat, circular piece of cooked batter made from milk, pumpkin, flour, and eggs.",
+    "picture_dir": "img/Pumpkin-pancake.png",
+    "category": "Snack",
+    "calories": 400,
+    "is_spicy": 0,
+    "is_vegetarian": 0
+  },
+  {
+    "name": "Rice Balls In Wine Soup",
+    "price": 9,
+    "description": "Small balls made of glutinous rice flour. Very chewy and slightly sweet.",
+    "picture_dir": "img/Rice-balls-in-wine-soup.png",
+    "category": "Snack",
+    "calories": 400,
+    "is_spicy": 0,
+    "is_vegetarian": 0
+  },
+  {
+    "name": "Scallion Pancakes",
+    "price": 9,
+    "description": "A breakfast pancake with a lovely crispy shell and soft inside.",
+    "picture_dir": "img/Scallion-pancakes.png",
+    "category": "Snack",
+    "calories": 400,
+    "is_spicy": 0,
+    "is_vegetarian": 0
+  },
+  {
+    "name": "Chow Mein",
+    "price": 10,
+    "description": "A traditional Chinese dish made with egg noodles and stir-fried veggies",
+    "picture_dir": "img/chow-mein.png",
+    "category": "Rice & Noodles",
+    "calories": 600,
+    "is_spicy": 0,
+    "is_vegetarian": 1
   }
 ]
