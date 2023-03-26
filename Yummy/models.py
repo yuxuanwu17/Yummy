@@ -2,11 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class Profile(models.Model):
-    user = models.OneToOneField(User, default=None, on_delete=models.PROTECT)
-    phone_number = models.CharField(max_length=200, editable=True, blank=True)
-
-
 class Category(models.Model):
     name = models.CharField(max_length=500)
 
@@ -21,6 +16,18 @@ class Food(models.Model):
     # 1 for spicy and 0 for non-spicy
     is_spicy = models.BooleanField(default=False)
     is_vegetarian = models.BooleanField(default=False)
+
+    def __str__(self):
+        return 'name=' + self.name
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, default=None, on_delete=models.PROTECT)
+    phone_number = models.CharField(max_length=200, editable=True, blank=True)
+    favorite = models.ManyToManyField(Food, related_name='favoring', blank=True)
+
+    def __str__(self):
+        return 'userid=' + str(self.user.id) + ', phone_number=' + self.phone_number
 
 
 class Comment(models.Model):

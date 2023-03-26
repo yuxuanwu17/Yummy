@@ -2,117 +2,149 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="../../static/Yummy/profile.css">
+    <link rel="stylesheet" href="../../static/Yummy/profile.css">
 {% endblock %}
 
 {% block content %}
-<div class="px-4 py-5 my-5 text-center">
-    <h1 id="id_page_title" class="fw-light">Profile Page for {{user.first_name}} {{user.last_name}}</h1>
-    <div class="col-lg-6 mx-auto">
-        <p class="lead mb-4">View your favorite dishes and order history.</p>
-    </div>
+    <div class="px-4 py-5 my-5 text-center">
+        <h1 id="id_page_title" class="fw-light">Profile Page for {{ user.first_name }} {{ user.last_name }}</h1>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4">View your favorite dishes and order history.</p>
+        </div>
 
-    <div id="id_profile_container">
-        <nav>
-            <div class="nav nav-tabs mb-3 justify-content-center" id="nav-tab" role="tablist">
-              <button class="nav-link active" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="true">Profile</button>
-              <button class="nav-link" id="nav-fav-tab" data-bs-toggle="tab" data-bs-target="#nav-fav" type="button" role="tab" aria-controls="nav-fav" aria-selected="false" tabindex="-1">Favorite Dishes</button>
-              <button class="nav-link" id="nav-history-tab" data-bs-toggle="tab" data-bs-target="#nav-history" type="button" role="tab" aria-controls="nav-history" aria-selected="false" tabindex="-1">Order History</button>
-            </div>
-        </nav>
-        <div class="tab-content" id="nav-tabContent">
-            <div class="tab-pane fade active show" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-                <p>This is some placeholder content the <strong>Profile tab's</strong> associated content.</p>
-            </div>
-
-            <div class="tab-pane fade" id="nav-fav" role="tabpanel" aria-labelledby="nav-fav-tab">
-              <p>This is some placeholder content the <strong>Favorite Dishes tab's</strong> associated content.</p>
-              <div class="list-group">
-                <a href="{% url 'dish' %}" class="list-group-item list-group-item-action">Cucumber Salad</a>
-                <a href="#" class="list-group-item list-group-item-action">Pork Dumplings</a>
-                <a href="#" class="list-group-item list-group-item-action">Dish 3</a>
-                <a href="#" class="list-group-item list-group-item-action">Dish 4</a>
-              </div>
-            </div>
-
-            <div class="tab-pane fade" id="nav-history" role="tabpanel" aria-labelledby="nav-history-tab">
-              <p>This is some placeholder content the <strong>Order History tab's</strong> associated content.</p>
-                
-              <!-- Accordion item -->
-              <div class="accordion" id="accordionOrder">
-                <div class="accordion-item">
-                  <h2 class="accordion-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                      Date of Order #1
+        <div id="id_profile_container">
+            <nav>
+                <div class="nav nav-tabs mb-3 justify-content-center" id="nav-tab" role="tablist">
+                    <button class="nav-link active" id="nav-profile-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile"
+                            aria-selected="true">Profile
                     </button>
-                  </h2>
-                  <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionOrder">
-                    <div class="accordion-body">
-                        <table class="table">
-                            <thead>
-                              <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Dish</th>
-                                <th scope="col">Quantity</th>
-                                <th scope="col">Price</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <th scope="row">1</th>
-                                <td>Cucumber Salad</td>
-                                <td>1</td>
-                                <td>$20</td>
-                              </tr>
-                              <tr>
-                                <th scope="row">2</th>
-                                <td>Scallion Pancakes</td>
-                                <td>2</td>
-                                <td>$15</td>
-                              </tr>
-                              <tr>
-                                <th scope="row">Total</th>
-                                <td colspan="3">$50</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                    </div>
-                  </div>
-                </div>
-                <div class="accordion-item">
-                  <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                      Date of Order #2
+                    <button class="nav-link" id="nav-fav-tab" data-bs-toggle="tab" data-bs-target="#nav-fav"
+                            type="button" role="tab" aria-controls="nav-fav" aria-selected="false" tabindex="-1">
+                        Favorite Dishes
                     </button>
-                  </h2>
-                  <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionOrder">
-                    <div class="accordion-body">
-                      <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                    </div>
-                  </div>
-                </div>
-                <div class="accordion-item">
-                  <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                      Date of Order #3
+                    <button class="nav-link" id="nav-history-tab" data-bs-toggle="tab" data-bs-target="#nav-history"
+                            type="button" role="tab" aria-controls="nav-history" aria-selected="false" tabindex="-1">
+                        Order History
                     </button>
-                  </h2>
-                  <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionOrder">
-                    <div class="accordion-body">
-                      <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                    </div>
-                  </div>
                 </div>
-              </div>
+            </nav>
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade active show" id="nav-profile" role="tabpanel"
+                     aria-labelledby="nav-profile-tab">
+                    <p>This is some placeholder content the <strong>Profile tab's</strong> associated content.</p>
+                </div>
 
+                <div class="tab-pane fade" id="nav-fav" role="tabpanel" aria-labelledby="nav-fav-tab">
+                    <p> Your favorite dishes are:
+
+                    </p>
+                    <div class="list-group">
+
+                        {% for u in favorite %}
+                            <ul>
+                                <a href="{% url 'dish' %}"
+                                   class="list-group-item list-group-item-action">{{ u.name }}</a>
+                            </ul>
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="nav-history" role="tabpanel" aria-labelledby="nav-history-tab">
+                    <p>This is some placeholder content the <strong>Order History tab's</strong> associated content.</p>
+
+                    <!-- Accordion item -->
+                    <div class="accordion" id="accordionOrder">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    Date of Order #1
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show"
+                                 data-bs-parent="#accordionOrder">
+                                <div class="accordion-body">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Dish</th>
+                                            <th scope="col">Quantity</th>
+                                            <th scope="col">Price</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <th scope="row">1</th>
+                                            <td>Cucumber Salad</td>
+                                            <td>1</td>
+                                            <td>$20</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">2</th>
+                                            <td>Scallion Pancakes</td>
+                                            <td>2</td>
+                                            <td>$15</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Total</th>
+                                            <td colspan="3">$50</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    Date of Order #2
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionOrder">
+                                <div class="accordion-body">
+                                    <strong>This is the second item's accordion body.</strong> It is hidden by default,
+                                    until the collapse plugin adds the appropriate classes that we use to style each
+                                    element. These classes control the overall appearance, as well as the showing and
+                                    hiding via CSS transitions. You can modify any of this with custom CSS or overriding
+                                    our default variables. It's also worth noting that just about any HTML can go within
+                                    the <code>.accordion-body</code>, though the transition does limit overflow.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseThree" aria-expanded="false"
+                                        aria-controls="collapseThree">
+                                    Date of Order #3
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse"
+                                 data-bs-parent="#accordionOrder">
+                                <div class="accordion-body">
+                                    <strong>This is the third item's accordion body.</strong> It is hidden by default,
+                                    until the collapse plugin adds the appropriate classes that we use to style each
+                                    element. These classes control the overall appearance, as well as the showing and
+                                    hiding via CSS transitions. You can modify any of this with custom CSS or overriding
+                                    our default variables. It's also worth noting that just about any HTML can go within
+                                    the <code>.accordion-body</code>, though the transition does limit overflow.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
+
     </div>
 
-</div>
 
-
-<script src="{% static 'medSearch/assets/dist/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'medSearch/assets/dist/js/bootstrap.bundle.min.js' %}"></script>
 
 
 {% endblock %}
