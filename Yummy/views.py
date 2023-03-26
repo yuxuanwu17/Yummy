@@ -92,15 +92,7 @@ def test_action(request):
             response_data['foods'].append([my_item])
         else:
             response_data['foods'][curr_index].append(my_item)
-    # order_map: define the order of category order
-
-    # get all the category objects
-    #category_list = response_data.keys()
-    #print(category_list)
-    #response_data['categories'] = category_list
-    # response_data.append(category)
-    # response_data['n'] = range(len(response_data['categories']))
-    print(response_data)
+    # print(response_data)
     return render(request, 'Yummy/home_test.html', response_data)
 
 

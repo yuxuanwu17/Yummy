@@ -8,5 +8,65 @@
     "calories": 300,
     "is_spicy": 0,
     "is_vegetarian": 1
+  },
+  {
+    "name": "Lettuce with garlic",
+    "price": 9,
+    "description": "A healthy vegetables dish with light and refreshing taste.",
+    "picture_dir": "img/Lettuce-with-garlic.png",
+    "category": "Vegetable",
+    "calories": 300,
+    "is_spicy": 0,
+    "is_vegetarian": 1
+  },
+  {
+    "name": "Ma Po Tofu",
+    "price": 9,
+    "description": "A popular dish from Sichuan, offering you a special and spicy experience.",
+    "picture_dir": "img/ma-po-tofu.png",
+    "category": "Vegetable",
+    "calories": 300,
+    "is_spicy": 1,
+    "is_vegetarian": 1
+  },
+  {
+    "name": "Peking Roasted Duck",
+    "price": 9,
+    "description": "A Beijing dish with roasted duck meat and crispy skin wrapped in a thin crepe.",
+    "picture_dir": "img/peking-roasted-duck.png",
+    "category": "Meat",
+    "calories": 500,
+    "is_spicy": 0,
+    "is_vegetarian": 0
+  },
+  {
+    "name": "Sweet Sour Pork",
+    "price": 12,
+    "description": "Cubed pork deep-fried until golden brown, then add sweet and sour sauce.",
+    "picture_dir": "img/sweet-sour-pork.png",
+    "category": "Meat",
+    "calories": 400,
+    "is_spicy": 0,
+    "is_vegetarian": 0
+  },
+  {
+    "name": "Sichuan Pork",
+    "price": 9,
+    "description": "Thin Sliced Pork Belly, Leek, Red Pepper, and Black Bean.",
+    "picture_dir": "img/sichuan-pork.png",
+    "category": "Meat",
+    "calories": 300,
+    "is_spicy": 1,
+    "is_vegetarian": 0
+  },
+  {
+    "name": "Seafood Congee",
+    "price": 9,
+    "description": "Seafood congee is made with a handful of shrimp, rich shrimp stock and the a couple of small crabs.",
+    "picture_dir": "img/seafood-congee.png",
+    "category": "Soup",
+    "calories": 400,
+    "is_spicy": 0,
+    "is_vegetarian": 0
   }
 ]
