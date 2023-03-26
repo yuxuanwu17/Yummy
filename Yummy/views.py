@@ -66,10 +66,6 @@ def register_action(request):
 
 # Create your views here.
 def global_action(request):
-    return render(request, 'Yummy/home.html', {})
-
-
-def test_action(request):
     response_data = collections.defaultdict(list)
     # {'Meat': [{}, {}], 'Soup': [{}, {}], 'categories' = ['Meat', 'Soup']}
 
@@ -93,7 +89,7 @@ def test_action(request):
         else:
             response_data['foods'][curr_index].append(my_item)
     # print(response_data)
-    return render(request, 'Yummy/home_test.html', response_data)
+    return render(request, 'Yummy/home.html', response_data)
 
 
 @login_required
