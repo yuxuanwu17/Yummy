@@ -8,504 +8,138 @@
             We have the best Chinese cuisine here!
         </p>
         <p class="lead text-gray-300">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pin-map-fill" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M3.1 11.2a.5.5 0 0 1 .4-.2H6a.5.5 0 0 1 0 1H3.75L1.5 15h13l-2.25-3H10a.5.5 0 0 1 0-1h2.5a.5.5 0 0 1 .4.2l3 4a.5.5 0 0 1-.4.8H.5a.5.5 0 0 1-.4-.8l3-4z"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                 class="bi bi-pin-map-fill"
+                 viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                      d="M3.1 11.2a.5.5 0 0 1 .4-.2H6a.5.5 0 0 1 0 1H3.75L1.5 15h13l-2.25-3H10a.5.5 0 0 1 0-1h2.5a.5.5 0 0 1 .4.2l3 4a.5.5 0 0 1-.4.8H.5a.5.5 0 0 1-.4-.8l3-4z"/>
                 <path fill-rule="evenodd" d="M4 4a4 4 0 1 1 4.5 3.969V13.5a.5.5 0 0 1-1 0V7.97A4 4 0 0 1 4 3.999z"/>
-              </svg> 5000 Forbes Ave, Pittsburgh, PA 15213</p>
+            </svg>
+            5000 Forbes Ave, Pittsburgh, PA 15213
+        </p>
         <p class="lead text-gray-300">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-telephone-fill" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
-            </svg> 412-345-6789</p>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                 class="bi bi-telephone-fill"
+                 viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                      d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
+            </svg>
+            412-345-6789
+        </p>
         <p>
         <p class="lead text-gray-300">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-clock-fill" viewBox="0 0 20 20">
-                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
-            </svg> 11:00 A.M to 9:00 P.M Everyday
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-clock-fill"
+                 viewBox="0 0 20 20">
+                <path
+                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+            </svg>
+            11:00 A.M to 9:00 P.M Everyday
         </p>
-            {% if user.is_authenticated %}
-                <a href="{% url 'reserve' %}" class="btn btn-warning my-2">Reserve</a>
-                <a href="{% url 'option' %}" class="btn btn-secondary my-2">Order</a>
-            {% endif %}
+        {% if user.is_authenticated %}
+            <a href="{% url 'reserve' %}" class="btn btn-warning my-2">Reserve</a>
+            <a href="{% url 'option' %}" class="btn btn-secondary my-2">Order</a>
+        {% endif %}
         </p>
     </div>
     <div id="carouselExampleCaptions" class="carousel slide">
         <div class="carousel-indicators">
-          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
-          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active"
+                    aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1"
+                    aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2"
+                    aria-label="Slide 3"></button>
         </div>
         <div class="carousel-inner">
-          <div class="carousel-item active">
-            <img src="{% static 'img/restaurant-pic-1.jpg' %}" class="d-block w-100 h-100" alt="Restauran Interior">
-            <!-- <div class="carousel-caption d-none d-md-block">
-                <div class="col-lg-6 col-md-8 mx-auto">
-                </div>
-            </div> -->
-          </div>
-          <div class="carousel-item">
-            <img src="{% static 'img/restaurant-pic-2.jpeg' %}" class="d-block w-100 h-100" alt="Shumai">
-            <!-- <div class="carousel-caption d-none d-md-block">
-                <div class="col-lg-6 col-md-8 mx-auto">
-                </div>
-            </div> -->
-          </div>
-          <div class="carousel-item">
-            <img src="{% static 'img/restaurant-pic-3.jpeg' %}" class="d-block w-100 h-100" alt="Dishes">
-            <!-- <div class="carousel-caption d-none d-md-block">
-                <div class="col-lg-6 col-md-8 mx-auto">
-                </div>
-            </div> -->
-          </div>
+            <div class="carousel-item active">
+                <img src="{% static 'img/restaurant-pic-1.jpg' %}" class="d-block w-100 h-100" alt="Restauran Interior">
+                <!-- <div class="carousel-caption d-none d-md-block">
+                        <div class="col-lg-6 col-md-8 mx-auto">
+                        </div>
+                    </div> -->
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'img/restaurant-pic-2.jpeg' %}" class="d-block w-100 h-100" alt="Shumai">
+                <!-- <div class="carousel-caption d-none d-md-block">
+                        <div class="col-lg-6 col-md-8 mx-auto">
+                        </div>
+                    </div> -->
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'img/restaurant-pic-3.jpeg' %}" class="d-block w-100 h-100" alt="Dishes">
+                <!-- <div class="carousel-caption d-none d-md-block">
+                        <div class="col-lg-6 col-md-8 mx-auto">
+                        </div>
+                    </div> -->
+            </div>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Previous</span>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions"
+                data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Next</span>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions"
+                data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
         </button>
-      </div>
+    </div>
 {% endblock %}
 
 {% block content %}
     <div class="album py-5 bg-light" style="align-content: center">
         <div class="container">
-            <br>
-            <div class="category_text">
-                <h1> Appetizer</h1>
-            </div>
-            <br>
-
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                <div class="category" id="cucumber-salad">
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <a href="{% url 'dish' %}" class="dish_picture_a">
-                            <img id="id_user_picture" src="{% static 'img/cucumber-salad.png' %}" width="100%"
-                                 height="100%" style="align-content: center">
-                            </a>
-
-                            <div class="card-body">
-                                <p class="card-text">
-                                    Loaded with cherry tomatoes, red onions, chickpeas and more, with a bright, lemony flavor!
-                                </p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary"><span
-                                                class="plus_sign"
-                                        >+</span></button>
-
+            {% for food in foods %}
+                <div class="category_text">
+                    <br>
+                    <h1>
+                        {{ food.0.category.name }}
+                    </h1>
+                    <br>
+                </div>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                    {% for f in food %}
+                        <div class="category" id={{ f.picture_dir }}>
+                            <div class="col">
+                                <div class="card shadow-sm">
+                                    <a href="{% url 'dish' %}" class="dish_picture_a">
+                                        <img id="id_user_picture" src="{% static f.picture_dir %}" width="100%"
+                                             height="100%"
+                                             style="align-content: center">
+                                    </a>
+                                    <div class="card-body text-center ">
+                                        <p class="card-text fw-bold">
+                                            {{ f.name }}
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary">
+                                                    Favorite
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary"><span
+                                                        class="plus_sign">+</span></button>
+                                            </div>
+                                            <div class="btn-group">
+                                                {% if f.is_vegetarian %}
+                                                    <button type="button" class="btn btn-light disabled" disabled>
+                                                        &#x1F96C;
+                                                    </button>
+                                                {% endif %}
+                                                {% if f.is_spicy %}
+                                                    <button type="button" class="btn btn-light   disabled" disabled>
+                                                        &#x1F336;&#xFE0F;
+                                                    </button>
+                                                {% endif %}
+                                            </div>
+                                            <small class="text-muted fs-2"> $ {{ f.price }} </small>
+                                        </div>
                                     </div>
-                                    <small class="text-muted fs-2"> 20$</small>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    {% endfor %}
                 </div>
-            </div>
-
-            <br>
-            <div class="category_text">
-                <h1> Vegetable</h1>
-            </div>
-            <br>
-
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                <div class="category" id="Lettuce-with-garlic">
-                    <div class="col">
-                        <div class="card shadow-sm">
-
-                            <img id="id_user_picture" src="{% static 'img/Lettuce-with-garlic.png' %}"
-                                 width="100%"
-                                 height="100%"
-                                 style="align-content: center">
-                            <div class="card-body">
-                                <p class="card-text">A healthy vegetables dish with light and refreshing taste.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary"><span
-                                                class="plus_sign"
-                                        >+</span></button>
-
-                                    </div>
-                                    <small class="text-muted fs-2"> 20$</small>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="category" id="ma-po-tofu">
-                    <div class="col">
-                        <div class="card shadow-sm">
-
-                            <img id="id_user_picture" src="{% static 'img/ma-po-tofu.png' %}"
-                                 width="100%"
-                                 height="100%"
-                                 style="align-content: center">
-                            <div class="card-body">
-                                <p class="card-text">A popular dish from Sichuan, offering you a special and spicy experience.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary"><span
-                                                class="plus_sign"
-                                        >+</span></button>
-
-                                    </div>
-                                    <small class="text-muted fs-2"> 20$</small>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <br>
-
-            <div class="category_text">
-                <h1>Meat</h1>
-            </div>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                <div class="category" id="peking-roasted-duck">
-                    <div class="col">
-                        <div class="card shadow-sm">
-
-                            <img id="id_user_picture" src="{% static 'img/peking-roasted-duck.png' %}"
-                                 width="100%"
-                                 height="100%"
-                                 style="align-content: center">
-                            <div class="card-body">
-                                <p class="card-text">A Beijing dish with
-                                    roasted duck meat and crispy skin wrapped in a thin crepe.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary"><span
-                                                class="plus_sign"
-                                        >+</span></button>
-
-                                    </div>
-                                    <small class="text-muted fs-2"> 20$</small>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="category" id="sweet-sour-pork.png">
-                    <div class="col">
-                        <div class="card shadow-sm">
-
-                            <img id="id_user_picture" src="{% static 'img/sweet-sour-pork.png' %}"
-                                 width="100%"
-                                 height="100%"
-                                 style="align-content: center">
-                            <div class="card-body">
-                                <p class="card-text">Cubed pork deep-fried until golden brown, then add sweet and sour sauce.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary"><span
-                                                class="plus_sign"
-                                        >+</span></button>
-
-                                    </div>
-                                    <small class="text-muted fs-2"> 20$</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="category" id="sichuan-pork.png">
-                    <div class="col">
-                        <div class="card shadow-sm">
-
-                            <img id="id_user_picture" src="{% static 'img/sichuan-pork.png' %}"
-                                 width="100%"
-                                 height="100%"
-                                 style="align-content: center">
-                            <div class="card-body">
-                                <p class="card-text">Thin Sliced Pork Belly, Leek, Red Pepper, and Black Bean.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary"><span
-                                                class="plus_sign"
-                                        >+</span></button>
-
-                                    </div>
-                                    <small class="text-muted fs-2"> 20$</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <br>
-
-            <br>
-            <div class="category_text">
-                <h1> Soup </h1>
-            </div>
-            <br>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                <div class="category" id="seafood-congee">
-                    <div class="col">
-                        <div class="card shadow-sm">
-
-                            <img id="id_user_picture" src="{% static 'img/seafood-congee.png' %}"
-                                 width="100%"
-                                 height="100%"
-                            >
-                            <div class="card-body">
-                                <p class="card-text">Seafood congee is made with a handful of shrimp, rich shrimp stock
-                                    and the a couple of small crabs.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary"><span
-                                                class="plus_sign"
-                                        >+</span></button>
-
-                                    </div>
-                                    <small class="text-muted fs-2"> 20$</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="category" id="red-bean-porridge">
-                    <div class="col">
-                        <div class="card shadow-sm">
-
-                            <img id="id_user_picture" src="{% static 'img/red-bean-porridge.png' %}"
-                                 width="100%"
-                                 height="100%"
-                            >
-                            <div class="card-body">
-                                <p class="card-text">Made from dried red beans
-                                    with added chewy rice cake balls made from glutinous rice flour.
-                                    Creamy, nutty, and a little sweet.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary"><span
-                                                class="plus_sign"
-                                        >+</span></button>
-
-                                    </div>
-                                    <small class="text-muted fs-2"> 20$</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <br>
-            <div class="category_text">
-                <h1> Dessert</h1>
-            </div>
-            <br>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                <div class="category" id="mango-pomelo-sago">
-                    <div class="col">
-                        <div class="card shadow-sm">
-
-                            <img id="id_user_picture" src="{% static 'img/mango-pomelo-sago.png' %}"
-                                 width="100%"
-                                 height="100%"
-                                 style="align-content: center">
-                            <div class="card-body">
-                                <p class="card-text">A Cantonese-style dessert with grapefruit,
-                                    mango, sago, and coconut milk, and the main cooking process is boiling.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary"><span
-                                                class="plus_sign"
-                                        >+</span></button>
-
-                                    </div>
-                                    <small class="text-muted fs-2"> 20$</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="category" id="fruit-with-yogurt">
-                    <div class="col">
-                        <div class="card shadow-sm">
-
-                            <img id="id_user_picture" src="{% static 'img/fruit-with-yogurt.png' %}"
-                                 width="100%"
-                                 height="100%"
-                                 style="align-content: center">
-                            <div class="card-body">
-                                <p class="card-text">Collision on the tip of the tongue brought by fruit and
-                                    yogurt. You can also choose fruit yourself!</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary"><span
-                                                class="plus_sign"
-                                        >+</span></button>
-
-                                    </div>
-                                    <small class="text-muted fs-2"> 20$</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <br>
-            <div class="category_text">
-                <h1> Snack </h1>
-            </div>
-            <br>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                <div class="category" id="Fried-pork-dumplings">
-                    <div class="col">
-                        <div class="card shadow-sm">
-
-                            <img id="id_user_picture" src="{% static 'img/Fried-pork-dumplings.jpg' %}"
-                                 width="100%"
-                                 height="100%"
-                                 style="align-content: center">
-                            <div class="card-body">
-                                <p class="card-text">Filled with ground pork, napa cabbage, chives, soy sauce and more.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary"><span
-                                                class="plus_sign"
-                                        >+</span></button>
-
-                                    </div>
-                                    <small class="text-muted fs-2"> 20$</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="category" id="Pumpkin-pancake">
-                    <div class="col">
-                        <div class="card shadow-sm">
-
-                            <img id="id_user_picture" src="{% static 'img/Pumpkin-pancake.png' %}"
-                                 width="100%"
-                                 height="100%"
-                                 style="align-content: center">
-                            <div class="card-body">
-                                <p class="card-text">A thin, flat, circular piece of cooked batter made from milk,
-                                    pumpkin, flour, and eggs.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary"><span
-                                                class="plus_sign"
-                                        >+</span></button>
-
-                                    </div>
-                                    <small class="text-muted fs-2"> 20$</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="category" id="Rice-balls-in-wine-soup">
-                    <div class="col">
-                        <div class="card shadow-sm">
-
-                            <img id="id_user_picture" src="{% static 'img/Rice-balls-in-wine-soup.png' %}"
-                                 width="100%"
-                                 height="100%"
-                                 style="align-content: center">
-                            <div class="card-body">
-                                <p class="card-text">Small balls made of glutinous rice flour. Very chewy and slightly
-                                    sweet.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary"><span
-                                                class="plus_sign"
-                                        >+</span></button>
-
-                                    </div>
-                                    <small class="text-muted fs-2"> 20$</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="category" id="Scallion-pancakes">
-                    <div class="col">
-                        <div class="card shadow-sm">
-
-                            <img id="id_user_picture" src="{% static 'img/Scallion-pancakes.png' %}"
-                                 width="100%"
-                                 height="100%"
-                                 style="align-content: center">
-                            <div class="card-body">
-                                <p class="card-text">A breakfast pancake with a lovely crispy shell and soft inside.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary"><span
-                                                class="plus_sign"
-                                        >+</span></button>
-                                    </div>
-                                    <small class="text-muted fs-2"> 20$</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <br>
-            <div class="category_text">
-                <h1> Rice & Noodles </h1>
-            </div>
-            <br>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                <div class="category" id="rice_noodles">
-                    <div class="col">
-                        <div class="card shadow-sm">
-
-                            <img id="id_user_picture" src="{% static 'img/chow-mein.png' %}"
-                                 width="100%"
-                                 height="100%"
-                                 style="align-content: center">
-                            <div class="card-body">
-                                <p class="card-text">A traditional Chinese dish made with egg noodles and stir-fried
-                                    veggies</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Favorite</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary"><span
-                                                class="plus_sign"
-                                        >+</span></button>
-
-                                    </div>
-                                    <small class="text-muted fs-2"> 20$</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+            {% endfor %}
         </div>
     </div>
 {% endblock %}
-

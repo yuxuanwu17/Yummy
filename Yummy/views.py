@@ -1,3 +1,5 @@
+import collections
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
@@ -65,6 +67,33 @@ def register_action(request):
 # Create your views here.
 def global_action(request):
     return render(request, 'Yummy/home.html', {})
+
+
+def test_action(request):
+    response_data = collections.defaultdict(list)
+    # {'Meat': [{}, {}], 'Soup': [{}, {}], 'categories' = ['Meat', 'Soup']}
+
+    # {'categories' : ['meat', 'soup'], 'foods': [[{}, {}], []]}
+    for model_item in Food.objects.all():
+        my_item = {
+            "name": model_item.name,
+            "price": model_item.price,
+            "description": model_item.description,
+            "picture_dir": model_item.picture_dir,
+            "category": model_item.category,
+            "calories": model_item.calories,
+            "is_spicy": model_item.is_spicy,
+            "is_vegetarian": model_item.is_vegetarian
+        }
+        if model_item.category.name not in response_data['categories']:
+            response_data['categories'].append(model_item.category.name)
+        curr_index = response_data['categories'].index(model_item.category.name)
+        if curr_index >= len(response_data['foods']):
+            response_data['foods'].append([my_item])
+        else:
+            response_data['foods'][curr_index].append(my_item)
+    # print(response_data)
+    return render(request, 'Yummy/home_test.html', response_data)
 
 
 @login_required
