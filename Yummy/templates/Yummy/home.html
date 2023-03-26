@@ -98,7 +98,7 @@
 
                 // Get the associated item ID
                 var itemId = $(this).closest('.category').attr('id');
-                console.log("itemId:",itemId)
+                console.log("itemId:", itemId)
 
                 // Increment the item count
                 if (!itemCounts[itemId]) {
@@ -210,9 +210,9 @@
                     {% endfor %}
                 </div>
             {% endfor %}
+            <button id="total-clicks-counter" class="btn btn-primary position-fixed top-50 end-0 translate-middle-y">
+                Total clicks: 0
+            </button>
         </div>
-        <button id="total-clicks-counter" class="btn btn-primary">
-            Total clicks: 0
-        </button>
     </div>
 {% endblock %}
