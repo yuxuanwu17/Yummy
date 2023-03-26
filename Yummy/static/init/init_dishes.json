@@ -68,5 +68,35 @@
     "calories": 400,
     "is_spicy": 0,
     "is_vegetarian": 0
+  },
+  {
+    "name": "Red Bean Porridge",
+    "price": 9,
+    "description": "Made from dried red beans with added chewy rice cake balls made from glutinous rice flour. Creamy, nutty, and a little sweet",
+    "picture_dir": "img/red-bean-porridge.png",
+    "category": "Soup",
+    "calories": 400,
+    "is_spicy": 0,
+    "is_vegetarian": 0
+  },
+  {
+    "name": "Mango Pomelo Sago",
+    "price": 9,
+    "description": "A Cantonese-style dessert with grapefruit, mango, sago, and coconut milk, and the main cooking process is boiling.",
+    "picture_dir": "img/mango-pomelo-sago.png",
+    "category": "Dessert",
+    "calories": 400,
+    "is_spicy": 0,
+    "is_vegetarian": 0
+  },
+  {
+    "name": "Fruit With Yogurt",
+    "price": 9,
+    "description": "Collision on the tip of the tongue brought by fruit and yogurt. You can also choose fruit yourself!",
+    "picture_dir": "img/fruit-with-yogurt.png",
+    "category": "Dessert",
+    "calories": 400,
+    "is_spicy": 0,
+    "is_vegetarian": 0
   }
 ]
