@@ -72,6 +72,7 @@ def global_action(request):
     # {'categories' : ['meat', 'soup'], 'foods': [[{}, {}], []]}
     for model_item in Food.objects.all():
         my_item = {
+            "id": model_item.id,
             "name": model_item.name,
             "price": model_item.price,
             "description": model_item.description,
