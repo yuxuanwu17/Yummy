@@ -117,25 +117,45 @@ def summary_action(request):
 
 @login_required
 def profile_action(request):
-    return render(request, 'Yummy/profile.html', {})
+    context = {}
+
+    profile = request.user.profile
+
+    # form = ProfileForm(request.POST, request.FILES, instance=new_item)
+    if request.method == "GET":
+        context['item'] = profile
+        context['favorite'] = profile.favorite.all()
+        print("=====================")
+        print(context['favorite'])
+        print("=====================")
+        return render(request, 'Yummy/profile.html', context)
+
+    return render(request, 'Yummy/profile.html', context)
+
 
 def dish_action(request):
     return render(request, 'Yummy/dish.html', {})
 
 
 @login_required
-def favorite_food_action_menu(request, food_id):
-    # get my info first
+def favorite_food_action_menu(request, id):
+    # Get my info first
     my_info = Profile.objects.get(user=request.user)
 
-    # add otherid into my following
-    curr_food = get_object_or_404(Food, id=food_id)
+    # Add otherid into my following
+    curr_food = get_object_or_404(Food, id=id)
+    print("curr food's name", curr_food.name)
 
     my_info.favorite.add(curr_food)
     my_info.save()
-    print(my_info.favorite)
+
+    print("my_info", my_info)
+    for food in my_info.favorite.all():
+        print(food.name)
     print("=====================")
+
     return redirect(reverse('home'))
+
 
 @login_required
 def unfavorite_food_action_menu(request, food_id):
