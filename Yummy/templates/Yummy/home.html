@@ -112,14 +112,24 @@
                                             {{ f.name }}
                                         </p>
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <div class="btn-group">
-                                                <a href="{% url 'favorite_menu' f.id %}"
-                                                   class="btn btn-sm btn-outline-secondary">
-                                                    Favorite
-                                                </a>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary"><span
-                                                        class="plus_sign">+</span></button>
-                                            </div>
+                                            {% if user.is_authenticated %}
+                                                <div class="btn-group">
+                                                    {% if f.name in favorite_list %}
+                                                        <a href="{% url 'unfavorite_menu' f.id %}"
+                                                           class="btn btn-sm btn-outline-secondary">
+                                                            Cancel
+                                                        </a>
+                                                    {% else %}
+                                                        <a href="{% url 'favorite_menu' f.id %}"
+                                                           class="btn btn-sm btn-outline-secondary">
+                                                            Favorite
+                                                        </a>
+                                                    {% endif %}
+
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary"><span
+                                                            class="plus_sign">+</span></button>
+                                                </div>
+                                            {% endif %}
                                             <div class="btn-group">
                                                 {% if f.is_vegetarian %}
                                                     <button type="button" class="btn btn-light disabled" disabled>

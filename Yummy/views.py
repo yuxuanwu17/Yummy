@@ -68,7 +68,6 @@ def register_action(request):
 def global_action(request):
     response_data = collections.defaultdict(list)
     # {'Meat': [{}, {}], 'Soup': [{}, {}], 'categories' = ['Meat', 'Soup']}
-
     # {'categories' : ['meat', 'soup'], 'foods': [[{}, {}], []]}
     for model_item in Food.objects.all():
         my_item = {
@@ -80,7 +79,7 @@ def global_action(request):
             "category": model_item.category,
             "calories": model_item.calories,
             "is_spicy": model_item.is_spicy,
-            "is_vegetarian": model_item.is_vegetarian
+            "is_vegetarian": model_item.is_vegetarian,
         }
         if model_item.category.name not in response_data['categories']:
             response_data['categories'].append(model_item.category.name)
@@ -89,7 +88,11 @@ def global_action(request):
             response_data['foods'].append([my_item])
         else:
             response_data['foods'][curr_index].append(my_item)
-    # print(response_data)
+    # print(Profile.objects.get(user=request.user))
+    if request.user.is_authenticated:
+        profiles = Profile.objects.get(user=request.user)
+        response_data['favorite_list'] = [x.name for x in profiles.favorite.all()]
+
     return render(request, 'Yummy/home.html', response_data)
 
 
@@ -158,5 +161,13 @@ def favorite_food_action_menu(request, id):
 
 
 @login_required
-def unfavorite_food_action_menu(request, food_id):
-    pass
+def unfavorite_food_action_menu(request, id):
+    # Get my info first
+    my_info = Profile.objects.get(user=request.user)
+
+    # Add otherid into my following
+    curr_food = get_object_or_404(Food, id=id)
+
+    my_info.favorite.remove(curr_food)
+    my_info.save()
+    return redirect(reverse('home'))
