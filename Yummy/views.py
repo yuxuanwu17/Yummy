@@ -119,6 +119,24 @@ def summary_action(request):
 def profile_action(request):
     return render(request, 'Yummy/profile.html', {})
 
-
 def dish_action(request):
     return render(request, 'Yummy/dish.html', {})
+
+
+@login_required
+def favorite_food_action_menu(request, food_id):
+    # get my info first
+    my_info = Profile.objects.get(user=request.user)
+
+    # add otherid into my following
+    curr_food = get_object_or_404(Food, id=food_id)
+
+    my_info.favorite.add(curr_food)
+    my_info.save()
+    print(my_info.favorite)
+    print("=====================")
+    return redirect(reverse('home'))
+
+@login_required
+def unfavorite_food_action_menu(request, food_id):
+    pass

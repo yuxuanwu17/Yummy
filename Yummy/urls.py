@@ -27,4 +27,5 @@ urlpatterns = [
     path('summary', views.summary_action, name='summary'),
     path('profile', views.profile_action, name='profile'),
     path('dish', views.dish_action, name='dish'),
+    path('favorite_menu/<int:id>', views.favorite_food_action_menu, name="favorite_menu")
 ]
