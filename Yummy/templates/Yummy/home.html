@@ -210,12 +210,12 @@
                                                 <div class="btn-group">
                                                     {% if f.name in favorite_list %}
                                                         <a href="{% url 'unfavorite_menu' f.id %}"
-                                                           class="btn btn-sm btn-outline-secondary">
+                                                           class="btn btn-sm btn-outline-secondary d-flex align-items-center">
                                                             Cancel
                                                         </a>
                                                     {% else %}
                                                         <a href="{% url 'favorite_menu' f.id %}"
-                                                           class="btn btn-sm btn-outline-secondary">
+                                                           class="btn btn-sm btn-outline-secondary d-flex align-items-center">
                                                             Favorite
                                                         </a>
                                                     {% endif %}
