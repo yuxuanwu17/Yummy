@@ -1,11 +1,15 @@
 import collections
 
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+
 from Yummy.models import *
 from .forms import *
 
@@ -97,6 +101,64 @@ def global_action(request):
 
 
 @login_required
+@csrf_exempt
+def add_food(request):
+    if request.method == 'POST':
+        food_id = request.POST.get('food_id')
+        action = request.POST.get('action')
+        quantity = int(request.POST.get('quantity', 1))
+        user = request.user
+
+        try:
+            food = Food.objects.get(id=food_id)
+
+            # Get or create the ongoing order for the user (is_paid=False)
+            order, created = Order.objects.get_or_create(customer=user, is_paid=False,
+                                                         defaults={'total_price': 0, 'is_takeout': False,
+                                                                   'order_time': timezone.now()})
+
+            if action == 'add':
+                # Get or create the FoodSet with the specified food
+                food_set, created = FoodSet.objects.get_or_create(food=food, defaults={'quantity': 0})
+
+                # If the FoodSet was not created, it may already be related to an order
+                if not created and food_set.orders.filter(id=order.id).exists():
+                    # The FoodSet already exists and is related to this order, so increment the quantity
+                    food_set.quantity += quantity
+                else:
+                    # The FoodSet is not related to this order, so set the initial quantity
+                    food_set.quantity = quantity
+
+                food_set.save()
+
+                # Add the FoodSet to the order's foods field
+                order.foods.add(food_set)
+
+                # Update the order's total price
+                order.total_price += food.price * quantity
+                order.save()
+
+            elif action == 'remove':
+                food_set = FoodSet.objects.get(food=food, orders=order)
+                food_set.quantity -= quantity
+                if food_set.quantity <= 0:
+                    food_set.delete()
+                else:
+                    food_set.save()
+
+                # Update the order's total price
+                order.total_price -= food.price * quantity
+                order.save()
+
+            return JsonResponse({"success": True}, status=200)
+
+        except (Food.DoesNotExist, FoodSet.DoesNotExist):
+            return JsonResponse({"success": False}, status=400)
+
+    return JsonResponse({"success": False}, status=405)  # Method not allowed
+
+
+@login_required
 def reserve_action(request):
     context = {}
     context['form'] = ReservationForm
@@ -128,9 +190,6 @@ def profile_action(request):
     if request.method == "GET":
         context['item'] = profile
         context['favorite'] = profile.favorite.all()
-        print("=====================")
-        print(context['favorite'])
-        print("=====================")
         return render(request, 'Yummy/profile.html', context)
 
     return render(request, 'Yummy/profile.html', context)
