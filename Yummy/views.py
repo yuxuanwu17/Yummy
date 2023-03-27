@@ -230,8 +230,8 @@ def unfavorite_food_action_menu(request, id):
     my_info.favorite.remove(curr_food)
     my_info.save()
     return redirect(reverse('home'))
-
-
+    
+    
 
 @login_required
 def new_dish_action(request):
@@ -277,5 +277,3 @@ def new_dish_action(request):
     # else:
     #     #forbidden
    
-
-
