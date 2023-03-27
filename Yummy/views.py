@@ -153,12 +153,25 @@ def add_food(request):
                 order.total_price -= food.price * quantity
                 order.save()
 
-            return JsonResponse({"success": True}, status=200)
+            return JsonResponse({"success": True, "total_price": order.total_price}, status=200)
 
         except (Food.DoesNotExist, FoodSet.DoesNotExist):
             return JsonResponse({"success": False}, status=400)
 
     return JsonResponse({"success": False}, status=405)  # Method not allowed
+
+
+@login_required
+def get_order_total_price(request):
+    user = request.user
+
+    try:
+        order = Order.objects.get(customer=user, is_paid=False)
+        food_quantities = order.foods.values('food_id', 'quantity')
+        return JsonResponse(
+            {"success": True, "total_price": order.total_price, "food_quantities": list(food_quantities)}, status=200)
+    except Order.DoesNotExist:
+        return JsonResponse({"success": False}, status=400)
 
 
 @login_required
@@ -233,14 +246,13 @@ def unfavorite_food_action_menu(request, id):
     my_info.favorite.remove(curr_food)
     my_info.save()
     return redirect(reverse('home'))
-    
-    
+
 
 
 @login_required
 @staff_member_required
 def new_dish_action(request):
-    context={}
+    context = {}
     user = request.user
     # All the staff (including super user) can add new dishes
     if not user.is_staff:
@@ -292,6 +304,7 @@ def register_staff_action(request):
 
         form = RegisterForm(request.POST)
         context['form'] = form
+        
         if not form.is_valid():
             context['message'] = form.errors
             return render(request, "Yummy/register_staff.html", context)
@@ -312,3 +325,4 @@ def register_staff_action(request):
         context['message'] = 'New staff ' + user.first_name + ' ' + user.last_name+ ' created.'
 
         return render(request, "Yummy/home.html", context)
+
