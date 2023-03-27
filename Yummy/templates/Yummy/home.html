@@ -87,53 +87,96 @@
 {% endblock %}
 
 {% block content %}
-    <script>
-        $(document).ready(function () {
-            var totalCount = 0;
-            var itemCounts = {};
+<script>
+    $(document).ready(function () {
+        var totalCount = 0;
+        var itemCounts = {};
 
-            // Handle clicks on plus sign buttons
-            $(".plus-btn").click(function (e) {
-                e.preventDefault(); // Prevent the default behavior (navigation)
+        // Handle clicks on plus sign buttons
+        $(".plus-btn").click(function (e) {
+            e.preventDefault(); // Prevent the default behavior (navigation)
 
-                // Get the associated item ID
-                var itemId = $(this).closest('.category').attr('id');
-                console.log("itemId:", itemId)
+            // Get the associated item ID
+            var itemId = $(this).closest('.category').attr('id');
+            console.log("itemId:", itemId)
 
-                // Increment the item count
-                if (!itemCounts[itemId]) {
-                    itemCounts[itemId] = 0;
-                }
-                itemCounts[itemId]++;
+            // Increment the item count
+            if (!itemCounts[itemId]) {
+                itemCounts[itemId] = 0;
+            }
+            itemCounts[itemId]++;
 
-                // Update the total count
-                totalCount++;
+            // Update the total count
+            totalCount++;
 
-                // Update the text of the total count counter button
-                $("#total-clicks-counter").text("Total count: " + totalCount);
-            });
+            // Update the text of the total count counter button
+            $("#total-clicks-counter").text("Total count: " + totalCount);
 
-            // Handle clicks on minus sign buttons
-            $(".minus-btn").click(function (e) {
-                e.preventDefault(); // Prevent the default behavior (navigation)
-
-                // Get the associated item ID
-                var itemId = $(this).closest('.category').attr('id');
-
-                // Check if the minus button is associated with an item that has a positive count
-                if (itemCounts[itemId] && itemCounts[itemId] > 0) {
-                    // Decrement the item count
-                    itemCounts[itemId]--;
-
-                    // Update the total count
-                    totalCount--;
-
-                    // Update the text of the total count counter button
-                    $("#total-clicks-counter").text("Total count: " + totalCount);
+            // Send an AJAX request to the Django view
+            $.ajax({
+                url: '{% url "add_food" %}',
+                method: 'POST',
+                data: {
+                    food_id: itemId,
+                    action: 'add',
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    if (response.success) {
+                        console.log("Food added successfully");
+                    } else {
+                        console.log("An error occurred while adding the food");
+                    }
+                },
+                error: function (response) {
+                    console.log("An error occurred while adding the food");
                 }
             });
         });
-    </script>
+
+        // Handle clicks on minus sign buttons
+        $(".minus-btn").click(function (e) {
+            e.preventDefault(); // Prevent the default behavior (navigation)
+
+            // Get the associated item ID
+            var itemId = $(this).closest('.category').attr('id');
+
+            // Check if the minus button is associated with an item that has a positive count
+            if (itemCounts[itemId] && itemCounts[itemId] > 0) {
+                // Decrement the item count
+                itemCounts[itemId]--;
+
+                // Update the total count
+                totalCount--;
+
+                // Update the text of the total count counter button
+                $("#total-clicks-counter").text("Total count: " + totalCount);
+
+                // Send an AJAX request to the Django view
+                $.ajax({
+                    url: '{% url "add_food" %}',
+                    method: 'POST',
+                    data: {
+                        food_id: itemId,
+                        action: 'remove',
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            console.log("Food removed successfully");
+                        } else {
+                            console.log("An error occurred while removing the food");
+                        }
+                    },
+                    error: function (response) {
+                        console.log("An error occurred while removing the food");
+                    }
+                });
+            }
+        });
+    });
+</script>
+
 
 
 
@@ -167,12 +210,12 @@
                                                 <div class="btn-group">
                                                     {% if f.name in favorite_list %}
                                                         <a href="{% url 'unfavorite_menu' f.id %}"
-                                                           class="btn btn-sm btn-outline-secondary">
+                                                           class="btn btn-sm btn-outline-secondary d-flex align-items-center">
                                                             Cancel
                                                         </a>
                                                     {% else %}
                                                         <a href="{% url 'favorite_menu' f.id %}"
-                                                           class="btn btn-sm btn-outline-secondary">
+                                                           class="btn btn-sm btn-outline-secondary d-flex align-items-center">
                                                             Favorite
                                                         </a>
                                                     {% endif %}
