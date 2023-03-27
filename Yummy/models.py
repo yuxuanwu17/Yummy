@@ -1,10 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 BOOL_CHOICES = ((None, 'Please Select'), (True, 'Yes'), (False, 'No'))
 
 class Category(models.Model):
     name = models.CharField(max_length=500)
+
+    def __str__(self):
+        return self.name
 
 
 class Food(models.Model):
@@ -18,6 +23,9 @@ class Food(models.Model):
     is_spicy = models.BooleanField(choices=BOOL_CHOICES, default=False, blank=True)
     is_vegetarian = models.BooleanField(choices=BOOL_CHOICES, default=False, blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 # a model to save the uploaded dish picture to the file
 class FoodPicture(models.Model):
@@ -25,7 +33,7 @@ class FoodPicture(models.Model):
     picture = models.FileField()
 
     def __str__(self):
-        return 'name=' + self.name
+        return 'Picture of ' + self.food.name
 
 
 class Profile(models.Model):
@@ -34,7 +42,7 @@ class Profile(models.Model):
     favorite = models.ManyToManyField(Food, related_name='favoring', blank=True)
 
     def __str__(self):
-        return 'userid=' + str(self.user.id) + ', phone_number=' + self.phone_number
+        return 'userid=' + str(self.user.id) + ', username=' + self.user.username
 
 
 class Comment(models.Model):
@@ -59,6 +67,9 @@ class Order(models.Model):
     is_paid = models.BooleanField(choices=BOOL_CHOICES,default=False)
     total_price = models.FloatField()
 
+    def __str__(self):
+        return 'Order ' + str(self.order.id) + ' for ' + self.customer.username
+
 
 class Table(models.Model):
     orders = models.ManyToManyField(Order, related_name="table")
@@ -73,3 +84,12 @@ class Reservation(models.Model):
     last_name = models.CharField(max_length=200, editable=True, blank=False)
     phone_number = models.CharField(max_length=200, editable=True, blank=False)
     comment = models.CharField(max_length=200, editable=True, blank=True)
+
+
+# automatically create a profile for a new user if a new superuser is created
+@receiver(post_save, sender=User)
+def create_or_update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        if instance.is_superuser:
+            Profile.objects.create(user=instance)
+            instance.profile.save()

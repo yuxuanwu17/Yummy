@@ -1,6 +1,7 @@
 import collections
 
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.admin.views.decorators import staff_member_required
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
@@ -9,6 +10,8 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+
+from django.contrib import admin
 
 from Yummy.models import *
 from .forms import *
@@ -245,46 +248,81 @@ def unfavorite_food_action_menu(request, id):
     return redirect(reverse('home'))
 
 
+
 @login_required
+@staff_member_required
 def new_dish_action(request):
     context = {}
     user = request.user
-    if request.method == 'POST':
-        form = FoodForm(data=request.POST, files=request.FILES)
-        if not form.is_valid():
-            print(form.errors)
-            context['message'] = form.errors
-            context['form'] = form
-            return render(request, 'Yummy/new_dish.html', context)
-
-        name = form.cleaned_data['dish_name']
-        price = form.cleaned_data['price']
-        desc = form.cleaned_data['description']
-        calories = form.cleaned_data['calories']
-        category = form.cleaned_data['category']
-        is_spicy = form.cleaned_data['is_spicy']
-        is_vegetarian = form.cleaned_data['is_vegetarian']
-        picture = form.cleaned_data['picture']
-
-        # get the Category object with var. category
-        category = Category.objects.get(name=category)
-
-        # create new objects
-        new_dish = Food.objects.create(name=name, price=price, description=desc, category=category, calories=calories,
-                                       is_spicy=is_spicy, is_vegetarian=is_vegetarian)
-        new_picture = FoodPicture.objects.create(food=new_dish, picture=picture)
-        print('created new dish')
-
-        # get the picture directory from FoodPicture object
-        new_dish.picture_dir = 'img/' + new_picture.picture.name
-        new_dish.save()
-        return redirect('home')
-
+    # All the staff (including super user) can add new dishes
+    if not user.is_staff:
+        context['message'] = 'You are not authorized to use this function.'
+        return render(request, 'Yummy/home.html', context)
     else:
-        form = FoodForm()
-        return render(request, 'Yummy/new_dish.html', {'form': form})
+        if request.method == 'POST':
+            form = FoodForm(data = request.POST, files=request.FILES)
+            if not form.is_valid():
+                print(form.errors)
+                context['message'] = form.errors
+                context['form'] = form
+                return render(request, 'Yummy/new_dish.html', context)
 
-    # if request.user.is_superuser:
-    #     #whatever_you_want_the_admin_to_see
-    # else:
-    #     #forbidden
+            name = form.cleaned_data['dish_name']
+            price = form.cleaned_data['price']
+            desc = form.cleaned_data['description']
+            calories = form.cleaned_data['calories']
+            category = form.cleaned_data['category']
+            is_spicy = form.cleaned_data['is_spicy']
+            is_vegetarian = form.cleaned_data['is_vegetarian']
+            picture = form.cleaned_data['picture']
+
+            # get the Category object with var. category
+            category = Category.objects.get(name = category)
+
+            # create new objects
+            new_dish = Food.objects.create(name=name, price=price, description=desc, category=category, calories=calories, is_spicy=is_spicy, is_vegetarian=is_vegetarian)
+            new_picture = FoodPicture.objects.create(food=new_dish, picture=picture)
+            print('created new dish')
+
+            # get the picture directory from FoodPicture object
+            new_dish.picture_dir = 'img/'+new_picture.picture.name
+            new_dish.save()
+            return redirect('home')
+
+        else:
+            form = FoodForm()
+            return render(request, 'Yummy/new_dish.html', {'form':form})
+
+
+@login_required
+def register_staff_action(request):
+    context = {}
+    if request.user.is_superuser:
+        if request.method == "GET":
+            context['form'] = RegisterForm()
+            return render(request, "Yummy/register_staff.html", context)
+
+        form = RegisterForm(request.POST)
+        context['form'] = form
+        
+        if not form.is_valid():
+            context['message'] = form.errors
+            return render(request, "Yummy/register_staff.html", context)
+
+        user = User.objects.create_user(username=form.cleaned_data['username'],
+                                        password=form.cleaned_data['password'],
+                                        first_name=form.cleaned_data['first_name'],
+                                        last_name=form.cleaned_data['last_name'],
+                                        is_staff = True)
+
+        user.save()
+        user = authenticate(username=form.cleaned_data['username'],
+                            password=form.cleaned_data['password'])
+        # login(request, user)
+        # Create profile for this new user
+        new_profile = Profile(user=user, phone_number=form.cleaned_data['phone_number'])
+        new_profile.save()
+        context['message'] = 'New staff ' + user.first_name + ' ' + user.last_name+ ' created.'
+
+        return render(request, "Yummy/home.html", context)
+

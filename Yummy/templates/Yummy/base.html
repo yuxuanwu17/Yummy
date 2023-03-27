@@ -35,6 +35,19 @@
                     <li class="nav-item">
                         <a class="nav-link fs-5 fw-light" href="{% url 'option' %}">Order</a>
                     </li>
+
+                    {% if user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link fs-5 fw-light" href="{% url 'new_dish' %}">Add New Dish</a>
+                        </li>
+                    {% endif %}
+
+                    {% if user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="nav-link fs-5 fw-light" href="{% url 'register_staff' %}">Register New Staff</a>
+                        </li>
+                    {% endif %}
+
                 {% endif %}
             </ul>
             {% if not user.is_authenticated %}
@@ -70,6 +83,14 @@
     {% endblock %}
 </div>
 
+{% if message %}
+<div id="error_message" class="row justify-content-center" >
+    <div class="alert alert-warning" role="alert" style="width: 80%">
+        {{ message }}
+    </div>
+</div>
+{% endif %}
+
 <div class="content" id="content">
     {% block content %}
     {% endblock %}
@@ -80,10 +101,6 @@
       <p class="text-center text-muted">&copy; 2023 Web Application Development @ Carnegie Mellon University</p>
     </footer>
 </div>
-
-{% block message %}
-
-{% endblock %}
 
 
 </body>
