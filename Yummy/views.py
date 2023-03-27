@@ -162,6 +162,19 @@ def add_food(request):
 
 
 @login_required
+def get_order_total_price(request):
+    user = request.user
+
+    try:
+        order = Order.objects.get(customer=user, is_paid=False)
+        food_quantities = order.foods.values('food_id', 'quantity')
+        return JsonResponse(
+            {"success": True, "total_price": order.total_price, "food_quantities": list(food_quantities)}, status=200)
+    except Order.DoesNotExist:
+        return JsonResponse({"success": False}, status=400)
+
+
+@login_required
 def reserve_action(request):
     context = {}
     context['form'] = ReservationForm
