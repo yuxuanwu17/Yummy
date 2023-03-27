@@ -126,6 +126,7 @@
                         if (response.success) {
                             console.log("Food added successfully");
                             $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
+                            updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
                         } else {
                             console.log("An error occurred while adding the food");
                         }
@@ -167,6 +168,7 @@
                             if (response.success) {
                                 console.log("Food removed successfully");
                                 $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
+                                updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
                             } else {
                                 console.log("An error occurred while removing the food");
                             }
@@ -285,6 +287,11 @@
                                                             class="btn btn-sm btn-outline-secondary minus-btn"
                                                             data-item="{{ food_item.id }}">
                                                         <span class="minus_sign">-</span>
+                                                    </button>
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-outline-secondary item-btn"
+                                                            data-item="{{ food_item.id }}">
+                                                        <span class="quantity-display" data-item="{{ f.id }}">0</span>
                                                     </button>
                                                 </div>
                                             {% endif %}
