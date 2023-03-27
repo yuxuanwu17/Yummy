@@ -1,0 +1,36 @@
+{% extends "Yummy/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="px-4 py-5 my-5 text-center">
+    <h1 id="id_page_title" class="fw-light">Add new dish to the menu</h1>
+    <div class="col-lg-6 mx-auto">
+        <p class="lead mb-4">Fill in the form below to add a new dish.</p>
+    </div>
+</div>
+
+{% if message %}
+<div class="row justify-content-center" >
+    <div class="alert alert-warning" role="alert" style="width: 60%">
+        {{ message }}
+    </div>
+</div>
+{% endif %}
+    
+
+<div class="mx-auto col-10 col-md-8 col-lg-6">
+    <div class="form-group">
+        <form method="post" id="id_report_form" action="{% url 'add_dish' %}" enctype="multipart/form-data">
+            {% for field in form %}
+                <field class="error">{{field.errors}}</field> 
+                {{ field.label_tag }} {{ field }}
+            {% endfor %}
+            <div class="d-flex justify-content-center">
+                <button id="report-button" type="submit" class="btn btn-primary btn-lg px-4 gap-3">Submit</button>
+            </div>
+            {% csrf_token %}
+        </form>
+    </div>
+</div>
+
+{% endblock %}

@@ -121,3 +121,50 @@ def profile_action(request):
 
 def dish_action(request):
     return render(request, 'Yummy/dish.html', {})
+
+
+@login_required
+def add_dish_action(request):
+    context={}
+    user = request.user
+    if request.method == 'POST':
+        form = FoodForm(data = request.POST, files=request.FILES)
+        if not form.is_valid():
+            print(form.errors)
+            context['message'] = form.errors
+            context['form'] = form
+            return render(request, 'Yummy/add_dish.html', context)
+
+        name = form.cleaned_data['dish_name']
+        price = form.cleaned_data['price']
+        desc = form.cleaned_data['description']
+        calories = form.cleaned_data['calories']
+        category = form.cleaned_data['category']
+        is_spicy = form.cleaned_data['is_spicy']
+        is_vegetarian = form.cleaned_data['is_vegetarian']
+        picture = form.cleaned_data['picture']
+
+        # get the Category object with cat
+        category = Category.objects.get(name = category)
+
+        # create new objects
+        new_dish = Food.objects.create(name=name, price=price, description=desc, category=category, calories=calories, is_spicy=is_spicy, is_vegetarian=is_vegetarian)
+        new_picture = FoodPicture.objects.create(food=new_dish, picture=picture)
+        print('created new dish')
+
+        new_dish.picture_dir = 'img/'+new_picture.picture.name
+        new_dish.save()
+        return redirect('home')
+
+    else:
+        form = FoodForm()
+        return render(request, 'Yummy/add_dish.html', {'form':form})
+
+
+    # if request.user.is_superuser:
+    #     #whatever_you_want_the_admin_to_see
+    # else:
+    #     #forbidden
+   
+
+
