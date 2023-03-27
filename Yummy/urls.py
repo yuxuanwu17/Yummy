@@ -31,4 +31,5 @@ urlpatterns = [
     path('unfavorite_menu/<int:id>', views.unfavorite_food_action_menu, name="unfavorite_menu"),
     path('add_food/', views.add_food, name='add_food'),
     path('new_dish', views.new_dish_action, name='new_dish'),
+    path('register_staff', views.register_staff_action, name='register_staff'),
     ]
