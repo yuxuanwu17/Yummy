@@ -16,6 +16,11 @@ MAX_PHONE_LENGTH = 20
 MAX_COMMENTS_LENGTH = 100
 MAX_UPLOAD_SIZE = 250000000
 
+MAX_DISH_NAME_LENGTH = 50
+FOOD_CATEGORIES = ((None, 'Please Select'), ("Appetizer","Appetizer"), ("Vegetable","Vegetable"), ("Meat","Meat"), 
+                    ("Soup","Soup"), ("Dessert","Dessert"), ("Snack","Snack"), ("Rice & Noodles","Rice & Noodles"))
+BOOL_CHOICES = ((None, 'Please Select'), (True, 'Yes'), (False, 'No'))
+
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=20, label='Username')
     password = forms.CharField(max_length=200, label='Password', widget=forms.PasswordInput())
@@ -86,3 +91,19 @@ class ReservationForm(forms.Form):
     def clean(self):
         cleaned_data = super().clean()
         return cleaned_data
+
+class FoodForm(forms.Form):
+    dish_name = forms.CharField(label='Dish Name', required=True, max_length=MAX_DISH_NAME_LENGTH, widget=forms.TextInput(attrs={'class':'form-control'}))
+    price = forms.FloatField(label='Price', required=True, widget=forms.NumberInput(attrs={'class':'form-control'}))
+    description = forms.CharField(label='Description', required=True, max_length=MAX_COMMENTS_LENGTH, widget=forms.Textarea(attrs={'class':'form-control'}))
+    category = forms.CharField(label='Category', required=True, widget=forms.Select(choices=FOOD_CATEGORIES, attrs={'class':'form-control'}))
+    calories = forms.FloatField(label='Calroies', required=True, widget=forms.NumberInput(attrs={'class':'form-control'}))
+    is_spicy = forms.BooleanField(label='Is this dish spicy?', required=False, widget=forms.Select(choices=BOOL_CHOICES, attrs={'class':'form-control'}), initial=None)
+    is_vegetarian = forms.BooleanField(label='Is this dish vegetarian?', required=False, widget=forms.Select(choices=BOOL_CHOICES, attrs={'class':'form-control'}), initial=None)
+    picture = forms.ImageField(max_length=MAX_UPLOAD_SIZE)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        return cleaned_data
+
+ 

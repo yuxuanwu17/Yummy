@@ -230,3 +230,50 @@ def unfavorite_food_action_menu(request, id):
     my_info.favorite.remove(curr_food)
     my_info.save()
     return redirect(reverse('home'))
+    
+    
+
+@login_required
+def new_dish_action(request):
+    context={}
+    user = request.user
+    if request.method == 'POST':
+        form = FoodForm(data = request.POST, files=request.FILES)
+        if not form.is_valid():
+            print(form.errors)
+            context['message'] = form.errors
+            context['form'] = form
+            return render(request, 'Yummy/new_dish.html', context)
+
+        name = form.cleaned_data['dish_name']
+        price = form.cleaned_data['price']
+        desc = form.cleaned_data['description']
+        calories = form.cleaned_data['calories']
+        category = form.cleaned_data['category']
+        is_spicy = form.cleaned_data['is_spicy']
+        is_vegetarian = form.cleaned_data['is_vegetarian']
+        picture = form.cleaned_data['picture']
+
+        # get the Category object with var. category
+        category = Category.objects.get(name = category)
+
+        # create new objects
+        new_dish = Food.objects.create(name=name, price=price, description=desc, category=category, calories=calories, is_spicy=is_spicy, is_vegetarian=is_vegetarian)
+        new_picture = FoodPicture.objects.create(food=new_dish, picture=picture)
+        print('created new dish')
+
+        # get the picture directory from FoodPicture object
+        new_dish.picture_dir = 'img/'+new_picture.picture.name
+        new_dish.save()
+        return redirect('home')
+
+    else:
+        form = FoodForm()
+        return render(request, 'Yummy/new_dish.html', {'form':form})
+
+
+    # if request.user.is_superuser:
+    #     #whatever_you_want_the_admin_to_see
+    # else:
+    #     #forbidden
+   

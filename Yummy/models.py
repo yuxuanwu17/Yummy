@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+BOOL_CHOICES = ((None, 'Please Select'), (True, 'Yes'), (False, 'No'))
 
 class Category(models.Model):
     name = models.CharField(max_length=500)
@@ -9,13 +10,19 @@ class Category(models.Model):
 class Food(models.Model):
     name = models.CharField(max_length=500)
     price = models.FloatField()
-    description = models.CharField(max_length=500)
-    picture_dir = models.CharField(max_length=500)
-    category = models.ForeignKey(Category, on_delete=models.PROTECT)
-    calories = models.FloatField()
+    description = models.CharField(max_length=500, blank=True)
+    picture_dir = models.CharField(max_length=500, blank = True)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, blank=True)
+    calories = models.FloatField(blank=True)
     # 1 for spicy and 0 for non-spicy
-    is_spicy = models.BooleanField(default=False)
-    is_vegetarian = models.BooleanField(default=False)
+    is_spicy = models.BooleanField(choices=BOOL_CHOICES, default=False, blank=True)
+    is_vegetarian = models.BooleanField(choices=BOOL_CHOICES, default=False, blank=True)
+
+
+# a model to save the uploaded dish picture to the file
+class FoodPicture(models.Model):
+    food = models.ForeignKey(Food, on_delete=models.PROTECT)
+    picture = models.FileField()
 
     def __str__(self):
         return 'name=' + self.name
@@ -48,8 +55,8 @@ class Order(models.Model):
     customer = models.ForeignKey(User, on_delete=models.PROTECT)
     order_time = models.DateTimeField()
     # whether the food is take out or not
-    is_takeout = models.BooleanField(default=False)
-    is_paid = models.BooleanField(default=False)
+    is_takeout = models.BooleanField(choices=BOOL_CHOICES,default=False)
+    is_paid = models.BooleanField(choices=BOOL_CHOICES,default=False)
     total_price = models.FloatField()
 
 
