@@ -92,4 +92,6 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
     if created:
         if instance.is_superuser:
             Profile.objects.create(user=instance)
+            instance.first_name = instance.username
+            instance.save()
             instance.profile.save()
