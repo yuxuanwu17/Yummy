@@ -150,12 +150,25 @@ def add_food(request):
                 order.total_price -= food.price * quantity
                 order.save()
 
-            return JsonResponse({"success": True}, status=200)
+            return JsonResponse({"success": True, "total_price": order.total_price}, status=200)
 
         except (Food.DoesNotExist, FoodSet.DoesNotExist):
             return JsonResponse({"success": False}, status=400)
 
     return JsonResponse({"success": False}, status=405)  # Method not allowed
+
+
+@login_required
+def get_order_total_price(request):
+    user = request.user
+
+    try:
+        order = Order.objects.get(customer=user, is_paid=False)
+        food_quantities = order.foods.values('food_id', 'quantity')
+        return JsonResponse(
+            {"success": True, "total_price": order.total_price, "food_quantities": list(food_quantities)}, status=200)
+    except Order.DoesNotExist:
+        return JsonResponse({"success": False}, status=400)
 
 
 @login_required
@@ -230,15 +243,14 @@ def unfavorite_food_action_menu(request, id):
     my_info.favorite.remove(curr_food)
     my_info.save()
     return redirect(reverse('home'))
-    
-    
+
 
 @login_required
 def new_dish_action(request):
-    context={}
+    context = {}
     user = request.user
     if request.method == 'POST':
-        form = FoodForm(data = request.POST, files=request.FILES)
+        form = FoodForm(data=request.POST, files=request.FILES)
         if not form.is_valid():
             print(form.errors)
             context['message'] = form.errors
@@ -255,25 +267,24 @@ def new_dish_action(request):
         picture = form.cleaned_data['picture']
 
         # get the Category object with var. category
-        category = Category.objects.get(name = category)
+        category = Category.objects.get(name=category)
 
         # create new objects
-        new_dish = Food.objects.create(name=name, price=price, description=desc, category=category, calories=calories, is_spicy=is_spicy, is_vegetarian=is_vegetarian)
+        new_dish = Food.objects.create(name=name, price=price, description=desc, category=category, calories=calories,
+                                       is_spicy=is_spicy, is_vegetarian=is_vegetarian)
         new_picture = FoodPicture.objects.create(food=new_dish, picture=picture)
         print('created new dish')
 
         # get the picture directory from FoodPicture object
-        new_dish.picture_dir = 'img/'+new_picture.picture.name
+        new_dish.picture_dir = 'img/' + new_picture.picture.name
         new_dish.save()
         return redirect('home')
 
     else:
         form = FoodForm()
-        return render(request, 'Yummy/new_dish.html', {'form':form})
-
+        return render(request, 'Yummy/new_dish.html', {'form': form})
 
     # if request.user.is_superuser:
     #     #whatever_you_want_the_admin_to_see
     # else:
     #     #forbidden
-   
