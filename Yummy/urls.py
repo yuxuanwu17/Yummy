@@ -26,10 +26,9 @@ urlpatterns = [
     path('summary', views.summary_action, name='summary'),
     path('profile', views.profile_action, name='profile'),
     path('dish', views.dish_action, name='dish'),
-    path('favorite_menu/<int:id>', views.favorite_food_action_menu, name="favorite_menu"),
-    path('unfavorite_menu/<int:id>', views.unfavorite_food_action_menu, name="unfavorite_menu"),
+    path('favorite_food_action/', views.favorite_food_action, name="favorite_food_action"),
     path('add_food/', views.add_food, name='add_food'),
     path('new_dish', views.new_dish_action, name='new_dish'),
     path('register_staff', views.register_staff_action, name='register_staff'),
     path('get_order_total_price/', views.get_order_total_price, name='get_order_total_price'),
-    ]
+]
