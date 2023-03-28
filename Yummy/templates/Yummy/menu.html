@@ -179,6 +179,38 @@
                     });
                 }
             });
+
+            $(".favorite-btn").click(function (e) {
+                e.preventDefault(); // Prevent the default behavior (navigation)
+
+                // Get the associated item ID and favorited status
+                var itemId = $(this).data('item');
+                var isFavorited = $(this).data('favorited');
+
+                // Determine the appropriate action
+                var action = isFavorited ? 'unfavorite' : 'favorite';
+                var url = '{% url "favorite_food_action" %}';
+
+                // Send an AJAX request to the Django view
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: {
+                        food_id: itemId,
+                        action: action,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: (response) => {
+                        // Toggle the favorited status and update the button text
+                        isFavorited = !isFavorited;
+                        $(this).data('favorited', isFavorited);
+                        $(this).text(isFavorited ? 'Cancel' : 'Favorite');
+                    },
+                    error: (response) => {
+                        console.log("An error occurred while updating the favorite status");
+                    }
+                });
+            });
         });
 
         // In the success callback of the plus-btn AJAX request
@@ -202,6 +234,7 @@
         function redirectToOptionPage() {
             window.location.href = '{% url "option" %}';
         }
+
 
     </script>
 
@@ -233,17 +266,16 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             {% if user.is_authenticated %}
                                                 <div class="btn-group">
-                                                    {% if f.name in favorite_list %}
-                                                        <a href="{% url 'unfavorite_menu' f.id %}"
-                                                           class="btn btn-sm btn-outline-secondary d-flex align-items-center">
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-outline-secondary favorite-btn"
+                                                            data-item="{{ f.id }}"
+                                                            data-favorited="{% if f.name in favorite_list %}true{% else %}false{% endif %}">
+                                                        {% if f.name in favorite_list %}
                                                             Cancel
-                                                        </a>
-                                                    {% else %}
-                                                        <a href="{% url 'favorite_menu' f.id %}"
-                                                           class="btn btn-sm btn-outline-secondary d-flex align-items-center">
+                                                        {% else %}
                                                             Favorite
-                                                        </a>
-                                                    {% endif %}
+                                                        {% endif %}
+                                                    </button>
 
                                                     <button type="button"
                                                             class="btn btn-sm btn-outline-secondary plus-btn"
