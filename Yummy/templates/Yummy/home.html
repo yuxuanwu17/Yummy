@@ -181,11 +181,6 @@
             });
         });
 
-        // Update the quantity-display element for the specified itemId
-        function updateQuantityDisplay(itemId, quantity) {
-            $('.quantity-display[data-item="' + itemId + '"]').text(quantity);
-        }
-
         // In the success callback of the plus-btn AJAX request
         if (response.success) {
             console.log("Food added successfully");
@@ -204,39 +199,11 @@
             console.log("An error occurred while removing the food");
         }
 
-
-        function fetchOrderTotalPrice() {
-            $.ajax({
-                url: '{% url "get_order_total_price" %}',
-                method: 'GET',
-                success: function (response) {
-                    if (response.success) {
-                        $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
-
-                        // Initialize itemCounts and totalCount with values from the server
-                        response.food_quantities.forEach(function (item) {
-                            itemCounts[item.food_id] = item.quantity;
-                            totalCount += item.quantity;
-                            updateQuantityDisplay(item.food_id, item.quantity); // Add this line
-                        });
-
-                        // Update the total count counter button
-                        $("#total-clicks-counter").text("Total count: " + totalCount);
-                    } else {
-                        console.log("An error occurred while fetching the order's total price");
-                    }
-                },
-                error: function (response) {
-                    console.log("An error occurred while fetching the order's total price");
-                }
-            });
+        function redirectToOptionPage() {
+            window.location.href = '{% url "option" %}';
         }
 
-
     </script>
-
-
-
 
 
     <div class="album py-5 bg-light" style="align-content: center">
@@ -317,7 +284,8 @@
                 </div>
             {% endfor %}
             {% if user.is_authenticated %}
-                <button id="total-price-counter" class="btn btn-primary position-fixed top-50 end-0 translate-middle-y">
+                <button id="total-price-counter" class="btn btn-primary position-fixed top-50 end-0 translate-middle-y"
+                        onclick="redirectToOptionPage();">
                     Total price: $0.00
                 </button>
                 </div>

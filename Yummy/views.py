@@ -180,12 +180,6 @@ def reserve_action(request):
     context['form'] = ReservationForm
     return render(request, 'Yummy/reserve.html', context)
 
-
-@login_required
-def order_action(request):
-    return render(request, 'Yummy/order.html', {})
-
-
 @login_required
 def option_action(request):
     return render(request, 'Yummy/option.html', {})
