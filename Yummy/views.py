@@ -100,7 +100,7 @@ def global_action(request):
         profiles = Profile.objects.get(user=request.user)
         response_data['favorite_list'] = [x.name for x in profiles.favorite.all()]
 
-    return render(request, 'Yummy/home.html', response_data)
+    return render(request, 'Yummy/menu.html', response_data)
 
 
 @login_required
@@ -251,7 +251,7 @@ def new_dish_action(request):
     # All the staff (including super user) can add new dishes
     if not user.is_staff:
         context['message'] = 'You are not authorized to use this function.'
-        return render(request, 'Yummy/home.html', context)
+        return render(request, 'Yummy/menu.html', context)
     else:
         if request.method == 'POST':
             form = FoodForm(data = request.POST, files=request.FILES)
@@ -318,5 +318,5 @@ def register_staff_action(request):
         new_profile.save()
         context['message'] = 'New staff ' + user.first_name + ' ' + user.last_name+ ' created.'
 
-        return render(request, "Yummy/home.html", context)
+        return render(request, "Yummy/menu.html", context)
 
