@@ -199,11 +199,11 @@
             console.log("An error occurred while removing the food");
         }
 
+        function redirectToOptionPage() {
+            window.location.href = '{% url "option" %}';
+        }
 
     </script>
-
-
-
 
 
     <div class="album py-5 bg-light" style="align-content: center">
@@ -284,7 +284,8 @@
                 </div>
             {% endfor %}
             {% if user.is_authenticated %}
-                <button id="total-price-counter" class="btn btn-primary position-fixed top-50 end-0 translate-middle-y">
+                <button id="total-price-counter" class="btn btn-primary position-fixed top-50 end-0 translate-middle-y"
+                        onclick="redirectToOptionPage();">
                     Total price: $0.00
                 </button>
                 </div>
