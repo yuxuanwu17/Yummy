@@ -6,15 +6,24 @@
 {% endblock %}
 
 
-
 {% block content %}
+
+<script src="{% static 'Yummy/summary.js' %}" type="text/javascript">
+
+
+
+</script>
+
 
 <div class="py-5 text-center container">
     <h1 id="id_page_title" class="fw-light">Cart</h1>
     <p class="fs-5 fw-light-bolder">Your table number is: 5</p>
 </div>
 
-<table class="table table-striped align-middle text-center">
+<div id="id_order_summary"> </div>
+
+
+<table  class="table table-striped align-middle text-center">
     <thead>
       <tr>
         <th scope="col">#</th>
