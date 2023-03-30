@@ -1,4 +1,4 @@
-{% extends "Yummy/home.html" %}
+{% extends "Yummy/menu.html" %}
 {% load static %}
 
 {% block extra_css %}
@@ -24,22 +24,8 @@
 <section class="reservation">
     <div id="step1">
         <span class="step-title"> Step 1: find a table </span>
-        <form>
-            <span>Date: <input id="reserve_date" /></span>
-            <br>
-            <span>Time: <input id="reserve_time" /></span>
-            <br>
-            <span>#people: <input id="reserve_number_people" /></span>
-        </form>
-        <p>
-            <a href="{% url 'reserve' %}" class="btn btn-primary my-2">Find</a>
-        </p>
-    </div>
-
-    <div id="step2">
-        <span class="step-title"> Step 2: your details </span>
-        <form>
-            {% for field in form.visible_fields %}
+        <form method="POST">
+            {% for field in find_form.visible_fields %}
             {% csrf_token %}
             <div>
                 <span>{{field.label_tag}}</span>
@@ -47,10 +33,32 @@
             </div>
             {% endfor %}
             {% csrf_token %}
+            <p>
+                <button action="{% url 'reserve' %}" class="btn btn-primary my-2 reserve"  type="submit">Find</a></button>
+            </p>
         </form>
-        <p>
-            <a href="{% url 'reserve' %}" class="btn btn-primary my-2">Reserve</a>
-        </p>
+        <span class="lead text-muted message">{{find_message}}</span>
+        
+    </div>
+    <br>
+
+    <div id="step2">
+        <span class="step-title"> Step 2: your details </span>
+        <form method="POST">
+            {% for field in detail_form.visible_fields %}
+            {% csrf_token %}
+            <div>
+                <span>{{field.label_tag}}</span>
+                <span>{{field}}</span>
+            </div>
+            {% endfor %}
+            {% csrf_token %}
+            <p>
+                <button action="{% url 'reserve' %}" class="btn btn-primary my-2 reserve"  type="submit">Reserve</a></button>
+            </p>
+        </form>
+        <span class="lead text-muted message">{{reservation_message}}</span>
+
     </div>
 
 

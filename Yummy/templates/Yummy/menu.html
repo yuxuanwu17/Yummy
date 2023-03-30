@@ -30,8 +30,7 @@
         <p class="lead text-gray-300">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-clock-fill"
                  viewBox="0 0 20 20">
-                <path
-                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
             </svg>
             11:00 A.M to 9:00 P.M Everyday
         </p>
@@ -87,70 +86,31 @@
 {% endblock %}
 
 {% block content %}
-<script>
-    $(document).ready(function () {
+    <script>
         var totalCount = 0;
         var itemCounts = {};
+        $(document).ready(function () {
+            fetchOrderTotalPrice();
 
-        // Handle clicks on plus sign buttons
-        $(".plus-btn").click(function (e) {
-            e.preventDefault(); // Prevent the default behavior (navigation)
+            // Handle clicks on plus sign buttons
+            $(".plus-btn").click(function (e) {
+                e.preventDefault(); // Prevent the default behavior (navigation)
 
-            // Get the associated item ID
-            var itemId = $(this).closest('.category').attr('id');
-            console.log("itemId:", itemId)
+                // Get the associated item ID
+                var itemId = $(this).closest('.category').attr('id');
+                console.log("itemId:", itemId)
 
-            // Increment the item count
-            if (!itemCounts[itemId]) {
-                itemCounts[itemId] = 0;
-            }
-            itemCounts[itemId]++;
-
-            // Update the total count
-            totalCount++;
-
-            // Update the text of the total count counter button
-            $("#total-clicks-counter").text("Total count: " + totalCount);
-
-            // Send an AJAX request to the Django view
-            $.ajax({
-                url: '{% url "add_food" %}',
-                method: 'POST',
-                data: {
-                    food_id: itemId,
-                    action: 'add',
-                    csrfmiddlewaretoken: '{{ csrf_token }}'
-                },
-                success: function (response) {
-                    if (response.success) {
-                        console.log("Food added successfully");
-                    } else {
-                        console.log("An error occurred while adding the food");
-                    }
-                },
-                error: function (response) {
-                    console.log("An error occurred while adding the food");
+                // Increment the item count
+                if (!itemCounts[itemId]) {
+                    itemCounts[itemId] = 0;
                 }
-            });
-        });
-
-        // Handle clicks on minus sign buttons
-        $(".minus-btn").click(function (e) {
-            e.preventDefault(); // Prevent the default behavior (navigation)
-
-            // Get the associated item ID
-            var itemId = $(this).closest('.category').attr('id');
-
-            // Check if the minus button is associated with an item that has a positive count
-            if (itemCounts[itemId] && itemCounts[itemId] > 0) {
-                // Decrement the item count
-                itemCounts[itemId]--;
+                itemCounts[itemId]++;
 
                 // Update the total count
-                totalCount--;
+                totalCount++;
 
                 // Update the text of the total count counter button
-                $("#total-clicks-counter").text("Total count: " + totalCount);
+                $("#total-clicks-counter").text("Checkout: " + totalCount);
 
                 // Send an AJAX request to the Django view
                 $.ajax({
@@ -158,27 +118,124 @@
                     method: 'POST',
                     data: {
                         food_id: itemId,
-                        action: 'remove',
+                        action: 'add',
                         csrfmiddlewaretoken: '{{ csrf_token }}'
                     },
                     success: function (response) {
                         if (response.success) {
-                            console.log("Food removed successfully");
+                            console.log("Food added successfully");
+                            $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
+                            updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
                         } else {
-                            console.log("An error occurred while removing the food");
+                            console.log("An error occurred while adding the food");
                         }
                     },
                     error: function (response) {
-                        console.log("An error occurred while removing the food");
+                        console.log("An error occurred while adding the food");
                     }
                 });
-            }
+            });
+
+            // Handle clicks on minus sign buttons
+            $(".minus-btn").click(function (e) {
+                e.preventDefault(); // Prevent the default behavior (navigation)
+
+                // Get the associated item ID
+                var itemId = $(this).closest('.category').attr('id');
+
+                // Check if the minus button is associated with an item that has a positive count
+                if (itemCounts[itemId] && itemCounts[itemId] > 0) {
+                    // Decrement the item count
+                    itemCounts[itemId]--;
+
+                    // Update the total count
+                    totalCount--;
+
+                    // Update the text of the total count counter button
+                    $("#total-clicks-counter").text("Total count: " + totalCount);
+
+                    // Send an AJAX request to the Django view
+                    $.ajax({
+                        url: '{% url "add_food" %}',
+                        method: 'POST',
+                        data: {
+                            food_id: itemId,
+                            action: 'remove',
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                console.log("Food removed successfully");
+                                $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
+                                updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
+                            } else {
+                                console.log("An error occurred while removing the food");
+                            }
+                        },
+                        error: function (response) {
+                            console.log("An error occurred while removing the food");
+                        }
+                    });
+                }
+            });
+
+            $(".favorite-btn").click(function (e) {
+                e.preventDefault(); // Prevent the default behavior (navigation)
+
+                // Get the associated item ID and favorited status
+                var itemId = $(this).data('item');
+                var isFavorited = $(this).data('favorited');
+
+                // Determine the appropriate action
+                var action = isFavorited ? 'unfavorite' : 'favorite';
+                var url = '{% url "favorite_food_action" %}';
+
+                // Send an AJAX request to the Django view
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: {
+                        food_id: itemId,
+                        action: action,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: (response) => {
+                        // Toggle the favorited status and update the button text
+                        isFavorited = !isFavorited;
+                        $(this).data('favorited', isFavorited);
+                        $(this).text(isFavorited ? 'Cancel' : 'Favorite');
+                    },
+                    error: (response) => {
+                        console.log("An error occurred while updating the favorite status");
+                    }
+                });
+            });
         });
-    });
-</script>
+
+        // In the success callback of the plus-btn AJAX request
+        if (response.success) {
+            console.log("Food added successfully");
+            $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
+            updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
+        } else {
+            console.log("An error occurred while adding the food");
+        }
+
+        // In the success callback of the minus-btn AJAX request
+        if (response.success) {
+            console.log("Food removed successfully");
+            $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
+            updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
+        } else {
+            console.log("An error occurred while removing the food");
+        }
+
+        function redirectToOptionPage() {
+            window.location.href = '{% url "option" %}';
+        }
 
 
-
+    </script>
 
 
     <div class="album py-5 bg-light" style="align-content: center">
@@ -208,17 +265,16 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             {% if user.is_authenticated %}
                                                 <div class="btn-group">
-                                                    {% if f.name in favorite_list %}
-                                                        <a href="{% url 'unfavorite_menu' f.id %}"
-                                                           class="btn btn-sm btn-outline-secondary d-flex align-items-center">
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-outline-secondary favorite-btn"
+                                                            data-item="{{ f.id }}"
+                                                            data-favorited="{% if f.name in favorite_list %}true{% else %}false{% endif %}">
+                                                        {% if f.name in favorite_list %}
                                                             Cancel
-                                                        </a>
-                                                    {% else %}
-                                                        <a href="{% url 'favorite_menu' f.id %}"
-                                                           class="btn btn-sm btn-outline-secondary d-flex align-items-center">
+                                                        {% else %}
                                                             Favorite
-                                                        </a>
-                                                    {% endif %}
+                                                        {% endif %}
+                                                    </button>
 
                                                     <button type="button"
                                                             class="btn btn-sm btn-outline-secondary plus-btn"
@@ -229,6 +285,11 @@
                                                             class="btn btn-sm btn-outline-secondary minus-btn"
                                                             data-item="{{ food_item.id }}">
                                                         <span class="minus_sign">-</span>
+                                                    </button>
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-outline-secondary item-btn"
+                                                            data-item="{{ food_item.id }}">
+                                                        <span class="quantity-display" data-item="{{ f.id }}">0</span>
                                                     </button>
                                                 </div>
                                             {% endif %}
@@ -253,9 +314,12 @@
                     {% endfor %}
                 </div>
             {% endfor %}
-            <button id="total-clicks-counter" class="btn btn-primary position-fixed top-50 end-0 translate-middle-y">
-                Total clicks: 0
-            </button>
-        </div>
+            {% if user.is_authenticated %}
+                <button id="total-price-counter" class="btn btn-primary position-fixed top-50 end-0 translate-middle-y"
+                        onclick="redirectToOptionPage();">
+                    Total price: $0.00
+                </button>
+                </div>
+            {% endif %}
     </div>
 {% endblock %}
