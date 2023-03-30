@@ -1,4 +1,5 @@
 import collections
+import datetime
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.admin.views.decorators import staff_member_required
@@ -177,7 +178,73 @@ def get_order_total_price(request):
 @login_required
 def reserve_action(request):
     context = {}
-    context['form'] = ReservationForm
+    if request.method == 'GET':
+        context['find_form'] = FindTableForm()
+        return render(request, 'Yummy/reserve.html', context)
+    
+    if not 'phone_number' in request.POST:
+        new_filter = {
+            'date': request.POST['date'],
+            'start_time': datetime.datetime.strptime(request.POST['time'], '%H:%M'),
+            'end_time': datetime.datetime.strptime(request.POST['time'], '%H:%M') + datetime.timedelta(hours=2),
+            'number_people':request.POST['number_people']
+        }
+        tables = Table.objects.filter(
+            capacity__gte=new_filter['number_people']
+            )
+        reservations = Reservation.objects.filter(
+            date = new_filter['date'],
+            time__range=(new_filter['start_time'], new_filter['end_time'])
+        )
+        unavailable_tableid = [reservation.table.id for reservation in reservations]
+        filtered_tables = tables.exclude(id__in=unavailable_tableid)
+        print(filtered_tables)
+        if len(filtered_tables) == 0:
+            context['find_message'] = 'Sorry, no table available at that time'
+        else:
+            context['find_message'] = 'Great, there is an available table'
+            context['detail_form'] = DetailForm()
+            # new_unconfirmed_reservation = UnconfirmedReservation.objects.create(
+            #     date=new_filter['date'],
+            #     time=new_filter['time'],
+            #     num_customers = new_filter['number_people']
+            # )
+
+        context['find_form'] = FindTableForm({
+            'date': request.POST['date'],
+            'time': datetime.datetime.strptime(request.POST['time'], '%H:%M'),
+            'number_people':request.POST['number_people']
+        })
+        
+    
+    else:
+        # new_filter = {
+        #     'date': request.POST['date'],
+        #     'start_time': datetime.datetime.strptime(request.POST['time'], '%H:%M'),
+        #     'end_time': datetime.datetime.strptime(request.POST['time'], '%H:%M') + datetime.timedelta(hours=2),
+        #     'number_people':request.POST['number_people']
+        # }
+        # tables = Table.objects.filter(
+        #     capacity__gte=new_filter['number_people']
+        #     )
+        # reservations = Reservation.objects.filter(
+        #     date = new_filter['date'],
+        #     time__range=(new_filter['start_time'], new_filter['end_time'])
+        # )
+        # unavailable_tableid = [reservation.table.id for reservation in reservations]
+        # filtered_tables = tables.exclude(id__in=unavailable_tableid)
+        # new_reservation = Reservation.objects.create(
+        #         num_customers = new_filter['number_people'],
+        #         table = filtered_tables[0],
+        #         first_name = request.POST['last_name'],
+        #         last_name = request.POST['first_name'],
+        #         phone_number = request.POST['phone_number'],
+        #         comment = request.POST['comment'],
+        #         date = request.POST['date'],
+        #         time = datetime.datetime.strptime(request.POST['time'], '%H:%M')
+        # )
+        context['reservation_message'] = 'You are all set!'
+
     return render(request, 'Yummy/reserve.html', context)
 
 
@@ -207,7 +274,14 @@ def profile_action(request):
 
 
 def dish_action(request):
-    return render(request, 'Yummy/dish.html', {})
+    context = {}
+    context['comment_form'] = CommentForm()
+    context['comments'] = Comment.objects.all()
+    if 'text' in request.POST:
+         Comment.objects.create(text=request.POST['text'],
+                                creation_time=timezone.now(),
+                                creator=request.user)
+    return render(request, 'Yummy/dish.html', context)
 
 
 @login_required

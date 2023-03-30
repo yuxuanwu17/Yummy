@@ -83,14 +83,25 @@ class RegisterForm(forms.Form):
         # dictionary
         return username
 
-class ReservationForm(forms.Form):
-    first_name = forms.CharField(max_length=MAX_NAME_LENGTH, label="First Name")
-    last_name = forms.CharField(max_length=MAX_NAME_LENGTH, label="Last Name")
-    phone_number = forms.CharField(max_length=MAX_PHONE_LENGTH, label="Phone Number")
-    comment = forms.CharField(max_length=MAX_COMMENTS_LENGTH, label="Special Comment")
+class FindTableForm(forms.Form):
+    date = forms.DateField(label="Date", required=True, widget=forms.DateInput(attrs={'type': 'date'}))
+    time = forms.TimeField(label="Time", required=True, widget=forms.DateInput(attrs={'type': 'time'}, format='%H:%M'))
+    number_people = forms.IntegerField(label="#people", required=True)
     def clean(self):
         cleaned_data = super().clean()
         return cleaned_data
+
+class DetailForm(forms.Form):
+    first_name = forms.CharField(max_length=MAX_NAME_LENGTH, label="First Name")
+    last_name = forms.CharField(max_length=MAX_NAME_LENGTH, label="Last Name")
+    phone_number = forms.CharField(max_length=MAX_PHONE_LENGTH, label="Phone Number")
+    comment = forms.CharField(max_length=MAX_COMMENTS_LENGTH, label="Special Comment", required=False)
+    def clean(self):
+        cleaned_data = super().clean()
+        return cleaned_data
+
+class CommentForm(forms.Form):
+    text = forms.CharField(label="Comment")
 
 class FoodForm(forms.Form):
     dish_name = forms.CharField(label='Dish Name', required=True, max_length=MAX_DISH_NAME_LENGTH, widget=forms.TextInput(attrs={'class':'form-control'}))
