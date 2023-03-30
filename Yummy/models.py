@@ -73,7 +73,7 @@ class Order(models.Model):
 
 
 class Table(models.Model):
-    orders = models.ManyToManyField(Order, related_name="table", blank=True, editable=True, null=True)
+    orders = models.ManyToManyField(Order, related_name="table", blank=True, editable=True)
     customer = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, editable=True, null=True)
     open_time = models.TimeField(default='11:00', editable=True)
     close_time = models.TimeField(default='21:00', editable=True)
@@ -83,6 +83,7 @@ class UnconfirmedReservation(models.Model):
     num_customers = models.IntegerField(blank=False)
     date = models.DateField(editable=True, blank=False)
     time = models.TimeField(editable=True, blank=False)
+    table = models.ForeignKey(Table, on_delete=models.PROTECT)
 
 class Reservation(models.Model):
     num_customers = models.IntegerField(blank=False)
