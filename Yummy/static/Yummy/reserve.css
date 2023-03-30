@@ -30,3 +30,8 @@ input {
     justify-content: center;
     align-items: center;
 }
+
+button.reserve {
+    height: 2.4em;
+    width: 6em;
+}

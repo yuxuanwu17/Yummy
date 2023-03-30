@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -72,10 +73,16 @@ class Order(models.Model):
 
 
 class Table(models.Model):
-    orders = models.ManyToManyField(Order, related_name="table")
-    customer = models.ForeignKey(User, on_delete=models.PROTECT)
-    open_time = models.DateTimeField()
+    orders = models.ManyToManyField(Order, related_name="table", blank=True, editable=True, null=True)
+    customer = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, editable=True, null=True)
+    open_time = models.TimeField(default='11:00', editable=True)
+    close_time = models.TimeField(default='21:00', editable=True)
+    capacity = models.IntegerField(editable=True)
 
+class UnconfirmedReservation(models.Model):
+    num_customers = models.IntegerField(blank=False)
+    date = models.DateField(editable=True, blank=False)
+    time = models.TimeField(editable=True, blank=False)
 
 class Reservation(models.Model):
     num_customers = models.IntegerField(blank=False)
@@ -84,7 +91,8 @@ class Reservation(models.Model):
     last_name = models.CharField(max_length=200, editable=True, blank=False)
     phone_number = models.CharField(max_length=200, editable=True, blank=False)
     comment = models.CharField(max_length=200, editable=True, blank=True)
-
+    date = models.DateField(editable=True, blank=False)
+    time = models.TimeField(editable=True, blank=False)
 
 # automatically create a profile for a new user if a new superuser is created
 @receiver(post_save, sender=User)
