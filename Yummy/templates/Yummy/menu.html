@@ -126,6 +126,7 @@
                         if (response.success) {
                             console.log("Food added successfully");
                             $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
+                            updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
                         } else {
                             console.log("An error occurred while adding the food");
                         }
@@ -167,6 +168,7 @@
                             if (response.success) {
                                 console.log("Food removed successfully");
                                 $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
+                                updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
                             } else {
                                 console.log("An error occurred while removing the food");
                             }
@@ -177,39 +179,64 @@
                     });
                 }
             });
+
+            $(".favorite-btn").click(function (e) {
+                e.preventDefault(); // Prevent the default behavior (navigation)
+
+                // Get the associated item ID and favorited status
+                var itemId = $(this).data('item');
+                var isFavorited = $(this).data('favorited');
+
+                // Determine the appropriate action
+                var action = isFavorited ? 'unfavorite' : 'favorite';
+                var url = '{% url "favorite_food_action" %}';
+
+                // Send an AJAX request to the Django view
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: {
+                        food_id: itemId,
+                        action: action,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: (response) => {
+                        // Toggle the favorited status and update the button text
+                        isFavorited = !isFavorited;
+                        $(this).data('favorited', isFavorited);
+                        $(this).text(isFavorited ? 'Cancel' : 'Favorite');
+                    },
+                    error: (response) => {
+                        console.log("An error occurred while updating the favorite status");
+                    }
+                });
+            });
         });
 
-        function fetchOrderTotalPrice() {
-            $.ajax({
-                url: '{% url "get_order_total_price" %}',
-                method: 'GET',
-                success: function (response) {
-                    if (response.success) {
-                        $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
+        // In the success callback of the plus-btn AJAX request
+        if (response.success) {
+            console.log("Food added successfully");
+            $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
+            updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
+        } else {
+            console.log("An error occurred while adding the food");
+        }
 
-                        // Initialize itemCounts and totalCount with values from the server
-                        response.food_quantities.forEach(function (item) {
-                            itemCounts[item.food_id] = item.quantity;
-                            totalCount += item.quantity;
-                        });
+        // In the success callback of the minus-btn AJAX request
+        if (response.success) {
+            console.log("Food removed successfully");
+            $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
+            updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
+        } else {
+            console.log("An error occurred while removing the food");
+        }
 
-                        // Update the total count counter button
-                        $("#total-clicks-counter").text("Total count: " + totalCount);
-                    } else {
-                        console.log("An error occurred while fetching the order's total price");
-                    }
-                },
-                error: function (response) {
-                    console.log("An error occurred while fetching the order's total price");
-                }
-            });
+        function redirectToOptionPage() {
+            window.location.href = '{% url "option" %}';
         }
 
 
     </script>
-
-
-
 
 
     <div class="album py-5 bg-light" style="align-content: center">
@@ -239,17 +266,16 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             {% if user.is_authenticated %}
                                                 <div class="btn-group">
-                                                    {% if f.name in favorite_list %}
-                                                        <a href="{% url 'unfavorite_menu' f.id %}"
-                                                           class="btn btn-sm btn-outline-secondary d-flex align-items-center">
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-outline-secondary favorite-btn"
+                                                            data-item="{{ f.id }}"
+                                                            data-favorited="{% if f.name in favorite_list %}true{% else %}false{% endif %}">
+                                                        {% if f.name in favorite_list %}
                                                             Cancel
-                                                        </a>
-                                                    {% else %}
-                                                        <a href="{% url 'favorite_menu' f.id %}"
-                                                           class="btn btn-sm btn-outline-secondary d-flex align-items-center">
+                                                        {% else %}
                                                             Favorite
-                                                        </a>
-                                                    {% endif %}
+                                                        {% endif %}
+                                                    </button>
 
                                                     <button type="button"
                                                             class="btn btn-sm btn-outline-secondary plus-btn"
@@ -260,6 +286,11 @@
                                                             class="btn btn-sm btn-outline-secondary minus-btn"
                                                             data-item="{{ food_item.id }}">
                                                         <span class="minus_sign">-</span>
+                                                    </button>
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-outline-secondary item-btn"
+                                                            data-item="{{ food_item.id }}">
+                                                        <span class="quantity-display" data-item="{{ f.id }}">0</span>
                                                     </button>
                                                 </div>
                                             {% endif %}
@@ -285,7 +316,8 @@
                 </div>
             {% endfor %}
             {% if user.is_authenticated %}
-                <button id="total-price-counter" class="btn btn-primary position-fixed top-50 end-0 translate-middle-y">
+                <button id="total-price-counter" class="btn btn-primary position-fixed top-50 end-0 translate-middle-y"
+                        onclick="redirectToOptionPage();">
                     Total price: $0.00
                 </button>
                 </div>
