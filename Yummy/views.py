@@ -192,7 +192,14 @@ def reserve_action(request):
         tables = Table.objects.filter(
             capacity__gte=new_filter['number_people']
             )
-        if len(tables) == 0:
+        reservations = Reservation.objects.filter(
+            date = new_filter['date'],
+            time__range=(new_filter['start_time'], new_filter['end_time'])
+        )
+        unavailable_tableid = [reservation.table.id for reservation in reservations]
+        filtered_tables = tables.exclude(id__in=unavailable_tableid)
+        print(filtered_tables)
+        if len(filtered_tables) == 0:
             context['find_message'] = 'Sorry, no table available at that time'
         else:
             context['find_message'] = 'Great, there is an available table'
@@ -211,6 +218,31 @@ def reserve_action(request):
         
     
     else:
+        # new_filter = {
+        #     'date': request.POST['date'],
+        #     'start_time': datetime.datetime.strptime(request.POST['time'], '%H:%M'),
+        #     'end_time': datetime.datetime.strptime(request.POST['time'], '%H:%M') + datetime.timedelta(hours=2),
+        #     'number_people':request.POST['number_people']
+        # }
+        # tables = Table.objects.filter(
+        #     capacity__gte=new_filter['number_people']
+        #     )
+        # reservations = Reservation.objects.filter(
+        #     date = new_filter['date'],
+        #     time__range=(new_filter['start_time'], new_filter['end_time'])
+        # )
+        # unavailable_tableid = [reservation.table.id for reservation in reservations]
+        # filtered_tables = tables.exclude(id__in=unavailable_tableid)
+        # new_reservation = Reservation.objects.create(
+        #         num_customers = new_filter['number_people'],
+        #         table = filtered_tables[0],
+        #         first_name = request.POST['last_name'],
+        #         last_name = request.POST['first_name'],
+        #         phone_number = request.POST['phone_number'],
+        #         comment = request.POST['comment'],
+        #         date = request.POST['date'],
+        #         time = datetime.datetime.strptime(request.POST['time'], '%H:%M')
+        # )
         context['reservation_message'] = 'You are all set!'
 
     return render(request, 'Yummy/reserve.html', context)
