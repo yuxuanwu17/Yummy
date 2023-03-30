@@ -180,6 +180,7 @@ def reserve_action(request):
     context = {}
     if request.method == 'GET':
         context['find_form'] = FindTableForm()
+        UnconfirmedReservation.objects.all().delete()
         return render(request, 'Yummy/reserve.html', context)
     
     if not 'phone_number' in request.POST:
@@ -205,10 +206,11 @@ def reserve_action(request):
             context['find_message'] = 'Great, there is an available table'
             context['detail_form'] = DetailForm()
             # new_unconfirmed_reservation = UnconfirmedReservation.objects.create(
-            #     date=new_filter['date'],
-            #     time=new_filter['time'],
-            #     num_customers = new_filter['number_people']
-            # )
+            #      date=new_filter['date'],
+            #      time=new_filter['start_time'],
+            #      num_customers = new_filter['number_people'],
+            #      table=filtered_tables[0]
+            #  )
 
         context['find_form'] = FindTableForm({
             'date': request.POST['date'],
