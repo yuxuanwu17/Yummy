@@ -2,74 +2,33 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="../../static/Yummy/reserve.css">
-<script>
-    var totalCount = 0;
-    var itemCounts = {};
-    $(document).ready(function () {
-        fetchOrderTotalPrice();
+    <link rel="stylesheet" href="../../static/Yummy/reserve.css">
+    <script>
+        var totalCount = 0;
+        var itemCounts = {};
+        $(document).ready(function () {
+            fetchOrderTotalPrice();
 
-        // Handle clicks on plus sign buttons
-        $(".plus-btn").click(function (e) {
-            e.preventDefault(); // Prevent the default behavior (navigation)
+            // Handle clicks on plus sign buttons
+            $(".plus-btn").click(function (e) {
+                e.preventDefault(); // Prevent the default behavior (navigation)
 
-            // Get the associated item ID
-            var itemId = $(this).closest('.category').attr('id');
-            console.log("itemId:", itemId)
+                // Get the associated item ID
+                var itemId = $(this).data('item');
+                ;
+                console.log("itemId:", itemId)
 
-            // Increment the item count
-            if (!itemCounts[itemId]) {
-                itemCounts[itemId] = 0;
-            }
-            itemCounts[itemId]++;
-
-            // Update the total count
-            totalCount++;
-
-            // Update the text of the total count counter button
-            $("#total-clicks-counter").text("Checkout: " + totalCount);
-
-            // Send an AJAX request to the Django view
-            $.ajax({
-                url: '{% url "add_food" %}',
-                method: 'POST',
-                data: {
-                    food_id: itemId,
-                    action: 'add',
-                    csrfmiddlewaretoken: '{{ csrf_token }}'
-                },
-                success: function (response) {
-                    if (response.success) {
-                        console.log("Food added successfully");
-                        $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
-                        updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
-                    } else {
-                        console.log("An error occurred while adding the food");
-                    }
-                },
-                error: function (response) {
-                    console.log("An error occurred while adding the food");
+                // Increment the item count
+                if (!itemCounts[itemId]) {
+                    itemCounts[itemId] = 0;
                 }
-            });
-        });
-
-        // Handle clicks on minus sign buttons
-        $(".minus-btn").click(function (e) {
-            e.preventDefault(); // Prevent the default behavior (navigation)
-
-            // Get the associated item ID
-            var itemId = $(this).closest('.category').attr('id');
-
-            // Check if the minus button is associated with an item that has a positive count
-            if (itemCounts[itemId] && itemCounts[itemId] > 0) {
-                // Decrement the item count
-                itemCounts[itemId]--;
+                itemCounts[itemId]++;
 
                 // Update the total count
-                totalCount--;
+                totalCount++;
 
                 // Update the text of the total count counter button
-                $("#total-clicks-counter").text("Total count: " + totalCount);
+                $("#total-clicks-counter").text("Checkout: " + totalCount);
 
                 // Send an AJAX request to the Django view
                 $.ajax({
@@ -77,185 +36,226 @@
                     method: 'POST',
                     data: {
                         food_id: itemId,
-                        action: 'remove',
+                        action: 'add',
                         csrfmiddlewaretoken: '{{ csrf_token }}'
                     },
                     success: function (response) {
                         if (response.success) {
-                            console.log("Food removed successfully");
+                            console.log("Food added successfully");
                             $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
                             updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
                         } else {
-                            console.log("An error occurred while removing the food");
+                            console.log("An error occurred while adding the food");
                         }
                     },
                     error: function (response) {
-                        console.log("An error occurred while removing the food");
+                        console.log("An error occurred while adding the food");
                     }
                 });
-            }
-        });
+            });
 
-        $(".favorite-btn").click(function (e) {
-            e.preventDefault(); // Prevent the default behavior (navigation)
+            // Handle clicks on minus sign buttons
+            $(".minus-btn").click(function (e) {
+                e.preventDefault(); // Prevent the default behavior (navigation)
 
-            // Get the associated item ID and favorited status
-            var itemId = $(this).data('item');
-            var isFavorited = $(this).data('favorited');
+                // Get the associated item ID
+                var itemId = $(this).data('item');
 
-            // Determine the appropriate action
-            var action = isFavorited ? 'unfavorite' : 'favorite';
-            var url = '{% url "favorite_food_action" %}';
+                // Check if the minus button is associated with an item that has a positive count
+                if (itemCounts[itemId] && itemCounts[itemId] > 0) {
+                    // Decrement the item count
+                    itemCounts[itemId]--;
 
-            // Send an AJAX request to the Django view
-            $.ajax({
-                url: url,
-                method: 'POST',
-                data: {
-                    food_id: itemId,
-                    action: action,
-                    csrfmiddlewaretoken: '{{ csrf_token }}'
-                },
-                success: (response) => {
-                    // Toggle the favorited status and update the button text
-                    isFavorited = !isFavorited;
-                    $(this).data('favorited', isFavorited);
-                    $(this).text(isFavorited ? 'Cancel' : 'Favorite');
-                },
-                error: (response) => {
-                    console.log("An error occurred while updating the favorite status");
+                    // Update the total count
+                    totalCount--;
+
+                    // Update the text of the total count counter button
+                    $("#total-clicks-counter").text("Total count: " + totalCount);
+
+                    // Send an AJAX request to the Django view
+                    $.ajax({
+                        url: '{% url "add_food" %}',
+                        method: 'POST',
+                        data: {
+                            food_id: itemId,
+                            action: 'remove',
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                console.log("Food removed successfully");
+                                $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
+                                updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
+                            } else {
+                                console.log("An error occurred while removing the food");
+                            }
+                        },
+                        error: function (response) {
+                            console.log("An error occurred while removing the food");
+                        }
+                    });
                 }
             });
+
+            $(".favorite-btn").click(function (e) {
+                e.preventDefault(); // Prevent the default behavior (navigation)
+
+                // Get the associated item ID and favorited status
+                var itemId = $(this).data('item');
+                var isFavorited = $(this).data('favorited');
+
+                // Determine the appropriate action
+                var action = isFavorited ? 'unfavorite' : 'favorite';
+                var url = '{% url "favorite_food_action" %}';
+
+                // Send an AJAX request to the Django view
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: {
+                        food_id: itemId,
+                        action: action,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: (response) => {
+                        // Toggle the favorited status and update the button text
+                        isFavorited = !isFavorited;
+                        $(this).data('favorited', isFavorited);
+                        $(this).text(isFavorited ? 'Cancel' : 'Favorite');
+                    },
+                    error: (response) => {
+                        console.log("An error occurred while updating the favorite status");
+                    }
+                });
+            });
         });
-    });
 
-    // In the success callback of the plus-btn AJAX request
-    if (response.success) {
-        console.log("Food added successfully");
-        $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
-        updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
-    } else {
-        console.log("An error occurred while adding the food");
-    }
+        // In the success callback of the plus-btn AJAX request
+        if (response.success) {
+            console.log("Food added successfully");
+            $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
+            updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
+        } else {
+            console.log("An error occurred while adding the food");
+        }
 
-    // In the success callback of the minus-btn AJAX request
-    if (response.success) {
-        console.log("Food removed successfully");
-        $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
-        updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
-    } else {
-        console.log("An error occurred while removing the food");
-    }
+        // In the success callback of the minus-btn AJAX request
+        if (response.success) {
+            console.log("Food removed successfully");
+            $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
+            updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
+        } else {
+            console.log("An error occurred while removing the food");
+        }
 
-    function redirectToOptionPage() {
-        window.location.href = '{% url "option" %}';
-    }
+        function redirectToOptionPage() {
+            window.location.href = '{% url "option" %}';
+        }
 
 
-</script>
+    </script>
 {% endblock %}
+
 
 {% block posts_header %}
-<section class="py-5 text-center container">
+    <section class="py-5 text-center container">
 
-    <div class="row py-lg-5">
-        <div class="col-lg-6 col-md-8 mx-auto">
-            <h1 class="fw-light">Cucumber Salad &#129388;</h1>
-            <div class="dish_pic">
-                    <a href="{% url 'dish' %}">
-                        <img id="id_user_picture" src="{% static 'img/cucumber-salad.png' %}" width="100%" height="100%"
-                            style="align-content: center">
+        <div class="row py-lg-5">
+            <div class="col-lg-6 col-md-8 mx-auto">
+                <h1 class="fw-light">{{ f.name }}
+                    {% if f.is_vegetarian %}
+                        &#x1F96C;
+                    {% endif %}
+                    {% if f.is_spicy %}
+                        &#x1F336;&#xFE0F;
+                    {% endif %}
+                </h1>
+                <div class="dish_pic">
+                    <a href="{% url 'dish' f.id %}">
+                        <img id="id_user_picture" src="{% static  f.picture_dir %}" width="100%" height="100%"
+                             style="align-content: center">
                     </a>
-            </div>
-            <p class="lead text-muted">
-                Loaded with cherry tomatoes, red onions, chickpeas and more, with a bright, lemony flavor!
-            </p>
-            <p id="calories" class="lead text-muted">
-                300kcal
-            </p>
+                </div>
+                <p class="lead text-muted">
+                    {{ f.description }}
+                </p>
+                <p id="calories" class="lead text-muted">
+                    Calories: {{ f.calories }}
+                </p>
+                <p id="price" class="lead text-muted">
+                    ${{ f.price }}
+                </p>
 
+            </div>
         </div>
-    </div>
-</section>
+
+        <div>
+            {% if user.is_authenticated %}
+                <div class="btn-group">
+                    <button type="button"
+                            class="btn btn-sm btn-outline-secondary favorite-btn"
+                            data-item="{{ f.id }}"
+                            data-favorited="{% if f.name in favorite_list %}true{% else %}false{% endif %}">
+                        {% if f.name in favorite_list %}
+                            Cancel
+                        {% else %}
+                            Favorite
+                        {% endif %}
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-sm btn-outline-secondary plus-btn"
+                            data-item="{{ f.id }}">
+                        <span class="plus_sign">+</span>
+                    </button>
+                    <button type="button"
+                            class="btn btn-sm btn-outline-secondary minus-btn"
+                            data-item="{{ f.id }}">
+                        <span class="minus_sign">-</span>
+                    </button>
+                    <button type="button"
+                            class="btn btn-sm btn-outline-secondary item-btn"
+                            data-item="{{ f.id }}">
+                        <span class="quantity-display" data-item="{{ f.id }}">0</span>
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
 {% endblock %}
 
-
 {% block content %}
-<section class="dish">
-    $20.00 &emsp; &emsp;
 
-        {% if user.is_authenticated %}
-            <div class="btn-group">
-                <button type="button"
-                        class="btn btn-sm btn-outline-secondary favorite-btn"
-                        data-item="{{ f.id }}"
-                        data-favorited="{% if f.name in favorite_list %}true{% else %}false{% endif %}">
-                    {% if f.name in favorite_list %}
-                        Cancel
-                    {% else %}
-                        Favorite
-                    {% endif %}
-                </button>
-
-                <button type="button"
-                        class="btn btn-sm btn-outline-secondary plus-btn"
-                        data-item="{{ food_item.id }}">
-                    <span class="plus_sign">+</span>
-                </button>
-                <button type="button"
-                        class="btn btn-sm btn-outline-secondary minus-btn"
-                        data-item="{{ food_item.id }}">
-                    <span class="minus_sign">-</span>
-                </button>
-                <button type="button"
-                        class="btn btn-sm btn-outline-secondary item-btn"
-                        data-item="{{ food_item.id }}">
-                    <span class="quantity-display" data-item="{{ f.id }}">0</span>
-                </button>
-            </div>
-        {% endif %}
-        <div class="btn-group">
-            {% if f.is_vegetarian %}
-                <button type="button" class="btn btn-light disabled" disabled>
-                    &#x1F96C;
-                </button>
-            {% endif %}
-            {% if f.is_spicy %}
-                <button type="button" class="btn btn-light   disabled" disabled>
-                    &#x1F336;&#xFE0F;
-                </button>
-            {% endif %}
+    <section class="comments">
+        Comments:
+        <div>
+            <form method="POST">
+                {% for field in comment_form.visible_fields %}
+                    {% csrf_token %}
+                    <div>
+                        <span>{{ field.label_tag }}</span>
+                        <span>{{ field }}</span>
+                    </div>
+                {% endfor %}
+                {% csrf_token %}
+                <p>
+                    <button action="{% url 'reserve' %}" class="btn btn-primary my-2 reserve" type="submit">Submit
+                    </button>
+                </p>
+            </form>
         </div>
-</section>
 
-<section class="comments">
-    Comments:
-    <div>
-        <form method="POST">
-            {% for field in comment_form.visible_fields %}
-            {% csrf_token %}
-            <div>
-                <span>{{field.label_tag}}</span>
-                <span>{{field}}</span>
-            </div>
-            {% endfor %}
-            {% csrf_token %}
-            <p>
-                <button action="{% url 'reserve' %}" class="btn btn-primary my-2 reserve"  type="submit">Submit</a></button>
-            </p>
-        </form>
-    </div>
-
-    <div id="comment_dish_user">
-        {% for comment in comments %}
-        {{comment.text}}
-        -
-        <span>
-            {{comment.creator}}
+        <div id="comment_dish_user">
+            {% for comment in comments %}
+                {{ comment.text }}
+                -
+                <span>
+            {{ comment.creator }}
         </span>
-        <br>
-        {% endfor %}
-    </div>
-</section>
+                <br>
+            {% endfor %}
+        </div>
+    </section>
 
 {% endblock %}
