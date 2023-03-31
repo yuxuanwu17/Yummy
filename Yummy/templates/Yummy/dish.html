@@ -227,24 +227,30 @@
 {% block content %}
 
     <section class="comments">
-        Comments:
-        <div>
-            <form method="POST">
-                {% for field in comment_form.visible_fields %}
-                    {% csrf_token %}
-                    <div>
-                        <span>{{ field.label_tag }}</span>
-                        <span>{{ field }}</span>
-                    </div>
-                {% endfor %}
-                {% csrf_token %}
-                <p>
-                    <button action="{% url 'reserve' %}" class="btn btn-primary my-2 reserve" type="submit">Submit
-                    </button>
-                </p>
-            </form>
+        <div id="comment_text" class="font-weight-bold">
+            <b style="color:Tomato; font-size:20px">
+                Comments:
+            </b>
         </div>
-
+        {% if user.is_authenticated %}
+            <div>
+                <form method="POST">
+                    {% for field in comment_form.visible_fields %}
+                        {% csrf_token %}
+                        <div>
+                            <span>{{ field.label_tag }}</span>
+                            <span>{{ field }}</span>
+                        </div>
+                    {% endfor %}
+                    {% csrf_token %}
+                    <p>
+                        <button action="{% url 'reserve' %}" class="btn btn-primary my-2 reserve" type="submit">Submit
+                        </button>
+                    </p>
+                </form>
+            </div>
+        {% endif %}
+        <br>
         <div id="comment_dish_user">
             {% for comment in comments %}
                 {{ comment.text }}
