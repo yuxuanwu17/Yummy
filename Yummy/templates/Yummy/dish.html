@@ -171,18 +171,17 @@
                     {% endif %}
                 </h1>
                 <div class="dish_pic">
-                    <a href="{% url 'dish' f.id %}">
-                        <img id="id_user_picture" src="{% static  f.picture_dir %}" width="100%" height="100%"
-                             style="align-content: center">
-                    </a>
+                    <img id="id_user_picture" src="{% static  f.picture_dir %}" width="100%" height="100%"
+                        style="align-content: center">
                 </div>
-                <p class="lead text-muted">
-                    {{ f.description }}
-                </p>
-                <p id="calories" class="lead text-muted">
+                <br>
+                    <p class="lead text-muted">
+                        {{ f.description }}
+                    </p>
+                <p id="calories" class="font-weight-bold">
                     Calories: {{ f.calories }}
                 </p>
-                <p id="price" class="lead text-muted">
+                <p id="price" class="font-weight-bold">
                     ${{ f.price }}
                 </p>
 
