@@ -12,6 +12,70 @@
     function Openform() {
         document.getElementById("id_table_number_div").style.visibility = "visible";
     }
+
+    $(document).ready(function (){
+        $(".set-take-out").click(function (e) {
+        // Get the associated order ID
+          $.ajax({
+            url: '/yummy/get_order_total_price',
+            method: 'GET',
+            success: function (response) {
+                if (response.success) {
+                    var orderId = response.order_id;
+                    console.log("orderId:", orderId)
+                    $.ajax({
+                        url: '{% url "set_take_out" %}',
+                        method: 'POST',
+                        data: {
+                            order_id: orderId,
+                            action: 'take-out',
+                            csrfmiddlewaretoken: '{{csrf_token}}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                console.log("Take out status changed")
+                            } else {
+                                console.log('Error occurred')
+                            }
+                        }
+                    })
+                }
+            }
+          });  
+        })
+
+        $(".set-dine-in").click(function (e) {
+          var tableNumber = document.getElementById('id_table_number_input').value
+          console.log('table number:', tableNumber)
+          $.ajax({
+            url: '/yummy/get_order_total_price',
+            method: 'GET',
+            success: function (response) {
+                if (response.success) {
+                    var orderId = response.order_id;
+                    console.log("orderId:", orderId)
+                    $.ajax({
+                        url: '{% url "set_take_out" %}',
+                        method: 'POST',
+                        data: {
+                            order_id: orderId,
+                            action: 'dine-in',
+                            // table_number: tableNumber,
+                            csrfmiddlewaretoken: '{{csrf_token}}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                console.log("Take out status changed")
+                            } else {
+                                console.log('Error occurred')
+                            }
+                        }
+                    })
+                }
+            }
+          });  
+        })
+    })
 </script>
 
 <section class="py-5 text-center container">
@@ -22,7 +86,7 @@
                 Is this order take-out or dine in?
             </p>
             <p>
-                <a href="{% url 'summary' %}" class="btn btn-primary my-2">Take Out</a>
+                <a href="{% url 'summary' %}" class="btn btn-primary my-2 set-take-out">Take Out</a>
                 <a class="btn btn-secondary my-2" onclick="Openform()">Dine In</a>
             </p>
         </div>
@@ -35,7 +99,7 @@
         <label class="lead text-muted">Please enter your table number if you are dining in:</label>
         <input id="id_table_number_input" type="text" name="table_number">
         <div>
-            <button id="id_table_number_button" class="btn btn-secondary my-2" type="submit">Submit</button>
+            <button id="id_table_number_button" class="btn btn-secondary my-2 set-dine-in" type="submit">Submit</button>
         </div>
 
         {% csrf_token %}

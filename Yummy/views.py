@@ -1,7 +1,8 @@
 import collections
 import datetime
+import json
 
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -154,7 +155,7 @@ def add_food(request):
                 order.total_price -= food.price * quantity
                 order.save()
 
-            return JsonResponse({"success": True, "total_price": order.total_price}, status=200)
+            return JsonResponse({"success": True, "total_price": order.total_price, "food_quantity": food_set.quantity}, status=200)
 
         except (Food.DoesNotExist, FoodSet.DoesNotExist):
             return JsonResponse({"success": False}, status=400)
@@ -170,7 +171,7 @@ def get_order_total_price(request):
         order = Order.objects.get(customer=user, is_paid=False)
         food_quantities = order.foods.values('food_id', 'quantity')
         return JsonResponse(
-            {"success": True, "total_price": order.total_price, "food_quantities": list(food_quantities)}, status=200)
+            {"success": True, "order_id": order.id, "total_price": order.total_price, "food_quantities": list(food_quantities)}, status=200)
     except Order.DoesNotExist:
         return JsonResponse({"success": False}, status=400)
 
@@ -178,26 +179,139 @@ def get_order_total_price(request):
 @login_required
 def reserve_action(request):
     context = {}
-    context['form'] = ReservationForm
+    if request.method == 'GET':
+        context['find_form'] = FindTableForm()
+        UnconfirmedReservation.objects.all().delete()
+        return render(request, 'Yummy/reserve.html', context)
+    
+    if not 'phone_number' in request.POST:
+        new_filter = {
+            'date': request.POST['date'],
+            'start_time': datetime.datetime.strptime(request.POST['time'], '%H:%M'),
+            'end_time': datetime.datetime.strptime(request.POST['time'], '%H:%M') + datetime.timedelta(hours=2),
+            'number_people':request.POST['number_people']
+        }
+        tables = Table.objects.filter(
+            capacity__gte=new_filter['number_people']
+            )
+        reservations = Reservation.objects.filter(
+            date = new_filter['date'],
+            time__range=(new_filter['start_time'], new_filter['end_time'])
+        )
+        unavailable_tableid = [reservation.table.id for reservation in reservations]
+        filtered_tables = tables.exclude(id__in=unavailable_tableid)
+        print(filtered_tables)
+        if len(filtered_tables) == 0:
+            context['find_message'] = 'Sorry, no table available at that time'
+        else:
+            context['find_message'] = 'Great, there is an available table'
+            context['detail_form'] = DetailForm()
+            # new_unconfirmed_reservation = UnconfirmedReservation.objects.create(
+            #      date=new_filter['date'],
+            #      time=new_filter['start_time'],
+            #      num_customers = new_filter['number_people'],
+            #      table=filtered_tables[0]
+            #  )
+
+        context['find_form'] = FindTableForm({
+            'date': request.POST['date'],
+            'time': datetime.datetime.strptime(request.POST['time'], '%H:%M'),
+            'number_people':request.POST['number_people']
+        })
+        
+    
+    else:
+        # new_filter = {
+        #     'date': request.POST['date'],
+        #     'start_time': datetime.datetime.strptime(request.POST['time'], '%H:%M'),
+        #     'end_time': datetime.datetime.strptime(request.POST['time'], '%H:%M') + datetime.timedelta(hours=2),
+        #     'number_people':request.POST['number_people']
+        # }
+        # tables = Table.objects.filter(
+        #     capacity__gte=new_filter['number_people']
+        #     )
+        # reservations = Reservation.objects.filter(
+        #     date = new_filter['date'],
+        #     time__range=(new_filter['start_time'], new_filter['end_time'])
+        # )
+        # unavailable_tableid = [reservation.table.id for reservation in reservations]
+        # filtered_tables = tables.exclude(id__in=unavailable_tableid)
+        # new_reservation = Reservation.objects.create(
+        #         num_customers = new_filter['number_people'],
+        #         table = filtered_tables[0],
+        #         first_name = request.POST['last_name'],
+        #         last_name = request.POST['first_name'],
+        #         phone_number = request.POST['phone_number'],
+        #         comment = request.POST['comment'],
+        #         date = request.POST['date'],
+        #         time = datetime.datetime.strptime(request.POST['time'], '%H:%M')
+        # )
+        context['reservation_message'] = 'You are all set!'
+
     return render(request, 'Yummy/reserve.html', context)
 
 
 @login_required
 def option_action(request):
-    return render(request, 'Yummy/option.html', {})
+    context ={}
+    response = get_order_total_price(request)
+    json_response = json.loads(response.content)
+    order_id = json_response['order_id']
+    context['order_id'] = order_id
+    return render(request, 'Yummy/option.html', context)
+
+
+
+@login_required
+@csrf_exempt
+def set_take_out(request):
+    if request.method == 'POST':
+        order_id = request.POST.get('order_id')
+        action = request.POST.get('action')
+        print(action)
+        # table_number = request.POST.get('table_number')
+
+        try:
+            order = Order.objects.get(id=order_id)
+            if action == 'take-out':
+                order.is_takeout = True
+                order.save()
+                print(order.is_takeout)
+            if action == 'dine-in':
+                order.is_takeout = False
+                order.save()
+                # set the table number of order
+                # table = Table.objects.get(id=table_number)
+                # order.table = table
+            return JsonResponse({"success": True}, status=200)
+        except (Order.DoesNotExist):
+            return JsonResponse({"success": False}, status=400)
 
 
 @login_required
 def summary_action(request):
-    return render(request, 'Yummy/summary.html', {})
+    context ={}
+    user = request.user
+    response = get_order_total_price(request)
+    json_response = json.loads(response.content)
+    order_id = json_response['order_id']
+
+    order = Order.objects.get(id=order_id)
+    food_set = order.foods.all()
+    context['order'] = order
+    context['food_set'] = food_set
+    context['pretax'] = order.total_price
+    context['tax'] = round(order.total_price * 0.07, 2)
+    context['tips'] = round(order.total_price * 0.18, 2)
+    context['total'] = order.total_price + context['tax'] + context['tips']
+
+    return render(request, 'Yummy/summary.html', context)
 
 
 @login_required
 def profile_action(request):
     context = {}
-
     profile = request.user.profile
-
     # form = ProfileForm(request.POST, request.FILES, instance=new_item)
     if request.method == "GET":
         context['item'] = profile
@@ -207,9 +321,15 @@ def profile_action(request):
     return render(request, 'Yummy/profile.html', context)
 
 
-
 def dish_action(request):
-    return render(request, 'Yummy/dish.html', {})
+    context = {}
+    context['comment_form'] = CommentForm()
+    context['comments'] = Comment.objects.all()
+    if 'text' in request.POST:
+         Comment.objects.create(text=request.POST['text'],
+                                creation_time=timezone.now(),
+                                creator=request.user)
+    return render(request, 'Yummy/dish.html', context)
 
 
 @login_required
@@ -268,6 +388,7 @@ def new_dish_action(request):
             new_dish = Food.objects.create(name=name, price=price, description=desc, category=category,
                                            calories=calories, is_spicy=is_spicy, is_vegetarian=is_vegetarian)
             new_picture = FoodPicture.objects.create(food=new_dish, picture=picture)
+            print('created new dish')
 
             # get the picture directory from FoodPicture object
             new_dish.picture_dir = 'img/' + new_picture.picture.name
