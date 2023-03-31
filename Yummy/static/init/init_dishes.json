@@ -27,7 +27,7 @@
     "category": "Vegetable",
     "calories": 300,
     "is_spicy": 1,
-    "is_vegetarian": 1
+    "is_vegetarian": 0
   },
   {
     "name": "Peking Roasted Duck",
