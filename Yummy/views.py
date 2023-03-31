@@ -157,7 +157,8 @@ def add_food(request):
                 order.total_price -= food.price * quantity
                 order.save()
 
-            return JsonResponse({"success": True, "total_price": order.total_price, "food_quantity": food_set.quantity}, status=200)
+            return JsonResponse({"success": True, "total_price": order.total_price, "food_quantity": food_set.quantity},
+                                status=200)
 
         except (Food.DoesNotExist, FoodSet.DoesNotExist):
             return JsonResponse({"success": False}, status=400)
@@ -173,7 +174,8 @@ def get_order_total_price(request):
         order = Order.objects.get(customer=user, is_paid=False)
         food_quantities = order.foods.values('food_id', 'quantity')
         return JsonResponse(
-            {"success": True, "order_id": order.id, "total_price": order.total_price, "food_quantities": list(food_quantities)}, status=200)
+            {"success": True, "order_id": order.id, "total_price": order.total_price,
+             "food_quantities": list(food_quantities)}, status=200)
     except Order.DoesNotExist:
         return JsonResponse({"success": False}, status=400)
 
@@ -185,19 +187,19 @@ def reserve_action(request):
         context['find_form'] = FindTableForm()
         UnconfirmedReservation.objects.all().delete()
         return render(request, 'Yummy/reserve.html', context)
-    
+
     if not 'phone_number' in request.POST:
         new_filter = {
             'date': request.POST['date'],
             'start_time': datetime.datetime.strptime(request.POST['time'], '%H:%M'),
             'end_time': datetime.datetime.strptime(request.POST['time'], '%H:%M') + datetime.timedelta(hours=2),
-            'number_people':request.POST['number_people']
+            'number_people': request.POST['number_people']
         }
         tables = Table.objects.filter(
             capacity__gte=new_filter['number_people']
-            )
+        )
         reservations = Reservation.objects.filter(
-            date = new_filter['date'],
+            date=new_filter['date'],
             time__range=(new_filter['start_time'], new_filter['end_time'])
         )
         unavailable_tableid = [reservation.table.id for reservation in reservations]
@@ -218,10 +220,10 @@ def reserve_action(request):
         context['find_form'] = FindTableForm({
             'date': request.POST['date'],
             'time': datetime.datetime.strptime(request.POST['time'], '%H:%M'),
-            'number_people':request.POST['number_people']
+            'number_people': request.POST['number_people']
         })
-        
-    
+
+
     else:
         # new_filter = {
         #     'date': request.POST['date'],
@@ -255,7 +257,7 @@ def reserve_action(request):
 
 @login_required
 def option_action(request):
-    context ={}
+    context = {}
     response = get_order_total_price(request)
     json_response = json.loads(response.content)
     print(json_response)
@@ -266,7 +268,6 @@ def option_action(request):
     else:
         messages.warning(request, 'Your cart is empty. Please at least add 1 dish to your cart.')
         return redirect('home')
-
 
 
 @login_required
@@ -297,7 +298,7 @@ def set_take_out(request):
 
 @login_required
 def summary_action(request):
-    context ={}
+    context = {}
     user = request.user
     response = get_order_total_price(request)
     json_response = json.loads(response.content)
@@ -328,14 +329,18 @@ def profile_action(request):
     return render(request, 'Yummy/profile.html', context)
 
 
-def dish_action(request):
+def dish_action(request, id):
+    print(f"id: {id}")
+    target_food = Food.objects.get(id=id)
     context = {}
     context['comment_form'] = CommentForm()
     context['comments'] = Comment.objects.all()
+    context['f'] = target_food
+    print(target_food)
     if 'text' in request.POST:
-         Comment.objects.create(text=request.POST['text'],
-                                creation_time=timezone.now(),
-                                creator=request.user)
+        Comment.objects.create(text=request.POST['text'],
+                               creation_time=timezone.now(),
+                               creator=request.user)
     return render(request, 'Yummy/dish.html', context)
 
 

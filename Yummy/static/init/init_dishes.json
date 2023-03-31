@@ -21,17 +21,17 @@
   },
   {
     "name": "Ma Po Tofu",
-    "price": 9,
+    "price": 12,
     "description": "A popular dish from Sichuan, offering you a special and spicy experience.",
     "picture_dir": "img/ma-po-tofu.png",
     "category": "Vegetable",
     "calories": 300,
     "is_spicy": 1,
-    "is_vegetarian": 1
+    "is_vegetarian": 0
   },
   {
     "name": "Peking Roasted Duck",
-    "price": 9,
+    "price": 18,
     "description": "A Beijing dish with roasted duck meat and crispy skin wrapped in a thin crepe.",
     "picture_dir": "img/peking-roasted-duck.png",
     "category": "Meat",
@@ -41,7 +41,7 @@
   },
   {
     "name": "Sweet Sour Pork",
-    "price": 12,
+    "price": 18,
     "description": "Cubed pork deep-fried until golden brown, then add sweet and sour sauce.",
     "picture_dir": "img/sweet-sour-pork.png",
     "category": "Meat",
@@ -51,7 +51,7 @@
   },
   {
     "name": "Sichuan Pork",
-    "price": 9,
+    "price": 18,
     "description": "Thin Sliced Pork Belly, Leek, Red Pepper, and Black Bean.",
     "picture_dir": "img/sichuan-pork.png",
     "category": "Meat",
@@ -61,7 +61,7 @@
   },
   {
     "name": "Seafood Congee",
-    "price": 9,
+    "price": 20,
     "description": "Seafood congee is made with a handful of shrimp, rich shrimp stock and the a couple of small crabs.",
     "picture_dir": "img/seafood-congee.png",
     "category": "Soup",
@@ -71,7 +71,7 @@
   },
   {
     "name": "Red Bean Porridge",
-    "price": 9,
+    "price": 7,
     "description": "Made from dried red beans with added chewy rice cake balls made from glutinous rice flour. Creamy, nutty, and a little sweet",
     "picture_dir": "img/red-bean-porridge.png",
     "category": "Soup",
@@ -81,7 +81,7 @@
   },
   {
     "name": "Mango Pomelo Sago",
-    "price": 9,
+    "price": 8,
     "description": "A Cantonese-style dessert with grapefruit, mango, sago, and coconut milk, and the main cooking process is boiling.",
     "picture_dir": "img/mango-pomelo-sago.png",
     "category": "Dessert",
@@ -91,7 +91,7 @@
   },
   {
     "name": "Fruit With Yogurt",
-    "price": 9,
+    "price": 8,
     "description": "Collision on the tip of the tongue brought by fruit and yogurt. You can also choose fruit yourself!",
     "picture_dir": "img/fruit-with-yogurt.png",
     "category": "Dessert",
@@ -101,7 +101,7 @@
   },
   {
     "name": "Fried Pork Dumplings",
-    "price": 9,
+    "price": 8,
     "description": "Filled with ground pork, napa cabbage, chives, soy sauce and more.",
     "picture_dir": "img/Fried-pork-dumplings.jpg",
     "category": "Snack",
@@ -121,7 +121,7 @@
   },
   {
     "name": "Rice Balls In Wine Soup",
-    "price": 9,
+    "price": 12,
     "description": "Small balls made of glutinous rice flour. Very chewy and slightly sweet.",
     "picture_dir": "img/Rice-balls-in-wine-soup.png",
     "category": "Snack",
@@ -141,7 +141,7 @@
   },
   {
     "name": "Chow Mein",
-    "price": 10,
+    "price": 12,
     "description": "A traditional Chinese dish made with egg noodles and stir-fried veggies",
     "picture_dir": "img/chow-mein.png",
     "category": "Rice & Noodles",
