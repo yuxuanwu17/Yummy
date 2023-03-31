@@ -84,12 +84,14 @@
     {% endblock %}
 </div>
 
-{% if message %}
+{% if messages %}
+    {% for message in messages %}
     <div id="error_message" class="row justify-content-center">
-        <div class="alert alert-warning" role="alert" style="width: 80%">
+        <div class="alert {% if message.tags %}alert-{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}danger{% else %}{{ message.tags }}{% endif %}{% endif %}" role="alert" style="width: 80%">
             {{ message }}
         </div>
     </div>
+    {% endfor %}
 {% endif %}
 
 <div class="content" id="content">
