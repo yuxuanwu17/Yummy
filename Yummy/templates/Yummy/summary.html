@@ -6,12 +6,199 @@
 {% endblock %}
 
 
-
 {% block content %}
+<script>
+  var totalCount = 0;
+  var itemCounts = {};
+  $(document).ready(function () {
+      fetchOrderTotalPrice();
+
+      // Handle clicks on plus sign buttons
+      $(".plus-btn").click(function (e) {
+          e.preventDefault(); // Prevent the default behavior (navigation)
+
+          // Get the associated item ID
+          var itemId = $(this).data('id')
+          var orderId = $('#id_order_id').data('orderid')
+          console.log('plus')
+          console.log("Food Id:", itemId)
+          console.log('Order id:', orderId)
+
+          // Increment the item count
+          if (!itemCounts[itemId]) {
+              itemCounts[itemId] = 0;
+          }
+          itemCounts[itemId]++;
+
+          // Update the total count
+          totalCount++;
+
+          // Update the text of the total count counter button
+          $("#total-clicks-counter").text("Checkout: " + totalCount);
+
+          // Send an AJAX request to the Django view
+          $.ajax({
+              url: '{% url "add_food" %}',
+              method: 'POST',
+              data: {
+                  food_id: itemId,
+                  action: 'add',
+                  csrfmiddlewaretoken: '{{ csrf_token }}'
+              },
+              success: function (response) {
+                  if (response.success) {
+                      console.log("Food added successfully");
+                      var before_tax_sum = response.total_price
+                      var tax = before_tax_sum * 0.07
+                      var tips = before_tax_sum * 0.18
+                      var order_total = before_tax_sum + tax + tips
+                      console.log(order_total.toFixed(2))
+                      $('#id_quantity_of_'+itemId).text(response.food_quantity);
+                      $('#id_order_pretax_'+orderId).text(before_tax_sum.toFixed(2));
+                      $('#id_order_tax_'+orderId).text(tax.toFixed(2));
+                      $('#id_order_tips_'+orderId).text(tips.toFixed(2));
+                      $('#id_order_total_'+orderId).text(order_total.toFixed(2));
+                  } else {
+                      console.log("An error occurred while adding the food");
+                  }
+              },
+              error: function (response) {
+                  console.log("An error occurred while adding the food");
+              }
+          });
+      });
+
+      // Handle clicks on minus sign buttons
+      $(".minus-btn").click(function (e) {
+          e.preventDefault(); // Prevent the default behavior (navigation)
+
+          // Get the associated item ID
+          var itemId = $(this).data('id')
+          var orderId = $('#id_order_id').data('orderid')
+          console.log('minus')
+          console.log('food id', itemId)
+          console.log('Order id', orderId)
+
+          // Check if the minus button is associated with an item that has a positive count
+          if (itemCounts[itemId] && itemCounts[itemId] > 0) {
+              // Decrement the item count
+              itemCounts[itemId]--;
+
+              // Update the total count
+              totalCount--;
+
+              // Update the text of the total count counter button
+              $("#total-clicks-counter").text("Total count: " + totalCount);
+
+              // Send an AJAX request to the Django view
+              $.ajax({
+                  url: '{% url "add_food" %}',
+                  method: 'POST',
+                  data: {
+                      food_id: itemId,
+                      action: 'remove',
+                      csrfmiddlewaretoken: '{{ csrf_token }}'
+                  },
+                  success: function (response) {
+                      if (response.success) {
+                          console.log("Food removed successfully");
+                          var before_tax_sum = response.total_price
+                          var tax = before_tax_sum * 0.07
+                          var tips = before_tax_sum * 0.18
+                          var order_total = before_tax_sum + tax + tips
+                          console.log(order_total.toFixed(2))
+                          $('#id_quantity_of_'+itemId).text(response.food_quantity);
+                          $('#id_order_pretax_'+orderId).text(before_tax_sum.toFixed(2));
+                          $('#id_order_tax_'+orderId).text(tax.toFixed(2));
+                          $('#id_order_tips_'+orderId).text(tips.toFixed(2));
+                          $('#id_order_total_'+orderId).text(order_total.toFixed(2));
+
+                          // hide the row if quantity is 0
+                          if (response.food_quantity <= 0) {
+                            $('#id_quantity_of_'+itemId).closest('tr').hide()
+                          }
+                      } else {
+                          console.log("An error occurred while removing the food");
+                      }
+                  },
+                  error: function (response) {
+                      console.log("An error occurred while removing the food");
+                  }
+              });
+          }
+      });
+
+      $(".remove-btn").click(function (e) {
+          e.preventDefault(); // Prevent the default behavior (navigation)
+
+          // Get the associated item ID
+          var itemId = $(this).data('id')
+          var orderId = $('#id_order_id').data('orderid')
+          console.log('Remove')
+          console.log('food id', itemId)
+          console.log('Order id', orderId)
+
+          // Check if the minus button is associated with an item that has a positive count
+          if (itemCounts[itemId] && itemCounts[itemId] > 0) {
+              // Update the total count
+              totalCount = totalCount - itemCounts[itemId];
+              var prev_quantity = itemCounts[itemId];
+
+              // set item count to 0
+              itemCounts[itemId] = 0;
+
+              // Update the text of the total count counter button
+              $("#total-clicks-counter").text("Total count: " + totalCount);
+
+              // Send an AJAX request to the Django view
+              $.ajax({
+                  url: '{% url "add_food" %}',
+                  method: 'POST',
+                  data: {
+                      food_id: itemId,
+                      action: 'remove',
+                      quantity: prev_quantity,
+                      csrfmiddlewaretoken: '{{ csrf_token }}'
+                  },
+                  success: function (response) {
+                      if (response.success) {
+                          console.log("Food removed successfully");
+                          //update order related amount
+                          var before_tax_sum = response.total_price
+                          var tax = before_tax_sum * 0.07
+                          var tips = before_tax_sum * 0.18
+                          var order_total = before_tax_sum + tax + tips
+                          console.log(order_total.toFixed(2))
+                          $('#id_order_pretax_'+orderId).text(before_tax_sum.toFixed(2));
+                          $('#id_order_tax_'+orderId).text(tax.toFixed(2));
+                          $('#id_order_tips_'+orderId).text(tips.toFixed(2));
+                          $('#id_order_total_'+orderId).text(order_total.toFixed(2));
+
+                          // delete the removed row of food
+                          $('#id_quantity_of_'+itemId).closest('tr').hide()
+
+                      } else {
+                          console.log("An error occurred while removing the food");
+                      }
+                  },
+                  error: function (response) {
+                      console.log("An error occurred while removing the food");
+                  }
+              });
+          }
+      });
+  });
+</script>
+
 
 <div class="py-5 text-center container">
     <h1 id="id_page_title" class="fw-light">Cart</h1>
-    <p class="fs-5 fw-light-bolder">Your table number is: 5</p>
+    <p id="id_order_id" class="fs-5 fw-light-bolder" data-orderid="{{order.id}}">Order Number: {{order.id}}</p>
+    {% if not order.is_takeout %}
+      <p class="fs-5 fw-light-bolder">Your table number is: 5</p>
+    {% else %}
+      <p class="fs-5 fw-light-bolder">This a take-out order</p>
+    {% endif %}
 </div>
 
 <table class="table table-striped align-middle text-center">
@@ -20,63 +207,55 @@
         <th scope="col">#</th>
         <th scope="col">Image</th>
         <th scope="col">Dish Name</th>
-        <!-- <th scope="col">&nbsp;</th> -->
+        <th scope="col">&nbsp;</th>
         <th scope="col">Quantity</th>
-        <!-- <th scope="col">&nbsp;</th> -->
+        <th scope="col">&nbsp;</th>
         <th scope="col">Price</th>
         <th scope="col">&nbsp;</th>
       </tr>
     </thead>
     <tbody class="table-group-divider fs-5">
+      {% for foodset in food_set %}
       <tr>
-        <th scope="row">1</th>
+        <th scope="row">{{foodset.food.id}}</th>
         <td>
-            <img id="id_dish_picture_1" src="{% static 'img/Fried-pork-dumplings.jpg' %}"
-            width="50px"
-            style="align-content: center">
+          <img src="{% static foodset.food.picture_dir %}" width="50px" style="align-content:center">
         </td>
-        <td>Fried Pork Dumplings</td>
-        <!-- <td><button type="button" class="btn btn-outline-dark"> - </button></td> -->
-        <td><input class="quantity_input" type="number" placeholder="1"></td>
-        <!-- <td><button type="button" class="btn btn-outline-dark"> + </button></td> -->
-        <td>$10</td>
-        <td><button type="button" class="btn btn-outline-dark"">Remove</button></td>
+        <td>{{foodset.food.name}}</td>
+        <td><button type="button" class="btn btn-outline-dark minus-btn" data-id="{{foodset.food.id}}"> - </button></td>
+        <td><span id="id_quantity_of_{{foodset.food.id}}" class="quantity_input">{{foodset.quantity}}</td>
+        <td><button type="button" class="btn btn-outline-dark plus-btn" data-id="{{foodset.food.id}}"> + </button></td>
+        <td>{{foodset.food.price}}</td>
+        <td><button type="button" class="btn btn-outline-dark remove-btn" data-id="{{foodset.food.id}}">Remove</button></td>
       </tr>
-      <tr>
-        <th scope="row">2</th>
-        <td>
-            <img id="id_dish_picture_1" src="{% static '/img/Scallion-pancakes.png' %}"
-            width="100px"
-            style="align-content: center">
-        </td>
-        <td>Scallion Pancakes</td>
-        <!-- <td><button type="button" class="btn btn-outline-dark"> - </button></td> -->
-        <td><input class="quantity_input" type="number" placeholder="1"></td>
-        <!-- <td><button type="button" class="btn btn-outline-dark"> + </button></td> -->
-        <td>$15</td>
-        <td><button type="button" class="btn btn-outline-dark">Remove</button></td>
-      </tr>
+      {% endfor %}
       <tr>
         <th scope="row"></th>
-        <td colspan="3" class="fs-5 text-end">Tax(7%)</td>
-        <td class="fs-5 text-center">$1.75</td>
+        <td colspan="5" class="fs-5 text-end">Sum before tax and tips</td>
+        <td id="id_order_pretax_{{order.id}}" class="fs-5 text-center">{{pretax}}</td>
         <td></td>
       </tr>
       <tr>
         <th scope="row"></th>
-        <td colspan="3" class="fs-5 text-end">Tip</td>
-        <td class="fs-5 text-center">$5</td>
+        <td colspan="5" class="fs-5 text-end">Tax(7%)</td>
+        <td id="id_order_tax_{{order.id}}" class="fs-5 text-center">{{tax}}</td>
         <td></td>
       </tr>
       <tr>
         <th scope="row"></th>
-        <td colspan="3" class="fs-4 fw-bold text-end">Total</td>
-        <td class="fs-4 fw-bold text-center">$31.75</td>
+        <td colspan="5" class="fs-5 text-end">Tips(18%)</td>
+        <td id="id_order_tips_{{order.id}}" class="fs-5 text-center">{{tips}}</td>
         <td></td>
       </tr>
       <tr>
         <th scope="row"></th>
-        <td colspan="4" class="fs-4 fw-bold text-end"></td>
+        <td colspan="5" class="fs-4 fw-bold text-end">Total</td>
+        <td id="id_order_total_{{order.id}}" class="fs-4 fw-bold text-center">{{total}}</td>
+        <td></td>
+      </tr>
+      <tr>
+        <th scope="row"></th>
+        <td colspan="6" class="fs-4 fw-bold text-end"></td>
         <td><button type="button" class="btn btn-dark btn-lg">Check out</button></td>
       </tr>
     </tbody>
