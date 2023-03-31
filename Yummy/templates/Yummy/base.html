@@ -94,6 +94,14 @@
     {% endfor %}
 {% endif %}
 
+{% if message %}
+<div id="error_message" class="row justify-content-center">
+    <div class="alert alert-error" role="alert" style="width: 80%">
+        {{ message }}
+    </div>
+</div>
+{% endif %}
+
 <div class="content" id="content">
     {% block content %}
     {% endblock %}

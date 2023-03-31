@@ -373,8 +373,8 @@ def new_dish_action(request):
     user = request.user
     # All the staff (including super user) can add new dishes
     if not user.is_staff:
-        context['message'] = 'You are not authorized to use this function.'
-        return render(request, 'Yummy/menu.html', context)
+        messages.error(request, 'You are not authorized to use this function.')
+        return redirect('home')
     else:
         if request.method == 'POST':
             form = FoodForm(data=request.POST, files=request.FILES)
