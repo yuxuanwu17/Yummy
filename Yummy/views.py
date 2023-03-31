@@ -1,6 +1,7 @@
 import collections
 import datetime
 import json
+from django.contrib import messages
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.admin.views.decorators import staff_member_required
@@ -42,6 +43,7 @@ def login_action(request):
 @login_required
 def logout_action(request):
     logout(request)
+    messages.success(request, 'Logged out successfully.')
     return redirect(reverse('home'))
 
 
@@ -256,9 +258,14 @@ def option_action(request):
     context ={}
     response = get_order_total_price(request)
     json_response = json.loads(response.content)
-    order_id = json_response['order_id']
-    context['order_id'] = order_id
-    return render(request, 'Yummy/option.html', context)
+    print(json_response)
+    if json_response['success']:
+        order_id = json_response['order_id']
+        context['order_id'] = order_id
+        return render(request, 'Yummy/option.html', context)
+    else:
+        messages.warning(request, 'Your cart is empty. Please at least add 1 dish to your cart.')
+        return redirect('home')
 
 
 
@@ -393,6 +400,7 @@ def new_dish_action(request):
             # get the picture directory from FoodPicture object
             new_dish.picture_dir = 'img/' + new_picture.picture.name
             new_dish.save()
+            messages.success(request, 'New dish created')
             return redirect('home')
 
         else:
@@ -428,6 +436,6 @@ def register_staff_action(request):
         # Create profile for this new user
         new_profile = Profile(user=user, phone_number=form.cleaned_data['phone_number'])
         new_profile.save()
-        context['message'] = 'New staff ' + user.first_name + ' ' + user.last_name + ' created.'
-
-        return render(request, "Yummy/menu.html", context)
+        message = 'New staff ' + user.first_name + ' ' + user.last_name + ' created.'
+        messages.success(request, message)
+        return redirect('home')
