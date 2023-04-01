@@ -15,7 +15,6 @@
 
                 // Get the associated item ID
                 var itemId = $(this).data('item');
-                ;
                 console.log("itemId:", itemId)
 
                 // Increment the item count
@@ -164,7 +163,7 @@
 
                 <div class="dish_pic">
                     <img id="id_user_picture" src="{% static  f.picture_dir %}" class="card shawdow-sm "
-                        style="align-content: center; height: 18rem; width:18rem">
+                         style="align-content: center; height: 18rem; width:18rem">
                 </div>
                 <br>
 
@@ -238,7 +237,8 @@
                         </div>
                     {% endfor %}
                     {% csrf_token %}
-                    <button action="{% url 'reserve' %}" class="btn btn-secondary my-2 reserve" type="submit">Submit</button>
+                    <button action="{% url 'reserve' %}" class="btn btn-secondary my-2 reserve" type="submit">Submit
+                    </button>
                 </form>
             </div>
         {% endif %}
@@ -249,13 +249,13 @@
         <div id="comment_dish_user" class="px-4 my-5 text-center col-lg-6 mx-auto">
             <ul class="list-group">
                 {% for comment in comments %}
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                  <div class="ms-2 me-auto">
-                    <div class="fw-bold">{{ comment.text }}</div>
-                    By {{ comment.creator.first_name }} {{comment.creator.last_name}}
-                  </div>
-                  <span class="badge text-bg-light">{{ comment.creation_time }}</span>
-                </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">{{ comment.text }}</div>
+                            By {{ comment.creator.first_name }} {{ comment.creator.last_name }}
+                        </div>
+                        <span class="badge text-bg-light">{{ comment.creation_time }}</span>
+                    </li>
                 {% endfor %}
             </ul>
         </div>
