@@ -271,7 +271,7 @@
                                             {% if user.is_authenticated %}
                                                 <div class="btn-group">
                                                     <button type="button"
-                                                            class="btn btn-sm btn-outline-secondary favorite-btn"
+                                                            class="btn btn-sm btn-outline-secondary favorite-btn fw-bolder"
                                                             data-item="{{ f.id }}"
                                                             data-favorited="{% if f.name in favorite_list %}true{% else %}false{% endif %}">
                                                         {% if f.name in favorite_list %}
@@ -282,19 +282,19 @@
                                                     </button>
 
                                                     <button type="button"
-                                                            class="btn btn-sm btn-outline-secondary plus-btn"
-                                                            data-item="{{ f.id }}">
-                                                        <span class="plus_sign">+</span>
-                                                    </button>
-                                                    <button type="button"
                                                             class="btn btn-sm btn-outline-secondary minus-btn"
                                                             data-item="{{ f.id }}">
-                                                        <span class="minus_sign">-</span>
+                                                        <span class="minus_sign">&#10134;</span>
                                                     </button>
                                                     <button type="button"
-                                                            class="btn btn-sm btn-outline-secondary item-btn"
+                                                            class="btn btn-sm btn-outline-secondary fw-bold item-btn"
                                                             data-item="{{ f.id }}">
                                                         <span class="quantity-display" data-item="{{ f.id }}">0</span>
+                                                    </button>
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-outline-secondary plus-btn"
+                                                            data-item="{{ f.id }}">
+                                                        <span class="plus_sign">&#10133;</span>
                                                     </button>
                                                 </div>
                                             {% endif %}

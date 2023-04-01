@@ -219,7 +219,7 @@
       <tr>
         <th scope="row">{{foodset.food.id}}</th>
         <td class="d-flex justify-content-between align-items-center">
-          <img src="{% static foodset.food.picture_dir %}" class="card shadow-sm" style="align-content:center; width: 15vw; height:auto">
+          <img src="{% static foodset.food.picture_dir %}" class="card shadow-sm" style="align-content:center; width: 8vw; height: 8vw; object-fit: cover;">
         </td>
         <td>{{foodset.food.name}}</td>
         <td><button type="button" class="btn btn-outline-dark minus-btn" data-id="{{foodset.food.id}}"> - </button></td>
