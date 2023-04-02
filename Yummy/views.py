@@ -1,5 +1,7 @@
 import collections
 import datetime
+import json
+from django.contrib import messages
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.admin.views.decorators import staff_member_required
@@ -41,6 +43,7 @@ def login_action(request):
 @login_required
 def logout_action(request):
     logout(request)
+    messages.success(request, 'Logged out successfully.')
     return redirect(reverse('home'))
 
 
@@ -154,7 +157,8 @@ def add_food(request):
                 order.total_price -= food.price * quantity
                 order.save()
 
-            return JsonResponse({"success": True, "total_price": order.total_price}, status=200)
+            return JsonResponse({"success": True, "total_price": order.total_price, "food_quantity": food_set.quantity},
+                                status=200)
 
         except (Food.DoesNotExist, FoodSet.DoesNotExist):
             return JsonResponse({"success": False}, status=400)
@@ -170,7 +174,8 @@ def get_order_total_price(request):
         order = Order.objects.get(customer=user, is_paid=False)
         food_quantities = order.foods.values('food_id', 'quantity')
         return JsonResponse(
-            {"success": True, "total_price": order.total_price, "food_quantities": list(food_quantities)}, status=200)
+            {"success": True, "order_id": order.id, "total_price": order.total_price,
+             "food_quantities": list(food_quantities)}, status=200)
     except Order.DoesNotExist:
         return JsonResponse({"success": False}, status=400)
 
@@ -183,19 +188,19 @@ def reserve_action(request):
         # TODO
         # UnconfirmedReservation.objects.filter(user=request.user).delete()
         return render(request, 'Yummy/reserve.html', context)
-    
+
     if not 'phone_number' in request.POST:
         new_filter = {
             'date': request.POST['date'],
             'start_time': datetime.datetime.strptime(request.POST['time'], '%H:%M'),
             'end_time': datetime.datetime.strptime(request.POST['time'], '%H:%M') + datetime.timedelta(hours=2),
-            'number_people':request.POST['number_people']
+            'number_people': request.POST['number_people']
         }
         tables = Table.objects.filter(
             capacity__gte=new_filter['number_people']
-            )
+        )
         reservations = Reservation.objects.filter(
-            date = new_filter['date'],
+            date=new_filter['date'],
             time__range=(new_filter['start_time'], new_filter['end_time'])
         )
         unavailable_tableid = [reservation.table.id for reservation in reservations]
@@ -218,10 +223,10 @@ def reserve_action(request):
         context['find_form'] = FindTableForm({
             'date': request.POST['date'],
             'time': datetime.datetime.strptime(request.POST['time'], '%H:%M'),
-            'number_people':request.POST['number_people']
+            'number_people': request.POST['number_people']
         })
-        
-    
+
+
     else:
         # TODO
         # new_filter = {
@@ -256,20 +261,69 @@ def reserve_action(request):
 
 @login_required
 def option_action(request):
-    return render(request, 'Yummy/option.html', {})
+    context = {}
+    response = get_order_total_price(request)
+    json_response = json.loads(response.content)
+    print(json_response)
+    if json_response['success']:
+        order_id = json_response['order_id']
+        context['order_id'] = order_id
+        return render(request, 'Yummy/option.html', context)
+    else:
+        messages.warning(request, 'Your cart is empty. Please at least add 1 dish to your cart.')
+        return redirect('home')
+
+
+@login_required
+@csrf_exempt
+def set_take_out(request):
+    if request.method == 'POST':
+        order_id = request.POST.get('order_id')
+        action = request.POST.get('action')
+        print(action)
+        # table_number = request.POST.get('table_number')
+
+        try:
+            order = Order.objects.get(id=order_id)
+            if action == 'take-out':
+                order.is_takeout = True
+                order.save()
+                print(order.is_takeout)
+            if action == 'dine-in':
+                order.is_takeout = False
+                order.save()
+                # set the table number of order
+                # table = Table.objects.get(id=table_number)
+                # order.table = table
+            return JsonResponse({"success": True, 'Cache-Control': 'no-cache'}, status=200)
+        except (Order.DoesNotExist):
+            return JsonResponse({"success": False}, status=400)
 
 
 @login_required
 def summary_action(request):
-    return render(request, 'Yummy/summary.html', {})
+    context = {}
+    user = request.user
+    response = get_order_total_price(request)
+    json_response = json.loads(response.content)
+    order_id = json_response['order_id']
+
+    order = Order.objects.get(id=order_id)
+    food_set = order.foods.all()
+    context['order'] = order
+    context['food_set'] = food_set
+    context['pretax'] = order.total_price
+    context['tax'] = round(order.total_price * 0.07, 2)
+    context['tips'] = round(order.total_price * 0.18, 2)
+    context['total'] = order.total_price + context['tax'] + context['tips']
+
+    return render(request, 'Yummy/summary.html', context)
 
 
 @login_required
 def profile_action(request):
     context = {}
-
     profile = request.user.profile
-
     # form = ProfileForm(request.POST, request.FILES, instance=new_item)
     if request.method == "GET":
         context['item'] = profile
@@ -279,14 +333,20 @@ def profile_action(request):
     return render(request, 'Yummy/profile.html', context)
 
 
-def dish_action(request):
+def dish_action(request, id):
+    target_food = Food.objects.get(id=id)
     context = {}
     context['comment_form'] = CommentForm()
     context['comments'] = Comment.objects.all()
+    context['f'] = target_food
+    if request.user.is_authenticated:
+        profiles = Profile.objects.get(user=request.user)
+        context['favorite_list'] = [x.name for x in profiles.favorite.all()]
+
     if 'text' in request.POST:
-         Comment.objects.create(text=request.POST['text'],
-                                creation_time=timezone.now(),
-                                creator=request.user)
+        Comment.objects.create(text=request.POST['text'],
+                               creation_time=timezone.now(),
+                               creator=request.user)
     return render(request, 'Yummy/dish.html', context)
 
 
@@ -319,8 +379,8 @@ def new_dish_action(request):
     user = request.user
     # All the staff (including super user) can add new dishes
     if not user.is_staff:
-        context['message'] = 'You are not authorized to use this function.'
-        return render(request, 'Yummy/menu.html', context)
+        messages.error(request, 'You are not authorized to use this function.')
+        return redirect('home')
     else:
         if request.method == 'POST':
             form = FoodForm(data=request.POST, files=request.FILES)
@@ -351,6 +411,7 @@ def new_dish_action(request):
             # get the picture directory from FoodPicture object
             new_dish.picture_dir = 'img/' + new_picture.picture.name
             new_dish.save()
+            messages.success(request, 'New dish created')
             return redirect('home')
 
         else:
@@ -386,6 +447,6 @@ def register_staff_action(request):
         # Create profile for this new user
         new_profile = Profile(user=user, phone_number=form.cleaned_data['phone_number'])
         new_profile.save()
-        context['message'] = 'New staff ' + user.first_name + ' ' + user.last_name + ' created.'
-
-        return render(request, "Yummy/menu.html", context)
+        message = 'New staff ' + user.first_name + ' ' + user.last_name + ' created.'
+        messages.success(request, message)
+        return redirect('home')

@@ -43,7 +43,7 @@
 
                         {% for u in favorite %}
                             <ul>
-                                <a href="{% url 'dish' %}"
+                                <a href="{% url 'dish' u.id %}"
                                    class="list-group-item list-group-item-action">{{ u.name }}</a>
                             </ul>
                         {% endfor %}

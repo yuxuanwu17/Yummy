@@ -106,11 +106,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'US/Eastern'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 LOGIN_URL = 'login'
 
@@ -125,3 +125,6 @@ MEDIA_ROOT = BASE_DIR / 'Yummy/static/img'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'

@@ -101,7 +101,7 @@ class DetailForm(forms.Form):
         return cleaned_data
 
 class CommentForm(forms.Form):
-    text = forms.CharField(label="Comment")
+    text = forms.CharField(label="Tell us what you do think about this dish", widget=forms.Textarea(attrs={'class':'form-control','rows':2, 'cols':3}))
 
 class FoodForm(forms.Form):
     dish_name = forms.CharField(label='Dish Name', required=True, max_length=MAX_DISH_NAME_LENGTH, widget=forms.TextInput(attrs={'class':'form-control'}))
