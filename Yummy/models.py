@@ -80,6 +80,7 @@ class Table(models.Model):
     capacity = models.IntegerField(editable=True)
 
 class UnconfirmedReservation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
     num_customers = models.IntegerField(blank=False)
     date = models.DateField(editable=True, blank=False)
     time = models.TimeField(editable=True, blank=False)
