@@ -33,6 +33,7 @@
                         },
                         success: function(response) {
                             if (response.success) {
+                                window.location.href = 'summary';
                                 console.log("Take out status changed")
                             } else {
                                 console.log('Error occurred')
@@ -44,7 +45,8 @@
           });  
         })
 
-        $(".set-dine-in").click(function (e) {
+        $("#id_table_number_form").submit(function (e) {
+          e.preventDefault(); 
           var tableNumber = document.getElementById('id_table_number_input').value
           console.log('table number:', tableNumber)
           $.ajax({
@@ -65,6 +67,7 @@
                         },
                         success: function(response) {
                             if (response.success) {
+                                window.location.href = 'summary';
                                 console.log("Take out status changed")
                             } else {
                                 console.log('Error occurred')
@@ -86,7 +89,7 @@
                 Is this order take-out or dine in?
             </p>
             <p>
-                <a href="{% url 'summary' %}" class="btn btn-primary my-2 set-take-out">Take Out</a>
+                <a class="btn btn-primary my-2 set-take-out">Take Out</a>
                 <a class="btn btn-secondary my-2" onclick="Openform()">Dine In</a>
             </p>
         </div>
@@ -95,11 +98,11 @@
 
 <!-- if dine in button is clicked, show the form below to let user enter table number -->
 <div id="id_table_number_div" class="form_1" style="visibility:hidden">
-    <form id="id_table_number_form" method="post" action="{% url 'summary' %}">
+    <form id="id_table_number_form" method="post">
         <label class="lead text-muted">Please enter your table number if you are dining in:</label>
         <input id="id_table_number_input" type="text" name="table_number">
         <div>
-            <button id="id_table_number_button" class="btn btn-secondary my-2 set-dine-in" type="submit">Submit</button>
+            <button id="id_table_number_button" class="btn btn-secondary my-2">Submit</button>
         </div>
 
         {% csrf_token %}

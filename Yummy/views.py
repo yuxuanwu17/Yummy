@@ -291,7 +291,7 @@ def set_take_out(request):
                 # set the table number of order
                 # table = Table.objects.get(id=table_number)
                 # order.table = table
-            return JsonResponse({"success": True}, status=200)
+            return JsonResponse({"success": True, 'Cache-Control': 'no-cache'}, status=200)
         except (Order.DoesNotExist):
             return JsonResponse({"success": False}, status=400)
 
