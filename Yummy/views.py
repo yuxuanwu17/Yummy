@@ -446,3 +446,10 @@ def register_staff_action(request):
         message = 'New staff ' + user.first_name + ' ' + user.last_name + ' created.'
         messages.success(request, message)
         return redirect('home')
+
+
+@login_required
+def checkout(request):
+    context = {}
+    return render(request, "Yummy/checkout.html", context)
+
