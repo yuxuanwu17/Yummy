@@ -62,7 +62,7 @@
                         data: {
                             order_id: orderId,
                             action: 'dine-in',
-                            // table_number: tableNumber,
+                            table_number: tableNumber,
                             csrfmiddlewaretoken: '{{csrf_token}}'
                         },
                         success: function(response) {
@@ -72,8 +72,17 @@
                             } else {
                                 console.log('Error occurred')
                             }
+                        },
+                        error: function(xhr, status, error) {
+                            var responseText = JSON.parse(xhr.responseText)
+                            if (responseText.error_message) {
+                                error_message = document.getElementById('dine_in_message')
+                                error_message.innerHTML = responseText.error_message
+                            }
                         }
                     })
+
+
                 }
             }
           });  
@@ -98,11 +107,14 @@
 
 <!-- if dine in button is clicked, show the form below to let user enter table number -->
 <div id="id_table_number_div" class="form_1" style="visibility:hidden">
-    <form id="id_table_number_form" method="post">
+    <form id="id_table_number_form" method="POST">
+        <p id="dine_in_message"></p>
         <label class="lead text-muted">Please enter your table number if you are dining in:</label>
         <input id="id_table_number_input" type="text" name="table_number">
         <div>
-            <button id="id_table_number_button" class="btn btn-secondary my-2">Submit</button>
+            <button id="id_table_number_button" 
+            class="btn btn-secondary my-2"
+            action="{% url 'option' %}">Submit</button>
         </div>
 
         {% csrf_token %}

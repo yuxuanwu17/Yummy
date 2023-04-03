@@ -184,74 +184,53 @@ def get_order_total_price(request):
 def reserve_action(request):
     context = {}
     if request.method == 'GET':
-        context['find_form'] = FindTableForm()
-        UnconfirmedReservation.objects.all().delete()
+        context['form'] = ReservationForm()
         return render(request, 'Yummy/reserve.html', context)
 
-    if not 'phone_number' in request.POST:
-        new_filter = {
-            'date': request.POST['date'],
-            'start_time': datetime.datetime.strptime(request.POST['time'], '%H:%M'),
-            'end_time': datetime.datetime.strptime(request.POST['time'], '%H:%M') + datetime.timedelta(hours=2),
-            'number_people': request.POST['number_people']
-        }
-        tables = Table.objects.filter(
-            capacity__gte=new_filter['number_people']
-        )
-        reservations = Reservation.objects.filter(
-            date=new_filter['date'],
-            time__range=(new_filter['start_time'], new_filter['end_time'])
-        )
-        unavailable_tableid = [reservation.table.id for reservation in reservations]
-        filtered_tables = tables.exclude(id__in=unavailable_tableid)
-        print(filtered_tables)
-        if len(filtered_tables) == 0:
-            context['find_message'] = 'Sorry, no table available at that time'
-        else:
-            context['find_message'] = 'Great, there is an available table'
-            context['detail_form'] = DetailForm()
-            # new_unconfirmed_reservation = UnconfirmedReservation.objects.create(
-            #      date=new_filter['date'],
-            #      time=new_filter['start_time'],
-            #      num_customers = new_filter['number_people'],
-            #      table=filtered_tables[0]
-            #  )
+    new_filter = {
+        'date': request.POST['date'],
+        'start_time': datetime.datetime.strptime(request.POST['time'], '%H:%M'),
+        'end_time': datetime.datetime.strptime(request.POST['time'], '%H:%M') + datetime.timedelta(hours=2),
+        'number_customers': request.POST['number_customers']
+    }
+    tables = Table.objects.filter(
+        capacity__gte=new_filter['number_customers'],
+        open_time__lte=new_filter['start_time'],
+        close_time__gte=new_filter['end_time']
+    )
 
-        context['find_form'] = FindTableForm({
-            'date': request.POST['date'],
-            'time': datetime.datetime.strptime(request.POST['time'], '%H:%M'),
-            'number_people': request.POST['number_people']
+    reservations = Reservation.objects.filter(
+        date = new_filter['date'],
+        time__range = (new_filter['start_time'], new_filter['end_time'])
+    )
+    unavailable_tableid = [reservation.table.id for reservation in reservations]
+    filtered_tables = tables.exclude(id__in=unavailable_tableid)
+
+    if len(filtered_tables) == 0:
+        context['form'] = ReservationForm(initial={
+            'date': new_filter['date'],
+            'time': new_filter['start_time'],
+            'number_customers': new_filter['number_customers'],
+            'first_name': request.POST['first_name'],
+            'last_name': request.POST['last_name'],
+            'phone_number': request.POST['phone_number']
         })
+        context['reserve_message'] = 'Sorry, no available table at that time. Please try another time.'
+        return render(request, 'Yummy/reserve.html', context)
 
-
-    else:
-        # new_filter = {
-        #     'date': request.POST['date'],
-        #     'start_time': datetime.datetime.strptime(request.POST['time'], '%H:%M'),
-        #     'end_time': datetime.datetime.strptime(request.POST['time'], '%H:%M') + datetime.timedelta(hours=2),
-        #     'number_people':request.POST['number_people']
-        # }
-        # tables = Table.objects.filter(
-        #     capacity__gte=new_filter['number_people']
-        #     )
-        # reservations = Reservation.objects.filter(
-        #     date = new_filter['date'],
-        #     time__range=(new_filter['start_time'], new_filter['end_time'])
-        # )
-        # unavailable_tableid = [reservation.table.id for reservation in reservations]
-        # filtered_tables = tables.exclude(id__in=unavailable_tableid)
-        # new_reservation = Reservation.objects.create(
-        #         num_customers = new_filter['number_people'],
-        #         table = filtered_tables[0],
-        #         first_name = request.POST['last_name'],
-        #         last_name = request.POST['first_name'],
-        #         phone_number = request.POST['phone_number'],
-        #         comment = request.POST['comment'],
-        #         date = request.POST['date'],
-        #         time = datetime.datetime.strptime(request.POST['time'], '%H:%M')
-        # )
-        context['reservation_message'] = 'You are all set!'
-
+    new_reservation = Reservation(
+        table=filtered_tables[0],
+        date=new_filter['date'],
+        time=new_filter['start_time'],
+        number_customers=new_filter['number_customers'],
+        first_name=request.POST['first_name'],
+        last_name=request.POST['last_name'],
+        phone_number=request.POST['phone_number'],
+        comment = request.POST['comment']
+    )
+    new_reservation.save()
+    context['reserve_message'] = 'You are all set. Enjoy your meal!'
+    context['table_reserved'] = True
     return render(request, 'Yummy/reserve.html', context)
 
 
@@ -288,6 +267,14 @@ def set_take_out(request):
             if action == 'dine-in':
                 order.is_takeout = False
                 order.save()
+                if 'table_number' not in request.POST or request.POST['table_number'] == '':
+                    return JsonResponse({"success": False, "error_message": "Please enter a valid table number."}, status=400)
+                else:
+                    table_number = request.POST['table_number']
+                    try:
+                        table = Table.objects.get(id=table_number)
+                    except Table.DoesNotExist:
+                        return JsonResponse({"success": False, "error_message": "Please enter a valid table number."}, status=400)
                 # set the table number of order
                 # table = Table.objects.get(id=table_number)
                 # order.table = table
@@ -333,16 +320,17 @@ def dish_action(request, id):
     target_food = Food.objects.get(id=id)
     context = {}
     context['comment_form'] = CommentForm()
-    context['comments'] = Comment.objects.all()
+    context['comments'] = target_food.comments.all()
     context['f'] = target_food
     if request.user.is_authenticated:
         profiles = Profile.objects.get(user=request.user)
         context['favorite_list'] = [x.name for x in profiles.favorite.all()]
 
     if 'text' in request.POST:
-        Comment.objects.create(text=request.POST['text'],
+        new_comment = Comment.objects.create(text=request.POST['text'],
                                creation_time=timezone.now(),
-                               creator=request.user)
+                               creator=request.user,)
+        new_comment.post_under.add(target_food)
     return render(request, 'Yummy/dish.html', context)
 
 

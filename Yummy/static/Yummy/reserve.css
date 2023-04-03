@@ -9,7 +9,7 @@
 }
 
 input {
-    size:"20";
+    size: "20";
 }
 
 .dish {
@@ -34,4 +34,22 @@ input {
 button.reserve {
     height: 2.4em;
     width: 6em;
+}
+
+.hidden {
+    display: none;
+}
+
+.reservation_form label {
+    display: inline-block;
+    width: 180px; /* adjust as needed */
+    text-align: right;
+    padding-right: 10px; /* add padding to space the label from the field */
+}
+
+.reservation_form input,
+.reservation_form select,
+.reservation_form textarea {
+    display: inline-block;
+    width: 250px; /* adjust as needed */
 }
