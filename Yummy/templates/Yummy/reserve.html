@@ -35,7 +35,7 @@ function hideReservationButton() {
 <section class="reservation">
     <div id="reservation form">
         <span class="step-title"> Your Information </span>
-        <form method="POST" onsubmit="hideReservationButton()">
+        <form class="reservation_form" method="POST" onsubmit="hideReservationButton()">
             {% for field in form.visible_fields %}
             {% csrf_token %}
             <div>
@@ -53,7 +53,7 @@ function hideReservationButton() {
                 {% endif %}
                 type="submit"
                 id="reservation_button"
-                >Find</button>
+                >Reserve</button>
             </p>
         </form>
         <span class="lead text-muted message">{{reserve_message}}</span>
