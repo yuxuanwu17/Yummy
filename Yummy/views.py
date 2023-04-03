@@ -189,10 +189,11 @@ def reserve_action(request):
 
     new_filter = {
         'date': request.POST['date'],
-        'start_time': datetime.datetime.strptime(request.POST['time'], '%H:%M'),
-        'end_time': datetime.datetime.strptime(request.POST['time'], '%H:%M') + datetime.timedelta(hours=2),
+        'start_time': datetime.datetime.strptime(request.POST['time'], '%H:%M').time(),
+        'end_time': (datetime.datetime.strptime(request.POST['time'], '%H:%M') + datetime.timedelta(hours=2)).time(),
         'number_customers': request.POST['number_customers']
     }
+
     tables = Table.objects.filter(
         capacity__gte=new_filter['number_customers'],
         open_time__lte=new_filter['start_time'],
@@ -201,7 +202,8 @@ def reserve_action(request):
 
     reservations = Reservation.objects.filter(
         date = new_filter['date'],
-        time__range = (new_filter['start_time'], new_filter['end_time'])
+        time__range = ((datetime.datetime.strptime(request.POST['time'], '%H:%M') - datetime.timedelta(hours=2)).time()
+                       , datetime.datetime.strptime(request.POST['time'], '%H:%M').time())
     )
     unavailable_tableid = [reservation.table.id for reservation in reservations]
     filtered_tables = tables.exclude(id__in=unavailable_tableid)
