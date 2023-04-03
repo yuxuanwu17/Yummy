@@ -320,16 +320,17 @@ def dish_action(request, id):
     target_food = Food.objects.get(id=id)
     context = {}
     context['comment_form'] = CommentForm()
-    context['comments'] = Comment.objects.all()
+    context['comments'] = target_food.comments.all()
     context['f'] = target_food
     if request.user.is_authenticated:
         profiles = Profile.objects.get(user=request.user)
         context['favorite_list'] = [x.name for x in profiles.favorite.all()]
 
     if 'text' in request.POST:
-        Comment.objects.create(text=request.POST['text'],
+        new_comment = Comment.objects.create(text=request.POST['text'],
                                creation_time=timezone.now(),
-                               creator=request.user)
+                               creator=request.user,)
+        new_comment.post_under.add(target_food)
     return render(request, 'Yummy/dish.html', context)
 
 
