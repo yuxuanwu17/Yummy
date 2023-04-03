@@ -4,7 +4,7 @@ from django.core.files import File
 from django.core.serializers import deserialize
 from django.apps import apps
 
-from Yummy.models import Category, Food
+from Yummy.models import Category, Food, Table
 
 
 def import_data_from_json_file(json_file_path):
@@ -28,3 +28,10 @@ def import_data_from_json_file(json_file_path):
         )
         # Save the instance before assigning the image
         food.save()
+
+def create_initial_table():
+    if len(Table.objects.all()) == 0:
+        for i in range(10):
+            Table.objects.create(capacity=4)
+        for i in range(2):
+            Table.objects.create(capacity=10)

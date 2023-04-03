@@ -83,15 +83,10 @@ class RegisterForm(forms.Form):
         # dictionary
         return username
 
-class FindTableForm(forms.Form):
+class ReservationForm(forms.Form):
     date = forms.DateField(label="Date", required=True, widget=forms.DateInput(attrs={'type': 'date'}))
     time = forms.TimeField(label="Time", required=True, widget=forms.DateInput(attrs={'type': 'time'}, format='%H:%M'))
-    number_people = forms.IntegerField(label="#people", required=True)
-    def clean(self):
-        cleaned_data = super().clean()
-        return cleaned_data
-
-class DetailForm(forms.Form):
+    number_customers = forms.IntegerField(label="#people", required=True)
     first_name = forms.CharField(max_length=MAX_NAME_LENGTH, label="First Name")
     last_name = forms.CharField(max_length=MAX_NAME_LENGTH, label="Last Name")
     phone_number = forms.CharField(max_length=MAX_PHONE_LENGTH, label="Phone Number")

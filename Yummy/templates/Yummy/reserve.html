@@ -3,6 +3,17 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="../../static/Yummy/reserve.css">
+
+<script>
+function hideReservationButton() {
+    console.log('test')
+    var reservation_button = document.getElementById('reservation_button');
+    if (reservation_button.classList.contains('hidden')) {
+        reservation_button.classList.remove('hidden');
+    }
+}
+</script>
+
 {% endblock %}
 
 {% block posts_header %}
@@ -22,10 +33,10 @@
 {% block content %}
 
 <section class="reservation">
-    <div id="step1">
-        <span class="step-title"> Step 1: find a table </span>
-        <form method="POST">
-            {% for field in find_form.visible_fields %}
+    <div id="reservation form">
+        <span class="step-title"> Your Information </span>
+        <form method="POST" onsubmit="hideReservationButton()">
+            {% for field in form.visible_fields %}
             {% csrf_token %}
             <div>
                 <span>{{field.label_tag}}</span>
@@ -34,33 +45,21 @@
             {% endfor %}
             {% csrf_token %}
             <p>
-                <button action="{% url 'reserve' %}" class="btn btn-primary my-2 reserve"  type="submit">Find</a></button>
+                <button action="{% url 'reserve' %}" 
+                {% if table_reserved %}
+                class="hidden"
+                {% else %}
+                class="btn btn-primary my-2 reserve"  
+                {% endif %}
+                type="submit"
+                id="reservation_button"
+                >Find</button>
             </p>
         </form>
-        <span class="lead text-muted message">{{find_message}}</span>
+        <span class="lead text-muted message">{{reserve_message}}</span>
         
     </div>
     <br>
-
-    <div id="step2">
-        <span class="step-title"> Step 2: your details </span>
-        <form method="POST">
-            {% for field in detail_form.visible_fields %}
-            {% csrf_token %}
-            <div>
-                <span>{{field.label_tag}}</span>
-                <span>{{field}}</span>
-            </div>
-            {% endfor %}
-            {% csrf_token %}
-            <p>
-                <button action="{% url 'reserve' %}" class="btn btn-primary my-2 reserve"  type="submit">Reserve</a></button>
-            </p>
-        </form>
-        <span class="lead text-muted message">{{reservation_message}}</span>
-
-    </div>
-
 
 
 </section>

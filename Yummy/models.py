@@ -79,15 +79,15 @@ class Table(models.Model):
     close_time = models.TimeField(default='21:00', editable=True)
     capacity = models.IntegerField(editable=True)
 
-class UnconfirmedReservation(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
-    num_customers = models.IntegerField(blank=False)
-    date = models.DateField(editable=True, blank=False)
-    time = models.TimeField(editable=True, blank=False)
-    table = models.ForeignKey(Table, on_delete=models.PROTECT)
+# class UnconfirmedReservation(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.PROTECT)
+#     num_customers = models.IntegerField(blank=False)
+#     date = models.DateField(editable=True, blank=False)
+#     time = models.TimeField(editable=True, blank=False)
+#     table = models.ForeignKey(Table, on_delete=models.PROTECT)
 
 class Reservation(models.Model):
-    num_customers = models.IntegerField(blank=False)
+    number_customers = models.IntegerField(blank=False)
     table = models.ForeignKey(Table, on_delete=models.PROTECT)
     first_name = models.CharField(max_length=200, editable=True, blank=False)
     last_name = models.CharField(max_length=200, editable=True, blank=False)
