@@ -267,6 +267,14 @@ def set_take_out(request):
             if action == 'dine-in':
                 order.is_takeout = False
                 order.save()
+                if 'table_number' not in request.POST or request.POST['table_number'] == '':
+                    return JsonResponse({"success": False, "error_message": "Please enter a valid table number."}, status=400)
+                else:
+                    table_number = request.POST['table_number']
+                    try:
+                        table = Table.objects.get(id=table_number)
+                    except Table.DoesNotExist:
+                        return JsonResponse({"success": False, "error_message": "Please enter a valid table number."}, status=400)
                 # set the table number of order
                 # table = Table.objects.get(id=table_number)
                 # order.table = table
