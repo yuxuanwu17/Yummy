@@ -195,7 +195,7 @@
         <h1 id="id_page_title" class="fw-light">Cart</h1>
         <p id="id_order_id" class="fs-5 fw-light-bolder" data-orderid="{{ order.id }}">Order Number: {{ order.id }}</p>
         {% if not order.is_takeout %}
-            <p class="fs-5 fw-light-bolder">Your table number is: 5</p>
+            <p class="fs-5 fw-light-bolder">Your table number is: {{table}}</p>
         {% else %}
             <p class="fs-5 fw-light-bolder">This is a take-out order</p>
         {% endif %}
