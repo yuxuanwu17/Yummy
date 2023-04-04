@@ -59,21 +59,9 @@ class FoodSet(models.Model):
     quantity = models.IntegerField()
 
 
-class Order(models.Model):
-    foods = models.ManyToManyField(FoodSet, related_name="orders")
-    customer = models.ForeignKey(User, on_delete=models.PROTECT)
-    order_time = models.DateTimeField()
-    # whether the food is take out or not
-    is_takeout = models.BooleanField(choices=BOOL_CHOICES,default=False)
-    is_paid = models.BooleanField(choices=BOOL_CHOICES,default=False)
-    total_price = models.FloatField()
-
-    def __str__(self):
-        return 'Order ' + str(self.id) + ' for ' + self.customer.username
-
 
 class Table(models.Model):
-    orders = models.ManyToManyField(Order, related_name="table", blank=True, editable=True)
+    # orders = models.ManyToManyField(Order, related_name="table", blank=True, editable=True)
     customer = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, editable=True, null=True)
     open_time = models.TimeField(default='11:00', editable=True)
     close_time = models.TimeField(default='21:00', editable=True)
@@ -81,6 +69,22 @@ class Table(models.Model):
 
     def __str__(self):
         return  str(self.id) 
+    
+    
+    
+class Order(models.Model):
+    foods = models.ManyToManyField(FoodSet, related_name="orders")
+    customer = models.ForeignKey(User, on_delete=models.PROTECT)
+    order_time = models.DateTimeField()
+    table = models.ForeignKey(Table, on_delete=models.PROTECT, blank=True, related_name='table')
+    # whether the food is take out or not
+    is_takeout = models.BooleanField(choices=BOOL_CHOICES, default=False)
+    is_paid = models.BooleanField(choices=BOOL_CHOICES, default=False)
+    is_completed = models.BooleanField(choices=BOOL_CHOICES, default=False)
+    total_price = models.FloatField()
+
+    def __str__(self):
+        return 'Order ' + str(self.id) + ' for ' + self.customer.username
 
 # class UnconfirmedReservation(models.Model):
 #     user = models.ForeignKey(User, on_delete=models.PROTECT)
