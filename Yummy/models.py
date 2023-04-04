@@ -69,7 +69,7 @@ class Order(models.Model):
     total_price = models.FloatField()
 
     def __str__(self):
-        return 'Order ' + str(self.order.id) + ' for ' + self.customer.username
+        return 'Order ' + str(self.id) + ' for ' + self.customer.username
 
 
 class Table(models.Model):
@@ -78,6 +78,9 @@ class Table(models.Model):
     open_time = models.TimeField(default='11:00', editable=True)
     close_time = models.TimeField(default='21:00', editable=True)
     capacity = models.IntegerField(editable=True)
+
+    def __str__(self):
+        return  str(self.id) 
 
 # class UnconfirmedReservation(models.Model):
 #     user = models.ForeignKey(User, on_delete=models.PROTECT)

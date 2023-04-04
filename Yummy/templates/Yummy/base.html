@@ -29,13 +29,12 @@
                 <li class="nav-item">
                     <a class="nav-link fs-5 fw-light active" aria-current="page" href="{% url 'home' %}">Menu</a>
                 </li>
-                {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link fs-5 fw-light" href="{% url 'reserve' %}">Reservation</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fs-5 fw-light" href="{% url 'option' %}">Order</a>
-                    </li>
+                <li class="nav-item">
+                    <a class="nav-link fs-5 fw-light" href="{% url 'reserve' %}">Reservation</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fs-5 fw-light" href="{% url 'option' %}">Order</a>
+                </li>
 
                     {% if user.is_staff %}
                         <li class="nav-item">
@@ -49,7 +48,6 @@
                         </li>
                     {% endif %}
 
-                {% endif %}
             </ul>
             {% if not user.is_authenticated %}
                 {# if not log in, show the register and login #}

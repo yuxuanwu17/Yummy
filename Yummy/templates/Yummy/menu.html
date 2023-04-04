@@ -70,10 +70,8 @@
                 </svg>
                 11:00 A.M to 9:00 P.M Everyday
             </p>
-            {% if user.is_authenticated %}
                 <a href="{% url 'reserve' %}" class="btn btn-warning my-2">Reserve</a>
                 <a href="{% url 'option' %}" class="btn btn-secondary my-2">Order</a>
-            {% endif %}
             </p>
         </div>
 

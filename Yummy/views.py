@@ -275,11 +275,14 @@ def set_take_out(request):
                     table_number = request.POST['table_number']
                     try:
                         table = Table.objects.get(id=table_number)
+                        print(table.orders.all())
+                        table.orders.add(order)
+                        table.save()
+                        order.save()
+
                     except Table.DoesNotExist:
                         return JsonResponse({"success": False, "error_message": "Please enter a valid table number."}, status=400)
-                # set the table number of order
-                # table = Table.objects.get(id=table_number)
-                # order.table = table
+                
             return JsonResponse({"success": True, 'Cache-Control': 'no-cache'}, status=200)
         except (Order.DoesNotExist):
             return JsonResponse({"success": False}, status=400)
@@ -294,8 +297,11 @@ def summary_action(request):
     order_id = json_response['order_id']
 
     order = Order.objects.get(id=order_id)
+    table = order.table.last()
+
     food_set = order.foods.all()
     context['order'] = order
+    context['table'] = table
     context['food_set'] = food_set
     context['pretax'] = order.total_price
     context['tax'] = round(order.total_price * 0.07, 2)
