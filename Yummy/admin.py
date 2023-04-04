@@ -9,5 +9,7 @@ from Yummy.forms import FoodForm
 admin.site.register(Food)
 admin.site.register(FoodPicture)
 admin.site.register(Profile)
-
+admin.site.register(Order)
+admin.site.register(FoodSet)
+admin.site.register(Comment)
 
