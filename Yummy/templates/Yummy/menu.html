@@ -70,8 +70,8 @@
                 </svg>
                 11:00 A.M to 9:00 P.M Everyday
             </p>
-                <a href="{% url 'reserve' %}" class="btn btn-warning my-2">Reserve</a>
-                <a href="{% url 'option' %}" class="btn btn-secondary my-2">Order</a>
+            <a href="{% url 'reserve' %}" class="btn btn-warning my-2">Reserve</a>
+            <a href="{% url 'option' %}" class="btn btn-secondary my-2">Order</a>
             </p>
         </div>
 
@@ -127,7 +127,8 @@
                     success: function (response) {
                         if (response.success) {
                             console.log("Food added successfully");
-                            $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
+                            $("#total-price-counter").html("Total price: $" + response.total_price.toFixed(2) + "<br>Click Here Check Out");
+
                             updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
                         } else {
                             console.log("An error occurred while adding the food");
@@ -169,7 +170,7 @@
                         success: function (response) {
                             if (response.success) {
                                 console.log("Food removed successfully");
-                                $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
+                                $("#total-price-counter").html("Total price: $" + response.total_price.toFixed(2) + "<br>Click Here Check Out");
                                 updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
                             } else {
                                 console.log("An error occurred while removing the food");
@@ -218,7 +219,7 @@
         // In the success callback of the plus-btn AJAX request
         if (response.success) {
             console.log("Food added successfully");
-            $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
+            $("#total-price-counter").html("Total price: $" + response.total_price.toFixed(2) + "<br>Click Here Check Out");
             updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
         } else {
             console.log("An error occurred while adding the food");
@@ -227,7 +228,7 @@
         // In the success callback of the minus-btn AJAX request
         if (response.success) {
             console.log("Food removed successfully");
-            $("#total-price-counter").text("Total price: $" + response.total_price.toFixed(2));
+            $("#total-price-counter").html("Total price: $" + response.total_price.toFixed(2) + "<br>Click Here Check Out");
             updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
         } else {
             console.log("An error occurred while removing the food");
@@ -319,8 +320,9 @@
             {% if user.is_authenticated %}
                 <button id="total-price-counter" class="btn btn-primary position-fixed top-50 end-0 translate-middle-y"
                         onclick="redirectToOptionPage();">
-                    Total price: $0.00
+                    Total price: $0.00<br>Click Here Check Out
                 </button>
+
                 </div>
             {% endif %}
     </div>
