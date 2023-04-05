@@ -76,7 +76,7 @@ class Order(models.Model):
     foods = models.ManyToManyField(FoodSet, related_name="orders")
     customer = models.ForeignKey(User, on_delete=models.PROTECT)
     order_time = models.DateTimeField()
-    table = models.ForeignKey(Table, on_delete=models.PROTECT, blank=True, related_name='table')
+    # table = models.ForeignKey(Table, on_delete=models.PROTECT, blank=True, related_name='table')
     # whether the food is take out or not
     is_takeout = models.BooleanField(choices=BOOL_CHOICES, default=False)
     is_paid = models.BooleanField(choices=BOOL_CHOICES, default=False)
