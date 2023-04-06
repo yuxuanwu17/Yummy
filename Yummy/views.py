@@ -338,7 +338,7 @@ def dish_action(request, id):
     target_food = Food.objects.get(id=id)
     context = {}
     context['comment_form'] = CommentForm()
-    context['comments'] = target_food.comments.all()
+    context['comments'] = target_food.comments.all().order_by('creation_time').reverse
     context['f'] = target_food
     if request.user.is_authenticated:
         profiles = Profile.objects.get(user=request.user)
