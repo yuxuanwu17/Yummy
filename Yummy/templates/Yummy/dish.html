@@ -121,6 +121,8 @@
                         isFavorited = !isFavorited;
                         $(this).data('favorited', isFavorited);
                         $(this).text(isFavorited ? 'Cancel' : 'Favorite');
+                        var count = response.num_ppl_fav
+                        $("#num_ppl_fav").text(count + ' people also like this dish');
                     },
                     error: (response) => {
                         console.log("An error occurred while updating the favorite status");
@@ -217,6 +219,8 @@
                         <span class="plus_sign">&#10133;</span>
                     </button>
                 </div>
+                <br>
+                <p id="num_ppl_fav" class="lead fs-5">{{ count }} people also like this dish</p>
             {% endif %}
         </div>
       </div>
