@@ -446,6 +446,12 @@ def register_staff_action(request):
 
 @login_required
 def checkout(request):
-    context = {}
+    curr_profile = get_object_or_404(Profile, id=request.user.id)
+    context = {"profile":curr_profile}
+    print(curr_profile.phone_number)
     return render(request, "Yummy/checkout.html", context)
 
+@login_required
+def payment_success(request):
+    context = {}
+    return render(request, "Yummy/payment_success.html", context)
