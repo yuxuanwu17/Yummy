@@ -451,3 +451,7 @@ def checkout(request):
     print(curr_profile.phone_number)
     return render(request, "Yummy/checkout.html", context)
 
+@login_required
+def payment_success(request):
+    context = {}
+    return render(request, "Yummy/payment_success.html", context)
