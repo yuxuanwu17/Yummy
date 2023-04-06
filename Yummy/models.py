@@ -56,20 +56,8 @@ class Comment(models.Model):
 class FoodSet(models.Model):
     food = models.ForeignKey(Food, on_delete=models.PROTECT)
     quantity = models.IntegerField()
-
-
-
-class Table(models.Model):
-    # orders = models.ManyToManyField(Order, related_name="table", blank=True, editable=True)
-    customer = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, editable=True, null=True)
-    open_time = models.TimeField(default='11:00', editable=True)
-    close_time = models.TimeField(default='21:00', editable=True)
-    capacity = models.IntegerField(editable=True)
-
-    def __str__(self):
-        return  str(self.id) 
     
-    
+
     
 class Order(models.Model):
     foods = models.ManyToManyField(FoodSet, related_name="orders")
@@ -84,6 +72,28 @@ class Order(models.Model):
 
     def __str__(self):
         return 'Order ' + str(self.id) + ' for ' + self.customer.username
+    
+
+
+class Table(models.Model):
+    orders = models.ManyToManyField(Order, related_name="table", blank=True, editable=True)
+    customer = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, editable=True, null=True)
+    open_time = models.TimeField(default='11:00', editable=True)
+    close_time = models.TimeField(default='21:00', editable=True)
+    capacity = models.IntegerField(editable=True)
+
+    def __str__(self):
+        return  str(self.id) 
+    
+
+# one order will only be assign to one table
+class OrderTable(models.Model):
+    order = models.OneToOneField(Order, related_name='order', on_delete=models.CASCADE)
+    table = models.ForeignKey(Table, related_name='table', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return 'Order ' + str(self.order.id) + ' at Table ' + str(self.table.id)
+    
 
 # class UnconfirmedReservation(models.Model):
 #     user = models.ForeignKey(User, on_delete=models.PROTECT)

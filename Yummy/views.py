@@ -120,8 +120,8 @@ def add_food(request):
             food = Food.objects.get(id=food_id)
 
             # Get or create the ongoing order for the user (is_paid=False)
-            order, created = Order.objects.get_or_create(customer=user, is_paid=False,
-                                                         defaults={'total_price': 0, 'is_takeout': False,
+            order, created = Order.objects.get_or_create(customer=user, is_paid=False, is_completed=False,
+                                                         defaults={'total_price': 0, 'is_takeout': False, 
                                                                    'order_time': timezone.now()})
 
             if action == 'add':
@@ -171,7 +171,7 @@ def get_order_total_price(request):
     user = request.user
 
     try:
-        order = Order.objects.get(customer=user, is_paid=False)
+        order = Order.objects.get(customer=user, is_paid=False, is_completed=False)
         food_quantities = order.foods.values('food_id', 'quantity')
         return JsonResponse(
             {"success": True, "order_id": order.id, "total_price": order.total_price,
@@ -258,14 +258,16 @@ def set_take_out(request):
         order_id = request.POST.get('order_id')
         action = request.POST.get('action')
         print(action)
-        # table_number = request.POST.get('table_number')
 
         try:
             order = Order.objects.get(id=order_id)
             if action == 'take-out':
                 order.is_takeout = True
                 order.save()
-                print(order.is_takeout)
+                # if the order is take out and OrderTable exists, need to delete the OrderTable object for this order
+                if OrderTable.objects.filter(order=order).exists():
+                    OrderTable.objects.filter(order=order).delete()
+                    
             if action == 'dine-in':
                 order.is_takeout = False
                 order.save()
@@ -275,11 +277,17 @@ def set_take_out(request):
                     table_number = request.POST['table_number']
                     try:
                         table = Table.objects.get(id=table_number)
-                        print(table.orders.all())
-                        table.orders.add(order)
-                        table.save()
-                        order.save()
-
+                        if OrderTable.objects.filter(order=order).exists():
+                            order_table = OrderTable.objects.get(order=order)
+                            order_table.table = table
+                            table.orders.add(order)
+                            order_table.save()
+                            order.save()
+                            table.save()
+                        else:
+                            new_order_table = OrderTable.objects.create(order=order, table=table)
+                            new_order_table.save()
+                        
                     except Table.DoesNotExist:
                         return JsonResponse({"success": False, "error_message": "Please enter a valid table number."}, status=400)
                 
@@ -297,11 +305,13 @@ def summary_action(request):
     order_id = json_response['order_id']
 
     order = Order.objects.get(id=order_id)
-    table = order.table.last()
+    if not order.is_takeout:
+        order_table = get_object_or_404(OrderTable, order=order)
+        table = order_table.table
+        context['table'] = table
 
     food_set = order.foods.all()
     context['order'] = order
-    context['table'] = table
     context['food_set'] = food_set
     context['pretax'] = order.total_price
     context['tax'] = round(order.total_price * 0.07, 2)
