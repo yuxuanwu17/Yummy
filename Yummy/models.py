@@ -85,6 +85,16 @@ class Table(models.Model):
 
     def __str__(self):
         return  str(self.id) 
+    
+
+# one order will only be assign to one table
+class OrderTable(models.Model):
+    order = models.OneToOneField(Order, related_name='order', on_delete=models.CASCADE)
+    table = models.ForeignKey(Table, related_name='table', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return 'Order ' + str(self.order.id) + ' at Table ' + str(self.table.id)
+    
 
 # class UnconfirmedReservation(models.Model):
 #     user = models.ForeignKey(User, on_delete=models.PROTECT)
