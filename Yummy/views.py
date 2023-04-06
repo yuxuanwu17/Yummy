@@ -298,7 +298,7 @@ def summary_action(request):
 
     order = Order.objects.get(id=order_id)
     table = order.table.last()
-
+    print(order.table.all())
     food_set = order.foods.all()
     context['order'] = order
     context['table'] = table
