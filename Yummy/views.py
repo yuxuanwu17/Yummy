@@ -338,8 +338,13 @@ def dish_action(request, id):
     target_food = Food.objects.get(id=id)
     context = {}
     context['comment_form'] = CommentForm()
-    context['comments'] = target_food.comments.all()
+    context['comments'] = target_food.comments.all().order_by('creation_time').reverse
     context['f'] = target_food
+
+    # get number of user like this dish
+    count = target_food.favoring.count()
+    context['count'] = count
+
     if request.user.is_authenticated:
         profiles = Profile.objects.get(user=request.user)
         context['favorite_list'] = [x.name for x in profiles.favorite.all()]
@@ -370,8 +375,10 @@ def favorite_food_action(request):
         my_info.favorite.remove(curr_food)
 
     my_info.save()
+    # get number of user like this dish
+    count = curr_food.favoring.count()
 
-    return JsonResponse({'success': True})
+    return JsonResponse({'success': True, 'num_ppl_fav': count})
 
 
 @login_required
