@@ -121,7 +121,7 @@ def add_food(request):
 
             # Get or create the ongoing order for the user (is_paid=False)
             order, created = Order.objects.get_or_create(customer=user, is_paid=False, is_completed=False,
-                                                         defaults={'total_price': 0, 'is_takeout': False, 
+                                                         defaults={'total_price': 0, 'is_takeout': False,
                                                                    'order_time': timezone.now()})
 
             if action == 'add':
@@ -201,9 +201,9 @@ def reserve_action(request):
     )
 
     reservations = Reservation.objects.filter(
-        date = new_filter['date'],
-        time__range = ((datetime.datetime.strptime(request.POST['time'], '%H:%M') - datetime.timedelta(hours=2)).time()
-                       , datetime.datetime.strptime(request.POST['time'], '%H:%M').time())
+        date=new_filter['date'],
+        time__range=((datetime.datetime.strptime(request.POST['time'], '%H:%M') - datetime.timedelta(hours=2)).time()
+                     , datetime.datetime.strptime(request.POST['time'], '%H:%M').time())
     )
     unavailable_tableid = [reservation.table.id for reservation in reservations]
     filtered_tables = tables.exclude(id__in=unavailable_tableid)
@@ -228,7 +228,7 @@ def reserve_action(request):
         first_name=request.POST['first_name'],
         last_name=request.POST['last_name'],
         phone_number=request.POST['phone_number'],
-        comment = request.POST['comment']
+        comment=request.POST['comment']
     )
     new_reservation.save()
     context['reserve_message'] = 'You are all set. Enjoy your meal!'
@@ -351,8 +351,8 @@ def dish_action(request, id):
 
     if 'text' in request.POST:
         new_comment = Comment.objects.create(text=request.POST['text'],
-                               creation_time=timezone.now(),
-                               creator=request.user,)
+                                             creation_time=timezone.now(),
+                                             creator=request.user, )
         new_comment.post_under.add(target_food)
     return render(request, 'Yummy/dish.html', context)
 
@@ -464,11 +464,35 @@ def register_staff_action(request):
 @login_required
 def checkout(request):
     curr_profile = get_object_or_404(Profile, id=request.user.id)
-    context = {"profile":curr_profile}
+    context = {"profile": curr_profile}
     print(curr_profile.phone_number)
     return render(request, "Yummy/checkout.html", context)
+
 
 @login_required
 def payment_success(request):
     context = {}
     return render(request, "Yummy/payment_success.html", context)
+
+
+@csrf_exempt
+def clear_order(request):
+    if request.method == 'POST':
+        user = request.user
+
+        try:
+            # Get the ongoing order for the user (is_paid=False)
+            order = Order.objects.get(customer=user, is_paid=False, is_completed=False)
+
+            # Remove food items associated with the order
+            order.foods.clear()
+
+            # Remove the order itself
+            order.delete()
+
+            return JsonResponse({"success": True}, status=200)
+
+        except Order.DoesNotExist:
+            return JsonResponse({"success": False}, status=400)
+
+    return JsonResponse({"success": False}, status=405)  # Method not allowed
