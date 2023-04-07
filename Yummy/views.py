@@ -325,10 +325,20 @@ def summary_action(request):
 def profile_action(request):
     context = {}
     profile = request.user.profile
+    orders = Order.objects.filter(customer = request.user) #, is_paid = True
+    print(orders)
     # form = ProfileForm(request.POST, request.FILES, instance=new_item)
     if request.method == "GET":
         context['item'] = profile
-        context['favorite'] = profile.favorite.all()
+        favorite = profile.favorite.all()
+        context['favorite'] = favorite
+        if len(favorite) == 0:
+            context['no_favorite_message']="You don't have any favorite dishes."
+        if len(orders) == 0:
+            context['no_order_message']="You don't have any past orders."
+        else:
+            context['orders'] = orders.order_by('order_time').reverse
+            context['foodset_list'] = [order.foods.all() for order in orders]
         return render(request, 'Yummy/profile.html', context)
 
     return render(request, 'Yummy/profile.html', context)
