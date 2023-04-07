@@ -471,28 +471,11 @@ def checkout(request):
 
 @login_required
 def payment_success(request):
+    # change the payment status of the most recent order of current user
+    # Get the ongoing order for the user (is_paid=False)
+    order = Order.objects.get(customer=request.user, is_paid=False, is_completed=False)
+    order.is_paid = True
+    order.save()
+
     context = {}
     return render(request, "Yummy/payment_success.html", context)
-
-
-@csrf_exempt
-def clear_order(request):
-    if request.method == 'POST':
-        user = request.user
-
-        try:
-            # Get the ongoing order for the user (is_paid=False)
-            order = Order.objects.get(customer=user, is_paid=False, is_completed=False)
-
-            # Remove food items associated with the order
-            order.foods.clear()
-
-            # Remove the order itself
-            order.delete()
-
-            return JsonResponse({"success": True}, status=200)
-
-        except Order.DoesNotExist:
-            return JsonResponse({"success": False}, status=400)
-
-    return JsonResponse({"success": False}, status=405)  # Method not allowed

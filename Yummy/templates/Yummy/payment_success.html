@@ -4,28 +4,6 @@
 
 {% block content %}
     <body>
-
-    <script>
-        function clearOrder() {
-            $.ajax({
-                url: '{% url "clear_order" %}',
-                method: 'POST',
-                data: {
-                    csrfmiddlewaretoken: '{{ csrf_token }}'
-                },
-                success: function (response) {
-                    if (response.success) {
-                        console.log("Order cleared successfully");
-                    } else {
-                        console.log("An error occurred while clearing the order");
-                    }
-                },
-                error: function (response) {
-                    console.log("An error occurred while clearing the order");
-                }
-            });
-        }
-    </script>
     <div class="vh-100 d-flex justify-content-center align-items-center">
         <div>
             <div class="mb-4 text-center">
