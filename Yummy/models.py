@@ -103,6 +103,7 @@ class OrderTable(models.Model):
 #     table = models.ForeignKey(Table, on_delete=models.PROTECT)
 
 class Reservation(models.Model):
+    customer = models.ForeignKey(User, on_delete=models.PROTECT, related_name='reservations')
     number_customers = models.IntegerField(blank=False)
     table = models.ForeignKey(Table, on_delete=models.PROTECT)
     first_name = models.CharField(max_length=200, editable=True, blank=False)

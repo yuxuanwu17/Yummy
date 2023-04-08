@@ -183,6 +183,7 @@ def get_order_total_price(request):
 @login_required
 def reserve_action(request):
     context = {}
+    user = request.user
     if request.method == 'GET':
         context['form'] = ReservationForm()
         return render(request, 'Yummy/reserve.html', context)
@@ -221,6 +222,7 @@ def reserve_action(request):
         return render(request, 'Yummy/reserve.html', context)
 
     new_reservation = Reservation(
+        customer=user,
         table=filtered_tables[0],
         date=new_filter['date'],
         time=new_filter['start_time'],
