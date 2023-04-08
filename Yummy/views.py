@@ -101,7 +101,8 @@ def global_action(request):
             response_data['foods'][curr_index].append(my_item)
     # print(Profile.objects.get(user=request.user))
     if request.user.is_authenticated:
-        profiles = Profile.objects.get(user=request.user)
+        profiles, _ = Profile.objects.get_or_create(user=request.user)
+        print(profiles)
         response_data['favorite_list'] = [x.name for x in profiles.favorite.all()]
 
     return render(request, 'Yummy/menu.html', response_data)
@@ -267,12 +268,13 @@ def set_take_out(request):
                 # if the order is take out and OrderTable exists, need to delete the OrderTable object for this order
                 if OrderTable.objects.filter(order=order).exists():
                     OrderTable.objects.filter(order=order).delete()
-                    
+
             if action == 'dine-in':
                 order.is_takeout = False
                 order.save()
                 if 'table_number' not in request.POST or request.POST['table_number'] == '':
-                    return JsonResponse({"success": False, "error_message": "Please enter a valid table number."}, status=400)
+                    return JsonResponse({"success": False, "error_message": "Please enter a valid table number."},
+                                        status=400)
                 else:
                     table_number = request.POST['table_number']
                     try:
@@ -287,10 +289,11 @@ def set_take_out(request):
                         else:
                             new_order_table = OrderTable.objects.create(order=order, table=table)
                             new_order_table.save()
-                        
+
                     except Table.DoesNotExist:
-                        return JsonResponse({"success": False, "error_message": "Please enter a valid table number."}, status=400)
-                
+                        return JsonResponse({"success": False, "error_message": "Please enter a valid table number."},
+                                            status=400)
+
             return JsonResponse({"success": True, 'Cache-Control': 'no-cache'}, status=200)
         except (Order.DoesNotExist):
             return JsonResponse({"success": False}, status=400)
