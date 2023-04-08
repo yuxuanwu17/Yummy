@@ -13,14 +13,17 @@
             background-image: url('../../static/img/google.ico');
             background-size: cover;
             display: inline-block;
-            height: 15px;
-            width: 15px;
+            height: 18px;
+            width: 18px;
         }
 
         .custom-btn {
-            background-color: #f0be6f;
+            background-color: white;
             color: black;
-            border: 5px solid #f0be6f;
+            border: 5px solid white;
+        }
+        .custom-btn:hover {
+            background-color: #f0be6f;
         }
     </style>
     <div id="id_page_name" class="text-center">
@@ -38,8 +41,8 @@
                 <p class="text-center fw-bold mx-3 mb-0 text-muted">OR</p>
             </div>
 
-            <a class="btn btn-lg btn-block custom-btn" href="{% url 'social:begin' 'google-oauth2' %}" role="button">
-                <i class="icon-play"></i> Sign in with Google
+            <a class="btn btn-sm btn-block custom-btn" href="{% url 'social:begin' 'google-oauth2' %}" role="button">
+                <i class="icon-play"></i> &nbsp Sign in with Google
             </a>
         </form>
     </div>
