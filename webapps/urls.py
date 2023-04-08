@@ -21,4 +21,5 @@ urlpatterns = [
     path('', views.global_action),
     path('admin/', admin.site.urls),
     path('yummy/', include('Yummy.urls')),
+    path('oauth/', include('social_django.urls', namespace='social')),
 ]
