@@ -1,6 +1,28 @@
 {% extends "Yummy/base.html" %}
 {% block content %}
+    <style>
+        .divider:after,
+        .divider:before {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #eee;
+        }
 
+        .icon-play {
+            background-image: url('../../static/img/google.ico');
+            background-size: cover;
+            display: inline-block;
+            height: 15px;
+            width: 15px;
+        }
+
+        .custom-btn {
+            background-color: #f0be6f;
+            color: black;
+            border: 5px solid #f0be6f;
+        }
+    </style>
     <div id="id_page_name" class="text-center">
         <h1 class="fw-light">Login</h1>
     </div>
@@ -11,6 +33,14 @@
             </table>
             {% csrf_token %}
             <button type="submit" class="btn btn-outline-dark my-4">Submit</button>
+
+            <div class="divider d-flex align-items-center my-4">
+                <p class="text-center fw-bold mx-3 mb-0 text-muted">OR</p>
+            </div>
+
+            <a class="btn btn-lg btn-block custom-btn" href="#!" role="button">
+                <i class="icon-play"></i> Sign in with Google
+            </a>
         </form>
     </div>
 {% endblock %}
