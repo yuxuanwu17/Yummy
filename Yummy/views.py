@@ -477,8 +477,6 @@ def payment_success(request):
     # change the payment status of the most recent order of current user
     # Get the ongoing order for the user (is_paid=False)
     order = Order.objects.get(customer=request.user, is_paid=False, is_completed=False)
-    print("===========")
-    print(order)
     order.is_paid = True
     order.save()
 
