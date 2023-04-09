@@ -77,13 +77,13 @@ class Order(models.Model):
 
 class Table(models.Model):
     orders = models.ManyToManyField(Order, related_name="table", blank=True, editable=True)
-    customer = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, editable=True, null=True)
+    # customer = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, editable=True, null=True)
     open_time = models.TimeField(default='11:00', editable=True)
     close_time = models.TimeField(default='21:00', editable=True)
     capacity = models.IntegerField(editable=True)
 
     def __str__(self):
-        return  str(self.id) 
+        return  'Table ID: '+ str(self.id) + ' Capacity: ' + str(self.capacity)
     
 
 # one order will only be assign to one table

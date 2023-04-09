@@ -1,0 +1,67 @@
+{% extends "Yummy/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block posts_header %}
+<div class="px-4  my-5 text-center">
+    <h1 id="id_page_title" class="fw-light">Tables in your restaurant</h1>
+    <div class="col-lg-6 mx-auto">
+        <p class="lead mb-4">Fill in the form at the right to add new tables.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="text-center">
+                <h2 class="lead fw-light" style="margin-left:20%;">Tables you have in the restaurant:</h2>
+                <table class="table table-bordered table-sm" style="width: 70%; margin-left:25%;">
+                    <thead class="table-light">
+                      <tr>
+                        <th scope="col">Capacity</th>
+                        <th scope="col">Number of tables</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+                    {% for result in results %}
+                      <tr>
+                        <td>{{ result.capacity }}</td>
+                        <td>{{ result.dcount }}</td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    
+        <div class="col-md-6">
+            <div class="mx-auto col-10 col-md-10 col-lg-6">
+                <div class="form-group">
+                    <h2 class="lead fw-light" style="margin-left:20%;">Add a new table here</h2>
+                    <form method="post" action="{% url 'new_tables' %}">
+                        <div class="row">
+                            <label for="capacity">Capacity</label>
+                            <input name="capacity" type="number" class="form-control">
+                        </div>
+                        <div class="row">
+                            <label for="number_to_add">Number of tables to add</label>
+                            <input id="number_to_add" name="number_to_add" type="number" class="form-control">
+                        </div>
+                        <div class="d-flex justify-content-center py-5">
+                            <button id="report-button" type="submit" class="btn btn-primary btn-lg px-4 gap-3">Submit</button>
+                        </div>
+                        {% csrf_token %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

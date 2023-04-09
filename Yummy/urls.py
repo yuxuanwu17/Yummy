@@ -34,4 +34,5 @@ urlpatterns = [
     path('set_take_out/', views.set_take_out, name='set_take_out'),
     path('checkout/', views.checkout, name='checkout'),
     path('payment_success/', views.payment_success, name='payment_success'),
+    path('new_tables', views.new_tables_actions, name='new_tables'),
 ]

@@ -9,7 +9,7 @@
     <div class="px-4 py-5 my-5 text-center">
         <h1 id="id_page_title" class="fw-light">Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
         <div class="col-lg-6 mx-auto">
-            <p class="lead mb-4">View your favorite dishes and order history.</p>
+            <p class="lead mb-4">View your reservations, favorite dishes and order history.</p>
         </div>
 
         <div id="id_profile_container">
@@ -17,7 +17,7 @@
                 <div class="nav nav-tabs mb-3 justify-content-center" id="nav-tab" role="tablist">
                     <button class="nav-link active" id="nav-reservation-tab" data-bs-toggle="tab"
                             data-bs-target="#nav-reservation" type="button" role="tab" aria-controls="nav-reservation"
-                            aria-selected="true">Reservation
+                            aria-selected="true">Reservations
                     </button>
                     <button class="nav-link" id="nav-fav-tab" data-bs-toggle="tab" data-bs-target="#nav-fav"
                             type="button" role="tab" aria-controls="nav-fav" aria-selected="false" tabindex="-1">
@@ -32,7 +32,38 @@
             <div class="tab-content" id="nav-tabContent">
                 <div class="tab-pane fade active show" id="nav-reservation" role="tabpanel"
                      aria-labelledby="nav-reservation-tab">
-                    <p>This is some placeholder content the <strong>Reservation tab's</strong> associated content.</p>
+                    {% if no_reservation_message %}
+                    <h4 class="lead text-center">{{ no_reservation_message }}</h4>
+                    {% endif %}
+
+                    <!-- Accordion item -->
+                    <div class="accordion" id="accordionReservation">
+                        {% for reservation in reservations %}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <div class="ms-2 me-auto">
+                                                    <div class="fw-bold">Reservation Number: {{ reservation.id }}</div>
+                                                    <p>Date & Time: {{ reservation.date }} {{ reservation.time }}</p>
+                                                </div>
+                                            </div>
+                                    </button>
+                                </h2>
+                                <div id="collapseOne" class="accordion-collapse collapse"
+                                     data-bs-parent="#accordionReservation">
+                                    <div class="accordion-body">
+                                        <p>Name: {{ reservation.first_name }} {{reservation.last_name}}</p>
+                                        <p>Phone: {{reservation.phone_number }}</p>
+                                        <p>Number of customers: {{ reservation.number_customers }}</p>
+                                        <p>Assigned table: {{ reservation.table }}</p>
+                                        <p>Special comments: {{ reservation.comment }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
                 </div>
 
                 <div class="tab-pane fade" id="nav-fav" role="tabpanel" aria-labelledby="nav-fav-tab">
@@ -40,7 +71,6 @@
                     <h4 class="lead text-center">{{ no_favorite_message }}</h4>
                     {% endif %}
                     <div class="list-group">
-
                         {% for u in favorite %}
                             <ul>
                                 <a href="{% url 'dish' u.id %}"
@@ -56,14 +86,14 @@
                     {% endif %}
                     <!-- Accordion item -->
                     <div class="accordion" id="accordionOrder">
-                        {% for order in orders %}
+                    {% for order in orders %}
                         <div class="accordion-item">
                             <h2 class="accordion-header">
                                 <button class="accordion-button" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                                         <div class="d-flex w-100 justify-content-between">
                                             <div class="ms-2 me-auto">
-                                                <div class="fw-bold">Order Number {{ order.id }}</div>
+                                                <div class="fw-bold">Order Number: {{ order.id }}</div>
                                                 <p>Order Date: {{ order.order_time }}</p>
                                             </div>
                                             <div>
@@ -76,13 +106,11 @@
                                                         <span class="badge text-bg-warning">Not Submit</span>
                                                         {% endif %}
                                                     {% endif %}
-                                                </span>
                                             </div>
-
                                         </div>
                                 </button>
                             </h2>
-                            <div id="collapseOne" class="accordion-collapse collapse show"
+                            <div id="collapseOne" class="accordion-collapse collapse"
                                  data-bs-parent="#accordionOrder">
                                 <div class="accordion-body">
                                     <table class="table">
@@ -117,6 +145,8 @@
                         {% endfor %}
                     </div>
                 </div>
+
+
             </div>
         </div>
     </div>

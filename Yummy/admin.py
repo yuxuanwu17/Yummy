@@ -12,4 +12,5 @@ admin.site.register(Profile)
 admin.site.register(Order)
 admin.site.register(FoodSet)
 admin.site.register(Comment)
+admin.site.register(Table)
 
