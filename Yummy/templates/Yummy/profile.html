@@ -7,17 +7,17 @@
 
 {% block content %}
     <div class="px-4 py-5 my-5 text-center">
-        <h1 id="id_page_title" class="fw-light">Profile Page for {{ user.first_name }} {{ user.last_name }}</h1>
+        <h1 id="id_page_title" class="fw-light">Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
         <div class="col-lg-6 mx-auto">
-            <p class="lead mb-4">View your favorite dishes and order history.</p>
+            <p class="lead mb-4">View your reservations, favorite dishes and order history.</p>
         </div>
 
         <div id="id_profile_container">
             <nav>
                 <div class="nav nav-tabs mb-3 justify-content-center" id="nav-tab" role="tablist">
-                    <button class="nav-link active" id="nav-profile-tab" data-bs-toggle="tab"
-                            data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile"
-                            aria-selected="true">Profile
+                    <button class="nav-link active" id="nav-reservation-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-reservation" type="button" role="tab" aria-controls="nav-reservation"
+                            aria-selected="true">Reservations
                     </button>
                     <button class="nav-link" id="nav-fav-tab" data-bs-toggle="tab" data-bs-target="#nav-fav"
                             type="button" role="tab" aria-controls="nav-fav" aria-selected="false" tabindex="-1">
@@ -30,40 +30,87 @@
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
-                <div class="tab-pane fade active show" id="nav-profile" role="tabpanel"
-                     aria-labelledby="nav-profile-tab">
-                    <p>This is some placeholder content the <strong>Profile tab's</strong> associated content.</p>
+                <div class="tab-pane fade active show" id="nav-reservation" role="tabpanel"
+                     aria-labelledby="nav-reservation-tab">
+                    {% if no_reservation_message %}
+                    <h4 class="lead text-center">{{ no_reservation_message }}</h4>
+                    {% endif %}
+
+                    <!-- Accordion item -->
+                    <div class="accordion" id="accordionReservation">
+                        {% for reservation in reservations %}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <div class="ms-2 me-auto">
+                                                    <div class="fw-bold">Reservation Number: {{ reservation.id }}</div>
+                                                    <p>Date & Time: {{ reservation.date }} {{ reservation.time }}</p>
+                                                </div>
+                                            </div>
+                                    </button>
+                                </h2>
+                                <div id="collapseOne" class="accordion-collapse collapse"
+                                     data-bs-parent="#accordionReservation">
+                                    <div class="accordion-body">
+                                        <p>Name: {{ reservation.first_name }} {{reservation.last_name}}</p>
+                                        <p>Phone: {{reservation.phone_number }}</p>
+                                        <p>Number of customers: {{ reservation.number_customers }}</p>
+                                        <p>Assigned table: {{ reservation.table }}</p>
+                                        <p>Special comments: {{ reservation.comment }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
                 </div>
 
                 <div class="tab-pane fade" id="nav-fav" role="tabpanel" aria-labelledby="nav-fav-tab">
-                    <p> Your favorite dishes are:
-
-                    </p>
+                    {% if no_favorite_message %}
+                    <h4 class="lead text-center">{{ no_favorite_message }}</h4>
+                    {% endif %}
                     <div class="list-group">
-
                         {% for u in favorite %}
                             <ul>
                                 <a href="{% url 'dish' u.id %}"
                                    class="list-group-item list-group-item-action">{{ u.name }}</a>
                             </ul>
                         {% endfor %}
-
                     </div>
                 </div>
 
                 <div class="tab-pane fade" id="nav-history" role="tabpanel" aria-labelledby="nav-history-tab">
-                    <p>This is some placeholder content the <strong>Order History tab's</strong> associated content.</p>
-
+                    {% if no_order_message %}
+                        <h4 class="lead text-center">{{ no_order_message }}</h4>
+                    {% endif %}
                     <!-- Accordion item -->
                     <div class="accordion" id="accordionOrder">
+                    {% for order in orders %}
                         <div class="accordion-item">
                             <h2 class="accordion-header">
                                 <button class="accordion-button" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                    Date of Order #1
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <div class="ms-2 me-auto">
+                                                <div class="fw-bold">Order Number: {{ order.id }}</div>
+                                                <p>Order Date: {{ order.order_time }}</p>
+                                            </div>
+                                            <div>
+                                                    {% if order.is_completed %}
+                                                    <span class="badge text-bg-success">Completed</span>
+                                                    {% else %}
+                                                        {% if order.is_paid %}
+                                                        <span class="badge text-bg-info">Submitted</span>
+                                                        {% else %}
+                                                        <span class="badge text-bg-warning">Not Submit</span>
+                                                        {% endif %}
+                                                    {% endif %}
+                                            </div>
+                                        </div>
                                 </button>
                             </h2>
-                            <div id="collapseOne" class="accordion-collapse collapse show"
+                            <div id="collapseOne" class="accordion-collapse collapse"
                                  data-bs-parent="#accordionOrder">
                                 <div class="accordion-body">
                                     <table class="table">
@@ -72,79 +119,37 @@
                                             <th scope="col">#</th>
                                             <th scope="col">Dish</th>
                                             <th scope="col">Quantity</th>
-                                            <th scope="col">Price</th>
+                                            <th scope="col">Unit Price</th>
                                         </tr>
                                         </thead>
                                         <tbody>
+                                        {% for foods in foodset_list %}
+                                            {% for foodset in foods %}
+                                            <tr>
+                                                <th scope="row">{{ foodset.food.id }}</th>
+                                                <td>{{ foodset.food.name }}</td>
+                                                <td>{{ foodset.quantity }}</td>
+                                                <td>${{ foodset.food.price }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        {% endfor %}
                                         <tr>
-                                            <th scope="row">1</th>
-                                            <td>Cucumber Salad</td>
-                                            <td>1</td>
-                                            <td>$20</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">2</th>
-                                            <td>Scallion Pancakes</td>
-                                            <td>2</td>
-                                            <td>$15</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Total</th>
-                                            <td colspan="3">$50</td>
+                                            <th scope="row" colspan="3" class="text-right">Total</th>
+                                            <td>${{ order.total_price }}</td>
                                         </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                    Date of Order #2
-                                </button>
-                            </h2>
-                            <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionOrder">
-                                <div class="accordion-body">
-                                    <strong>This is the second item's accordion body.</strong> It is hidden by default,
-                                    until the collapse plugin adds the appropriate classes that we use to style each
-                                    element. These classes control the overall appearance, as well as the showing and
-                                    hiding via CSS transitions. You can modify any of this with custom CSS or overriding
-                                    our default variables. It's also worth noting that just about any HTML can go within
-                                    the <code>.accordion-body</code>, though the transition does limit overflow.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#collapseThree" aria-expanded="false"
-                                        aria-controls="collapseThree">
-                                    Date of Order #3
-                                </button>
-                            </h2>
-                            <div id="collapseThree" class="accordion-collapse collapse"
-                                 data-bs-parent="#accordionOrder">
-                                <div class="accordion-body">
-                                    <strong>This is the third item's accordion body.</strong> It is hidden by default,
-                                    until the collapse plugin adds the appropriate classes that we use to style each
-                                    element. These classes control the overall appearance, as well as the showing and
-                                    hiding via CSS transitions. You can modify any of this with custom CSS or overriding
-                                    our default variables. It's also worth noting that just about any HTML can go within
-                                    the <code>.accordion-body</code>, though the transition does limit overflow.
-                                </div>
-                            </div>
-                        </div>
+                        {% endfor %}
                     </div>
-
                 </div>
+
+
             </div>
         </div>
-
     </div>
-
-
-    <script src="{% static 'medSearch/assets/dist/js/bootstrap.bundle.min.js' %}"></script>
-
-
 {% endblock %}
+    <!-- <script src="{% static 'medSearch/assets/dist/js/bootstrap.bundle.min.js' %}"></script> -->
+

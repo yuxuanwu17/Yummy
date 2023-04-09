@@ -13,6 +13,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Count
 
 from django.contrib import admin
 
@@ -184,6 +185,7 @@ def get_order_total_price(request):
 @login_required
 def reserve_action(request):
     context = {}
+    user = request.user
     if request.method == 'GET':
         context['form'] = ReservationForm()
         return render(request, 'Yummy/reserve.html', context)
@@ -222,6 +224,7 @@ def reserve_action(request):
         return render(request, 'Yummy/reserve.html', context)
 
     new_reservation = Reservation(
+        customer=user,
         table=filtered_tables[0],
         date=new_filter['date'],
         time=new_filter['start_time'],
@@ -282,7 +285,7 @@ def set_take_out(request):
                         if OrderTable.objects.filter(order=order).exists():
                             order_table = OrderTable.objects.get(order=order)
                             order_table.table = table
-                            table.orders.add(order)
+                            # table.orders.add(order)
                             order_table.save()
                             order.save()
                             table.save()
@@ -328,11 +331,23 @@ def summary_action(request):
 def profile_action(request):
     context = {}
     profile = request.user.profile
-    # form = ProfileForm(request.POST, request.FILES, instance=new_item)
+    orders = Order.objects.filter(customer = request.user) #, is_paid = True
+    reservations = Reservation.objects.filter(customer = request.user)
+
     if request.method == "GET":
         context['item'] = profile
-        context['favorite'] = profile.favorite.all()
-        return render(request, 'Yummy/profile.html', context)
+        favorite = profile.favorite.all()
+        context['favorite'] = favorite
+        context['reservations'] = reservations
+        if len(reservations) == 0:
+            context['no_reservation_message']="You don't have any reservations."
+        if len(favorite) == 0:
+            context['no_favorite_message']="You don't have any favorite dishes."
+        if len(orders) == 0:
+            context['no_order_message']="You don't have any past orders."
+        else:
+            context['orders'] = orders.order_by('order_time').reverse
+            context['foodset_list'] = [order.foods.all() for order in orders]
 
     return render(request, 'Yummy/profile.html', context)
 
@@ -455,12 +470,17 @@ def register_staff_action(request):
         user.save()
         user = authenticate(username=form.cleaned_data['username'],
                             password=form.cleaned_data['password'])
-        # login(request, user)
-        # Create profile for this new user
+
+        # Create profile for new staff user
         new_profile = Profile(user=user, phone_number=form.cleaned_data['phone_number'])
         new_profile.save()
         message = 'New staff ' + user.first_name + ' ' + user.last_name + ' created.'
         messages.success(request, message)
+        return redirect('home')
+    
+    else:
+        message = 'You are not authorized to do this action.'
+        messages.error(request, message)
         return redirect('home')
 
 
@@ -482,3 +502,56 @@ def payment_success(request):
 
     context = {}
     return render(request, "Yummy/payment_success.html", context)
+
+
+
+@login_required
+@staff_member_required
+def new_tables_actions(request):
+    context = {}
+    user = request.user
+    if not user.is_staff:
+        message = 'You are not authorized to do this action.'
+        messages.error(request, message)
+        return redirect('home')
+    
+    if request.method == "GET":
+        results = Table.objects.values('capacity').annotate(dcount=Count('capacity')).order_by()
+        context['results'] = results
+        return render(request, "Yummy/new_tables.html", context)
+    
+    if request.method == "POST":
+        if 'capacity' not in request.POST or request.POST['capacity'] == '':
+            message = 'Invalid input of capacity, please enter a number'
+            messages.error(request, message)
+            return redirect('new_tables')
+        if 'number_to_add' not in request.POST or request.POST['number_to_add'] == '':
+            message = 'Invalid input of number of tables to add, please enter a number'
+            messages.error(request, message)
+            return redirect('new_tables')
+      
+        capacity = float(request.POST['capacity'])
+        number_to_add = float(request.POST['number_to_add'])
+        if capacity<=0 or number_to_add<=0:
+            message = 'Input must be greater than zero'
+            messages.error(request, message)
+            return redirect('new_tables')
+        
+        if capacity.is_integer() and number_to_add.is_integer():
+            new_tables = []
+            for i in range(int(number_to_add)): 
+                new_tables.append(Table(capacity=int(capacity)))
+
+            Table.objects.bulk_create(new_tables)
+            message = 'New tables added successfully'
+            messages.success(request, message)
+            results = Table.objects.values('capacity').annotate(dcount=Count('capacity')).order_by()
+            context['results'] = results
+            return render(request, 'yummy/new_tables.html', context)
+            
+        else:
+            message = 'Input must be an integer'
+            messages.error(request, message)
+            return redirect('new_tables')
+        
+        

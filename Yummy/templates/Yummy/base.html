@@ -41,6 +41,9 @@
                         <li class="nav-item">
                             <a class="nav-link fs-5 fw-light" href="{% url 'new_dish' %}">Add New Dish</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link fs-5 fw-light" href="{% url 'new_tables' %}">Add Tables</a>
+                        </li>
                     {% endif %}
 
                     {% if user.is_superuser %}
