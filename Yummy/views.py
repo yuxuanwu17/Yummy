@@ -187,7 +187,10 @@ def reserve_action(request):
     context = {}
     user = request.user
     if request.method == 'GET':
-        context['form'] = ReservationForm()
+        context['form'] = ReservationForm(initial={
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'phone_number': user.profile.phone_number,})
         return render(request, 'Yummy/reserve.html', context)
 
     new_filter = {

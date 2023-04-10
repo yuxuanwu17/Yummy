@@ -34,7 +34,11 @@ function hideReservationButton() {
 
 <section class="reservation">
     <div id="reservation form">
-        <span class="step-title"> Your Information </span>
+        <span {% if table_reserved %}
+        class="hidden"
+        {% else %} 
+        class="step-title"
+        {% endif %}> Your Information </span>
         <form class="reservation_form" method="POST" onsubmit="hideReservationButton()">
             {% for field in form.visible_fields %}
             {% csrf_token %}

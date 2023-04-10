@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from Yummy.models import *
-
+from django.core.validators import MinValueValidator
 
 # from phonenumber_field.modelfields import PhoneNumberField
 
@@ -86,7 +86,7 @@ class RegisterForm(forms.Form):
 class ReservationForm(forms.Form):
     date = forms.DateField(label="Date", required=True, widget=forms.DateInput(attrs={'type': 'date'}))
     time = forms.TimeField(label="Time", required=True, widget=forms.DateInput(attrs={'type': 'time'}, format='%H:%M'))
-    number_customers = forms.IntegerField(label="#people", required=True)
+    number_customers = forms.IntegerField(label="#people", required=True, widget=forms.NumberInput(attrs={'min': 0}))
     first_name = forms.CharField(max_length=MAX_NAME_LENGTH, label="First Name")
     last_name = forms.CharField(max_length=MAX_NAME_LENGTH, label="Last Name")
     phone_number = forms.CharField(max_length=MAX_PHONE_LENGTH, label="Phone Number")
