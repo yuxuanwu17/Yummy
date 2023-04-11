@@ -22,7 +22,7 @@
                 <table class="table table-bordered table-sm" style="width: 70%; margin-left:25%;">
                     <thead class="table-light">
                       <tr>
-                        <th scope="col">Capacity</th>
+                        <th scope="col">Maximum Capacity</th>
                         <th scope="col">Number of tables</th>
                       </tr>
                     </thead>
@@ -44,7 +44,7 @@
                     <h2 class="lead fw-light" style="margin-left:20%;">Add a new table here</h2>
                     <form method="post" action="{% url 'new_tables' %}">
                         <div class="row">
-                            <label for="capacity">Capacity</label>
+                            <label for="capacity">Maximum capacity</label>
                             <input name="capacity" type="number" class="form-control">
                         </div>
                         <div class="row">
