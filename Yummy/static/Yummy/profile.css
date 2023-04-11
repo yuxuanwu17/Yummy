@@ -14,6 +14,6 @@
     margin-right: 10vw;
 }
 
-#delete_reservation_button {
+.cancel-reserve {
     background-color: #ff5349;
 }
