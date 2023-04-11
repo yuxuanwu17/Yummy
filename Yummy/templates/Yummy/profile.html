@@ -45,7 +45,7 @@
                                             data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                                             <div class="d-flex w-100 justify-content-between">
                                                 <div class="ms-2 me-auto">
-                                                    <div class="fw-bold">Reservation Number: {{ reservation.id }}</div>
+                                                    <div class="fw-bold" id="reservation_id_{{reservation.id}}">Reservation Number: {{ reservation.id }}</div>
                                                     <p>Date & Time: {{ reservation.date }} {{ reservation.time }}</p>
                                                 </div>
                                             </div>
@@ -59,6 +59,14 @@
                                         <p>Number of customers: {{ reservation.number_customers }}</p>
                                         <p>Assigned table: {{ reservation.table }}</p>
                                         <p>Special comments: {{ reservation.comment }}</p>
+
+                                        <form method="POST" action="{% url 'cancel_reservation_action' reservation.id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="reservation_id" value="{{reservation.id}}">
+                                            <button type="submit" class="btn btn-primary my-2 cancel-reserve"
+                                                id="cancel_reservation_{{reservation.id}}">Cancel</button>
+                                        </form>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -152,4 +160,5 @@
     </div>
 {% endblock %}
     <!-- <script src="{% static 'medSearch/assets/dist/js/bootstrap.bundle.min.js' %}"></script> -->
+
 

@@ -354,6 +354,10 @@ def profile_action(request):
 
     return render(request, 'Yummy/profile.html', context)
 
+def cancel_reservation_action(request, id):
+    reservation = Reservation.objects.get(id=id)
+    reservation.delete()
+    return redirect('profile')
 
 def dish_action(request, id):
     target_food = Food.objects.get(id=id)
