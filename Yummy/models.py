@@ -88,8 +88,8 @@ class Table(models.Model):
 
 # one order will only be assign to one table
 class OrderTable(models.Model):
-    order = models.OneToOneField(Order, related_name='order', on_delete=models.CASCADE)
-    table = models.ForeignKey(Table, related_name='table', on_delete=models.CASCADE)
+    order = models.OneToOneField(Order, related_name='order_table', on_delete=models.CASCADE)
+    table = models.ForeignKey(Table, related_name='order_table', on_delete=models.CASCADE)
 
     def __str__(self):
         return 'Order ' + str(self.order.id) + ' at Table ' + str(self.table.id)
