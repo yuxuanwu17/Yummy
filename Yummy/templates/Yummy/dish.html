@@ -177,7 +177,7 @@
                         commentDiv.append('<div class="fw-bold">' + comment.text + '</div>');
                         commentDiv.append('By ' + comment.creator__first_name + ' ' + comment.creator__last_name);
                         listItem.append(commentDiv);
-                        listItem.append('<span class="badge text-bg-light">' + comment.creation_time + '</span>');
+                        listItem.append('<span class="badge text-bg-light">' + comment.formatted_creation_time + '</span>');
                         commentsList.append(listItem);
                     });
                 },
@@ -188,7 +188,7 @@
         }
 
         // Call updateComments() every 5 seconds (5000 milliseconds)
-        setInterval(updateComments, 5000);
+        {#setInterval(updateComments, 5000);#}
 
         // Fetch and display comments when the page loads
         updateComments();

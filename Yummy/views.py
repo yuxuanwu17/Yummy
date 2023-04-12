@@ -14,6 +14,8 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count
+from datetime import datetime
+from django.db.models import F, ExpressionWrapper, CharField
 
 from django.contrib import admin
 
@@ -384,11 +386,17 @@ def dish_action(request, id):
     return render(request, 'Yummy/dish.html', context)
 
 
+
 def get_comments(request):
     # Assuming you have a Comment model with these fields
     comments = Comment.objects.filter(post_under=request.GET.get('item_id')).values('text', 'creator__first_name',
                                                                                     'creator__last_name',
                                                                                     'creation_time')
+
+    # Convert the creation_time to the desired format
+    for comment in comments:
+        comment['formatted_creation_time'] = comment['creation_time'].strftime('%B %-d, %Y, %-I:%M %p')
+
     return JsonResponse(list(comments)[::-1], safe=False)
 
 
