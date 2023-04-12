@@ -44,16 +44,16 @@ class LoginForm(forms.Form):
 
 
 class RegisterForm(forms.Form):
-    username = forms.CharField(max_length=20)
-    password = forms.CharField(max_length=200,
+    username = forms.CharField(max_length=20, min_length=4)
+    password = forms.CharField(max_length=200, min_length=8,
                                label='Password',
                                widget=forms.PasswordInput())
-    confirm_password = forms.CharField(max_length=200,
+    confirm_password = forms.CharField(max_length=200, min_length=8,
                                        label='Confirm Password',
                                        widget=forms.PasswordInput())
     first_name = forms.CharField(max_length=20, label='First Name')
     last_name = forms.CharField(max_length=20, label='Last Name')
-    phone_number = forms.CharField(max_length=50, label='Phone Number')
+    phone_number = forms.CharField(min_length=10, label='Phone Number')
 
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.
@@ -99,17 +99,41 @@ class CommentForm(forms.Form):
     text = forms.CharField(label="Tell us what you do think about this dish", widget=forms.Textarea(attrs={'class':'form-control','rows':2, 'cols':3}))
 
 class FoodForm(forms.Form):
-    dish_name = forms.CharField(label='Dish Name', required=True, max_length=MAX_DISH_NAME_LENGTH, widget=forms.TextInput(attrs={'class':'form-control'}))
-    price = forms.FloatField(label='Price', required=True, widget=forms.NumberInput(attrs={'class':'form-control'}))
-    description = forms.CharField(label='Description', required=True, max_length=MAX_COMMENTS_LENGTH, widget=forms.Textarea(attrs={'class':'form-control'}))
-    category = forms.CharField(label='Category', required=True, widget=forms.Select(choices=FOOD_CATEGORIES, attrs={'class':'form-control'}))
-    calories = forms.FloatField(label='Calroies', required=True, widget=forms.NumberInput(attrs={'class':'form-control'}))
-    is_spicy = forms.BooleanField(label='Is this dish spicy?', required=False, widget=forms.Select(choices=BOOL_CHOICES, attrs={'class':'form-control'}), initial=None)
-    is_vegetarian = forms.BooleanField(label='Is this dish vegetarian?', required=False, widget=forms.Select(choices=BOOL_CHOICES, attrs={'class':'form-control'}), initial=None)
-    picture = forms.ImageField(max_length=MAX_UPLOAD_SIZE)
+    dish_name = forms.CharField(label='Dish Name', required=True, 
+                                max_length=MAX_DISH_NAME_LENGTH,
+                                widget=forms.TextInput(attrs={'class':'form-control'}))
+    price = forms.FloatField(label='Price', required=True, 
+                             min_value=0,
+                             widget=forms.NumberInput(attrs={'class':'form-control'}))
+    description = forms.CharField(label='Description', required=True, 
+                                  max_length=MAX_COMMENTS_LENGTH, min_length=20, 
+                                  widget=forms.Textarea(attrs={'class':'form-control'}))
+    category = forms.CharField(label='Category', required=True, 
+                               widget=forms.Select(choices=FOOD_CATEGORIES, attrs={'class':'form-control'}))
+    calories = forms.FloatField(label='Calroies', required=True, 
+                                min_value=0,
+                                widget=forms.NumberInput(attrs={'class':'form-control'}))
+    
+    is_spicy = forms.BooleanField(label='Is this dish spicy?', required=False,
+                                  widget=forms.Select(choices=BOOL_CHOICES, attrs={'class':'form-control'}), initial=None)
+    is_vegetarian = forms.BooleanField(label='Is this dish vegetarian?', required=False,
+                                       widget=forms.Select(choices=BOOL_CHOICES, attrs={'class':'form-control'}), initial=None)
+    picture = forms.ImageField(max_length=MAX_UPLOAD_SIZE, required=True)
 
     def clean(self):
         cleaned_data = super().clean()
+
         return cleaned_data
+    
+    def clean_dish_name(self):
+        # Confirms that the username is not already present in the
+        # User model database.
+        dish_name = self.cleaned_data.get('dish_name')
+        if Food.objects.filter(name__icontains=dish_name):
+            raise forms.ValidationError("This dish is already in the menu.")
+
+        # We must return the cleaned data we got from the cleaned_data
+        # dictionary
+        return dish_name
 
  
