@@ -1,0 +1,105 @@
+{% extends "Yummy/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+{% endblock %}
+
+
+{% block content %}
+<div class="px-4 py-5 my-5 text-center">
+    <h1 id="id_page_title" class="fw-light">Order Management System</h1>
+    <div class="col-lg-6 mx-auto">
+        <p class="lead mb-4">Welcome, {{ user.first_name }} {{ user.last_name }}</p>
+    </div>
+
+    <div class="accordion" id="accordionOrderManagement">
+        {% for order in orders %}
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            <div class="d-flex w-100 justify-content-between">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">Order Number: {{ order.id }}</div>
+                                    <p>Submitted Date & Time: {{ order.order_time }}</p>
+                                </div>
+                            </div>
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse"
+                     data-bs-parent="#accordionReservation">
+                    <div class="accordion-body">
+                        <p>Name: {{ order.customer.first_name }} {{order.customer.last_name}}</p>
+                        <p>Phone: {{order.customer.profile.phone_number }}</p>
+                        {% if order.is_takeout %}
+                            <p>Take-out</p>
+                        {% else %}
+                            <p>Dine-in. Table: {{order.order_table.table.id}}</p>
+                        {% endif %}
+                        <div>
+                            {% if order.is_completed %}
+                            <span class="badge text-bg-success">Completed</span>
+                            {% else %}
+                                {% if order.is_paid %}
+                                <span class="badge text-bg-info">Submitted</span>
+                                {% else %}
+                                <span class="badge text-bg-warning">Not Submit</span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <table class="table table-striped align-middle text-center">
+        <thead class="fs-5">
+        <tr>
+            <th scope="col">#Dish</th>
+            <th scope="col">Image</th>
+            <th scope="col">Dish Name</th>
+            <th scope="col">&nbsp;</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">&nbsp;</th>
+            <th scope="col">Unit Price</th>
+            <th scope="col">&nbsp;</th>
+        </tr>
+        </thead>
+        <tbody class="table-group-divider fs-5">
+        {% for foodset in food_set %}
+            <tr>
+                <th scope="row">{{ foodset.food.id }}</th>
+                <td class="d-flex justify-content-between align-items-center">
+                    <img src="{% static foodset.food.picture_dir %}" class="card shadow-sm"
+                         style="align-content:center; width: 8vw; height: 8vw; object-fit: cover;">
+                </td>
+                <td>{{ foodset.food.name }}</td>
+                <td>
+                    <button type="button" class="btn btn-outline-dark minus-btn" data-id="{{ foodset.food.id }}"> -
+                    </button>
+                </td>
+                <td><span id="id_quantity_of_{{ foodset.food.id }}" class="quantity_input">{{ foodset.quantity }}</td>
+                <td>
+                    <button type="button" class="btn btn-outline-dark plus-btn" data-id="{{ foodset.food.id }}"> +
+                    </button>
+                </td>
+                <td>{{ foodset.food.price }}</td>
+                <td>
+                    <button type="button" class="btn btn-outline-dark remove-btn" data-id="{{ foodset.food.id }}">
+                        Remove
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+
+
+
+
+
+{% endblock %}
+

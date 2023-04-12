@@ -433,7 +433,6 @@ def new_dish_action(request):
             new_dish = Food.objects.create(name=name, price=price, description=desc, category=category,
                                            calories=calories, is_spicy=is_spicy, is_vegetarian=is_vegetarian)
             new_picture = FoodPicture.objects.create(food=new_dish, picture=picture)
-            print('created new dish')
 
             # get the picture directory from FoodPicture object
             new_dish.picture_dir = 'img/' + new_picture.picture.name
@@ -504,7 +503,6 @@ def payment_success(request):
     return render(request, "Yummy/payment_success.html", context)
 
 
-
 @login_required
 @staff_member_required
 def new_tables_actions(request):
@@ -555,3 +553,19 @@ def new_tables_actions(request):
             return redirect('new_tables')
         
         
+@login_required
+@staff_member_required
+def view_orders_action(request):
+    context = {}
+    user = request.user
+    if not user.is_staff:
+        message = 'You are not authorized to do this action.'
+        messages.error(request, message)
+        return redirect('home')
+    else: 
+        orders = Order.objects.all()
+        foodset_list = [order.foods.all() for order in orders]
+
+        context['orders'] = orders.order_by('order_time').reverse
+        context['foodset_list'] = foodset_list
+        return render(request, 'yummy/view_orders.html', context)
