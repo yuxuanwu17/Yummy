@@ -3,7 +3,7 @@ import datetime
 import json
 from django.contrib import messages
 
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -14,11 +14,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count
-from datetime import datetime
-from django.db.models import F, ExpressionWrapper, CharField
-
-from django.contrib import admin
-
+import datetime
 from Yummy.models import *
 from .forms import *
 
@@ -78,7 +74,7 @@ def register_action(request):
     return redirect('home')
 
 
-# Create your views here.
+# display pre-stored dishes
 def global_action(request):
     response_data = collections.defaultdict(list)
     # {'Meat': [{}, {}], 'Soup': [{}, {}], 'categories' = ['Meat', 'Soup']}
@@ -102,7 +98,7 @@ def global_action(request):
             response_data['foods'].append([my_item])
         else:
             response_data['foods'][curr_index].append(my_item)
-    # print(Profile.objects.get(user=request.user))
+    
     if request.user.is_authenticated:
         profiles, _ = Profile.objects.get_or_create(user=request.user)
         print(profiles)
@@ -202,11 +198,17 @@ def reserve_action(request):
         'number_customers': request.POST['number_customers']
     }
 
-    tables = Table.objects.filter(
-        capacity__gte=new_filter['number_customers'],
-        open_time__gte=new_filter['start_time'],
-        close_time__lte=new_filter['end_time']
-    )
+    # tables = Table.objects.filter(
+    #     capacity__gte=new_filter['number_customers'],
+    #     open_time__gte=new_filter['start_time'],
+    #     close_time__lte=new_filter['end_time']
+    # )
+    # Initial tables filtering
+    tables = Table.objects.filter(capacity__gte=new_filter['number_customers'])
+    # Filter by start_time
+    tables = tables.filter(open_time__lte=new_filter['start_time'])
+    # Filter by end_time
+    tables = tables.filter(close_time__gte=new_filter['end_time'])
 
     reservations = Reservation.objects.filter(
         date=new_filter['date'],
