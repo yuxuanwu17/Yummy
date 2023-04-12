@@ -37,4 +37,5 @@ urlpatterns = [
     path('new_tables', views.new_tables_actions, name='new_tables'),
     path('cancel_reservation_action/<int:id>', views.cancel_reservation_action, name='cancel_reservation_action'),
     path('get_comments/', views.get_comments, name='get_comments'),
+    path('favorite_count/<int:item_id>/', views.get_favorite_count, name='favorite_count'),
 ]

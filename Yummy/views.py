@@ -402,6 +402,12 @@ def get_comments(request):
     return JsonResponse(list(comments)[::-1], safe=False)
 
 
+def get_favorite_count(request, item_id):
+    # Replace this line with the code to get the updated count for the given item_id
+    count = Food.objects.get(id=item_id).favoring.count()
+    return JsonResponse({"count": count})
+
+
 @login_required
 def favorite_food_action(request):
     # Get my info first
