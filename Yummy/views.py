@@ -190,7 +190,7 @@ def reserve_action(request):
         context['form'] = ReservationForm(initial={
             'first_name': user.first_name,
             'last_name': user.last_name,
-            'phone_number': user.profile.phone_number,})
+            'phone_number': user.profile.phone_number, })
         return render(request, 'Yummy/reserve.html', context)
 
     new_filter = {
@@ -334,8 +334,8 @@ def summary_action(request):
 def profile_action(request):
     context = {}
     profile = request.user.profile
-    orders = Order.objects.filter(customer = request.user) #, is_paid = True
-    reservations = Reservation.objects.filter(customer = request.user)
+    orders = Order.objects.filter(customer=request.user)  # , is_paid = True
+    reservations = Reservation.objects.filter(customer=request.user)
 
     if request.method == "GET":
         context['item'] = profile
@@ -343,21 +343,23 @@ def profile_action(request):
         context['favorite'] = favorite
         context['reservations'] = reservations
         if len(reservations) == 0:
-            context['no_reservation_message']="You don't have any reservations."
+            context['no_reservation_message'] = "You don't have any reservations."
         if len(favorite) == 0:
-            context['no_favorite_message']="You don't have any favorite dishes."
+            context['no_favorite_message'] = "You don't have any favorite dishes."
         if len(orders) == 0:
-            context['no_order_message']="You don't have any past orders."
+            context['no_order_message'] = "You don't have any past orders."
         else:
             context['orders'] = orders.order_by('order_time').reverse
             context['foodset_list'] = [order.foods.all() for order in orders]
 
     return render(request, 'Yummy/profile.html', context)
 
+
 def cancel_reservation_action(request, id):
     reservation = Reservation.objects.get(id=id)
     reservation.delete()
     return redirect('profile')
+
 
 def dish_action(request, id):
     target_food = Food.objects.get(id=id)
@@ -380,6 +382,14 @@ def dish_action(request, id):
                                              creator=request.user, )
         new_comment.post_under.add(target_food)
     return render(request, 'Yummy/dish.html', context)
+
+
+def get_comments(request):
+    # Assuming you have a Comment model with these fields
+    comments = Comment.objects.filter(post_under=request.GET.get('item_id')).values('text', 'creator__first_name',
+                                                                                    'creator__last_name',
+                                                                                    'creation_time')
+    return JsonResponse(list(comments)[::-1], safe=False)
 
 
 @login_required
@@ -484,7 +494,7 @@ def register_staff_action(request):
         message = 'New staff ' + user.first_name + ' ' + user.last_name + ' created.'
         messages.success(request, message)
         return redirect('home')
-    
+
     else:
         message = 'You are not authorized to do this action.'
         messages.error(request, message)
@@ -511,7 +521,6 @@ def payment_success(request):
     return render(request, "Yummy/payment_success.html", context)
 
 
-
 @login_required
 @staff_member_required
 def new_tables_actions(request):
@@ -521,12 +530,12 @@ def new_tables_actions(request):
         message = 'You are not authorized to do this action.'
         messages.error(request, message)
         return redirect('home')
-    
+
     if request.method == "GET":
         results = Table.objects.values('capacity').annotate(dcount=Count('capacity')).order_by()
         context['results'] = results
         return render(request, "Yummy/new_tables.html", context)
-    
+
     if request.method == "POST":
         if 'capacity' not in request.POST or request.POST['capacity'] == '':
             message = 'Invalid input of capacity, please enter a number'
@@ -536,17 +545,17 @@ def new_tables_actions(request):
             message = 'Invalid input of number of tables to add, please enter a number'
             messages.error(request, message)
             return redirect('new_tables')
-      
+
         capacity = float(request.POST['capacity'])
         number_to_add = float(request.POST['number_to_add'])
-        if capacity<=0 or number_to_add<=0:
+        if capacity <= 0 or number_to_add <= 0:
             message = 'Input must be greater than zero'
             messages.error(request, message)
             return redirect('new_tables')
-        
+
         if capacity.is_integer() and number_to_add.is_integer():
             new_tables = []
-            for i in range(int(number_to_add)): 
+            for i in range(int(number_to_add)):
                 new_tables.append(Table(capacity=int(capacity)))
 
             Table.objects.bulk_create(new_tables)
@@ -555,10 +564,8 @@ def new_tables_actions(request):
             results = Table.objects.values('capacity').annotate(dcount=Count('capacity')).order_by()
             context['results'] = results
             return render(request, 'yummy/new_tables.html', context)
-            
+
         else:
             message = 'Input must be an integer'
             messages.error(request, message)
             return redirect('new_tables')
-        
-        

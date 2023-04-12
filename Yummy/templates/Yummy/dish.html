@@ -159,6 +159,41 @@
 
 
 {% block posts_header %}
+    <script>
+        // Add a new function to fetch and display comments
+        function updateComments() {
+            $.ajax({
+                url: '{% url "get_comments" %}',
+                method: 'GET',
+                data: {
+                    item_id: '{{ f.id }}',
+                },
+                success: function (response) {
+                    var commentsList = $(".list-group").html('');
+
+                    response.forEach(function (comment) {
+                        var listItem = $('<li class="list-group-item d-flex justify-content-between align-items-start"></li>');
+                        var commentDiv = $('<div class="ms-2 me-auto"></div>');
+                        commentDiv.append('<div class="fw-bold">' + comment.text + '</div>');
+                        commentDiv.append('By ' + comment.creator__first_name + ' ' + comment.creator__last_name);
+                        listItem.append(commentDiv);
+                        listItem.append('<span class="badge text-bg-light">' + comment.creation_time + '</span>');
+                        commentsList.append(listItem);
+                    });
+                },
+                error: function (response) {
+                    console.log("An error occurred while fetching the comments");
+                }
+            });
+        }
+
+        // Call updateComments() every 5 seconds (5000 milliseconds)
+        setInterval(updateComments, 5000);
+
+        // Fetch and display comments when the page loads
+        updateComments();
+
+    </script>
     <div class="py-5 text-center container-fluid">
         <div class="row">
             <div class="col-md-6 col-sm-6">

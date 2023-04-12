@@ -36,4 +36,5 @@ urlpatterns = [
     path('payment_success/', views.payment_success, name='payment_success'),
     path('new_tables', views.new_tables_actions, name='new_tables'),
     path('cancel_reservation_action/<int:id>', views.cancel_reservation_action, name='cancel_reservation_action'),
+    path('get_comments/', views.get_comments, name='get_comments'),
 ]
