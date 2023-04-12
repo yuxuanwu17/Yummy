@@ -159,67 +159,104 @@
 
 
 {% block posts_header %}
-<div class ="py-5 text-center container-fluid">
-    <div class ="row">
-      <div class ="col-md-6 col-sm-6">
-        <div class="dish_pic">
-            <img id="id_user_picture" src="{% static  f.picture_dir %}" class="card shawdow-sm "
-                 style="align-content: center; height: 18rem; width:18rem">
-        </div>
-        <br>
+    <script>
+        // Add a new function to fetch and display comments
+        function updateComments() {
+            $.ajax({
+                url: '{% url "get_comments" %}',
+                method: 'GET',
+                data: {
+                    item_id: '{{ f.id }}',
+                },
+                success: function (response) {
+                    var commentsList = $(".list-group").html('');
 
-        <h1 class="fw-light">{{ f.name }}</h1>
-        <p>
-            {% if f.is_vegetarian %}
-                &#x1F96C;
-            {% endif %}
-            {% if f.is_spicy %}
-                &#x1F336;&#xFE0F;
-            {% endif %}
-        </p>
-        <p class="lead">
-            {{ f.description }}
-        </p>
-        <p id="calories" class="lead fw-light">
-            Calories: {{ f.calories }}
-        </p>
-        <p id="price" class="lead fw-light-bolder fs-4">
-            ${{ f.price }}
-        </p>
+                    response.forEach(function (comment) {
+                        var listItem = $('<li class="list-group-item d-flex justify-content-between align-items-start"></li>');
+                        var commentDiv = $('<div class="ms-2 me-auto"></div>');
+                        commentDiv.append('<div class="fw-bold">' + comment.text + '</div>');
+                        commentDiv.append('By ' + comment.creator__first_name + ' ' + comment.creator__last_name);
+                        listItem.append(commentDiv);
+                        listItem.append('<span class="badge text-bg-light">' + comment.formatted_creation_time + '</span>');
+                        commentsList.append(listItem);
+                    });
+                },
+                error: function (response) {
+                    console.log("An error occurred while fetching the comments");
+                }
+            });
+        }
 
-        <div>
-            {% if user.is_authenticated %}
-                <div class="btn-group">
-                    <button type="button"
-                            class="btn btn-large btn-outline-secondary favorite-btn"
-                            data-item="{{ f.id }}"
-                            data-favorited="{% if f.name in favorite_list %}true{% else %}false{% endif %}">
-                        {% if f.name in favorite_list %}
-                            Cancel
-                        {% else %}
-                            Favorite
-                        {% endif %}
-                    </button>
+        // Call updateComments() every 5 seconds (5000 milliseconds)
+        setInterval(updateComments, 5000);
 
-                    <button type="button"
-                            class="btn btn-large btn-outline-secondary minus-btn"
-                            data-item="{{ f.id }}">
-                        <span class="minus_sign">&#10134;</span>
-                    </button>
+        // Fetch and display comments when the page loads
+        updateComments();
 
-                    <button type="button"
-                            class="btn btn-large btn-outline-secondary fw-bold item-btn"
-                            data-item="{{ f.id }}">
-                        <span class="quantity-display" data-item="{{ f.id }}">0</span>
-                    </button>
-
-                    <button type="button"
-                            class="btn btn-large btn-outline-secondary plus-btn"
-                            data-item="{{ f.id }}">
-                        <span class="plus_sign">&#10133;</span>
-                    </button>
+    </script>
+    <div class="py-5 text-center container-fluid">
+        <div class="row">
+            <div class="col-md-6 col-sm-6">
+                <div class="dish_pic">
+                    <img id="id_user_picture" src="{% static  f.picture_dir %}" class="card shawdow-sm "
+                         style="align-content: center; height: 18rem; width:18rem">
                 </div>
                 <br>
+                <h1 class="fw-light">{{ f.name }}</h1>
+                <p>
+                    {% if f.is_vegetarian %}
+                        &#x1F96C;
+                    {% endif %}
+                    {% if f.is_spicy %}
+                        &#x1F336;&#xFE0F;
+                    {% endif %}
+                </p>
+                <p class="lead">
+                    {{ f.description }}
+                </p>
+                <p id="calories" class="lead fw-light">
+                    Calories: {{ f.calories }}
+                </p>
+                <p id="price" class="lead fw-light-bolder fs-4">
+                    ${{ f.price }}
+                </p>
+
+                <div>
+                    {% if user.is_authenticated %}
+                        <div class="btn-group">
+                            <button type="button"
+                                    class="btn btn-large btn-outline-secondary favorite-btn"
+                                    data-item="{{ f.id }}"
+                                    data-favorited="{% if f.name in favorite_list %}true{% else %}false{% endif %}">
+                                {% if f.name in favorite_list %}
+                                    Cancel
+                                {% else %}
+                                    Favorite
+                                {% endif %}
+                            </button>
+
+                            <button type="button"
+                                    class="btn btn-large btn-outline-secondary minus-btn"
+                                    data-item="{{ f.id }}">
+                                <span class="minus_sign">&#10134;</span>
+                            </button>
+
+                            <button type="button"
+                                    class="btn btn-large btn-outline-secondary fw-bold item-btn"
+                                    data-item="{{ f.id }}">
+                                <span class="quantity-display" data-item="{{ f.id }}">0</span>
+                            </button>
+
+                            <button type="button"
+                                    class="btn btn-large btn-outline-secondary plus-btn"
+                                    data-item="{{ f.id }}">
+                                <span class="plus_sign">&#10133;</span>
+                            </button>
+                        </div>
+                        <br>
+                        <p id="num_ppl_fav" class="lead fs-5">{{ count }} people also like this dish</p>
+                    {% endif %}
+                </div>
                 <p id="num_ppl_fav" class="lead fs-5">{{ count }} people also like this dish</p>
             {% endif %}
         </div>
@@ -244,22 +281,44 @@
             <div id="comment_text" class="fs-5 fw-bold" style="color:#f0ad40f6;">
                 What did other people think about this dish:
             </div>
-            <div id="comment_dish_user" class="px-4 my-5 text-center">
-                <ul class="list-group overflow-auto shadow" style="max-height:23vw;">
-                    {% for comment in comments %}
-                        <li class="list-group-item d-flex justify-content-between align-items-start">
-                            <div class="ms-2 me-auto">
-                                <div class="fw-bold">{{ comment.text }}</div>
-                                By {{ comment.creator.first_name }} {{ comment.creator.last_name }}
-                            </div>
-                            <span class="badge text-bg-light">{{ comment.creation_time }}</span>
-                        </li>
-                    {% endfor %}
-                </ul>
-        </section>
-       </div>
+
+            <div class="col-md-6 col-sm-6">
+                <section class="comments">
+                    {% if user.is_authenticated %}
+                        <form method="POST" class="form-control">
+                            {% for field in comment_form.visible_fields %}
+                                <div>
+                                    <label class="col-form-label">{{ field.label_tag }}</label>
+                                    <span>{{ field }}</span>
+                                </div>
+                            {% endfor %}
+                            {% csrf_token %}
+                            <button action="{% url 'reserve' %}" class="btn btn-secondary my-2 reserve" type="submit">
+                                Submit
+                            </button>
+                        </form>
+                    {% endif %}
+                    <br>
+                    <div id="comment_text" class="fs-5 fw-bold" style="color:#f0ad40f6;">
+                        What did other people think about this dish:
+                    </div>
+                    <div id="comment_dish_user" class="px-4 my-5 text-center">
+                        <ul class="list-group overflow-auto shadow" style="max-height:23vw;">
+                            {% for comment in comments %}
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">{{ comment.text }}</div>
+                                        By {{ comment.creator.first_name }} {{ comment.creator.last_name }}
+                                    </div>
+                                    <span class="badge text-bg-light">{{ comment.creation_time }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </section>
+            </div>
+        </div>
     </div>
-</div>
 {% endblock %}
 
 {% block content %}

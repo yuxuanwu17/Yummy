@@ -60,7 +60,6 @@
 <script src="{% static 'Yummy/dist/js/checkout.js' %}?v={% now 'U' %}" type="text/javascript"></script>
 
 {% block content %}
-
     <body class="bg-light">
 
     <div class="container">
@@ -123,7 +122,8 @@
                         <div class="row g-3">
                             <div class="col-sm-6">
                                 <label for="firstName" class="form-label">First name</label>
-                                <input type="text" class="form-control" id="firstName" value="" required>
+                                <input type="text" class="form-control" id="firstName" value="{{ user.first_name }}"
+                                       required>
                                 <div class="invalid-feedback">
                                     Valid first name is required.
                                 </div>
@@ -131,7 +131,8 @@
 
                             <div class="col-sm-6">
                                 <label for="lastName" class="form-label">Last name</label>
-                                <input type="text" class="form-control" id="lastName" value="" required>
+                                <input type="text" class="form-control" id="lastName" value="{{ user.last_name }}"
+                                       required>
                                 <div class="invalid-feedback">
                                     Valid last name is required.
                                 </div>
@@ -142,7 +143,7 @@
                                 <div class="input-group has-validation">
                                     <span class="input-group-text">@</span>
                                     <input type="text" class="form-control" id="username"
-                                                   value="{{ user.username }}" required>
+                                           value="{{ user.username }}" required>
                                     <div class="invalid-feedback">
                                         Your username is required.
                                     </div>
@@ -260,7 +261,8 @@
                         <div class="row gy-3">
                             <div class="col-md-6">
                                 <label for="cc-name" class="form-label">Name on card</label>
-                                <input type="text" class="form-control" id="cc-name" placeholder="" required>
+                                <input type="text" class="form-control" id="cc-name" placeholder="" required
+                                       oninput="validateNameOnCard(this)">
                                 <small class="text-muted">Full name as displayed on card</small>
                                 <div class="invalid-feedback">
                                     Name on card is required
@@ -269,7 +271,8 @@
 
                             <div class="col-md-6">
                                 <label for="cc-number" class="form-label">Card number</label>
-                                <input type="text" class="form-control" id="cc-number" placeholder="" required>
+                                <input type="text" class="form-control" id="cc-number" placeholder="" required
+                                       oninput="validateCardNumber(this)">
                                 <div class="invalid-feedback">
                                     Credit card number is required
                                 </div>
@@ -277,7 +280,8 @@
 
                             <div class="col-md-3">
                                 <label for="cc-expiration" class="form-label">Expiration</label>
-                                <input type="text" class="form-control" id="cc-expiration" placeholder="" required>
+                                <input type="text" class="form-control" id="cc-expiration" placeholder="" required
+                                       oninput="validateExpirationDate(this)">
                                 <small class="text-muted">mm/yyyy</small>
                                 <div class="invalid-feedback">
                                     Expiration date required
@@ -286,12 +290,14 @@
 
                             <div class="col-md-3">
                                 <label for="cc-cvv" class="form-label">CVV</label>
-                                <input type="text" class="form-control" id="cc-cvv" placeholder="" required>
+                                <input type="text" class="form-control" id="cc-cvv" placeholder="" required
+                                       oninput="validateCVV(this)">
                                 <div class="invalid-feedback">
                                     Security code required
                                 </div>
                             </div>
                         </div>
+
 
                         <hr class="my-4">
 
@@ -305,17 +311,121 @@
 
     </body>
 
+
     <script>
+        function luhnCheck(value) {
+            let sum = 0;
+            let shouldDouble = false;
+            for (let i = value.length - 1; i >= 0; i--) {
+                let digit = parseInt(value.charAt(i), 10);
+
+                if (shouldDouble) {
+                    if ((digit *= 2) > 9) {
+                        digit -= 9;
+                    }
+                }
+
+                sum += digit;
+                shouldDouble = !shouldDouble;
+            }
+
+            return (sum % 10) === 0;
+        }
+
+        function validateCard(input) {
+            console.log("input.val" + input.value)
+            if (!luhnCheck(input.value)) {
+                input.setCustomValidity("Invalid credit card number.");
+            } else {
+                input.setCustomValidity("");
+            }
+        }
+
+        function isValidExpirationDate(expiration) {
+            const currentDate = new Date();
+            const currentMonth = currentDate.getMonth() + 1;
+            const currentYear = currentDate.getFullYear();
+
+            const [month, year] = expiration.split('/');
+            const expMonth = parseInt(month, 10);
+            const expYear = parseInt(year, 10);
+
+            if (!month || !year || isNaN(expMonth) || isNaN(expYear)) {
+                return false;
+            }
+
+            if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        function isValidCVV(cvv) {
+            const cvvRegex = /^[0-9]{3,4}$/;
+            return cvvRegex.test(cvv);
+        }
+
+
+        function isValidNameOnCard(name) {
+            const nameRegex = /^[a-zA-Z\s]+$/;
+            return nameRegex.test(name);
+        }
+
+        function validateNameOnCard(input) {
+            input.setCustomValidity(isValidNameOnCard(input.value) ? "" : "Invalid name on card.");
+        }
+
+        function validateCardNumber(input) {
+            input.setCustomValidity(luhnCheck(input.value) ? "" : "Invalid credit card number.");
+        }
+
+        function validateExpirationDate(input) {
+            input.setCustomValidity(isValidExpirationDate(input.value) ? "" : "Invalid expiration date.");
+        }
+
+        function validateCVV(input) {
+            input.setCustomValidity(isValidCVV(input.value) ? "" : "Invalid CVV.");
+        }
+
+
         document.getElementById("payment-form").addEventListener("submit", function (event) {
             event.preventDefault();
             event.stopPropagation();
 
             const form = event.target;
+            const ccName = form.querySelector("#cc-name").value;
+            const ccNumber = form.querySelector("#cc-number").value;
+            const ccExpiration = form.querySelector("#cc-expiration").value;
+            const ccCVV = form.querySelector("#cc-cvv").value;
+
+            if (!isValidNameOnCard(ccName)) {
+                alert("Invalid name on card.");
+                return;
+            }
+
+            if (!luhnCheck(ccNumber)) {
+                alert("Invalid credit card number.");
+                return;
+            }
+
+            if (!isValidExpirationDate(ccExpiration)) {
+                alert("Invalid expiration date.");
+                return;
+            }
+
+            if (!isValidCVV(ccCVV)) {
+                alert("Invalid CVV.");
+                return;
+            }
+
             if (form.checkValidity()) {
                 window.location.href = "{% url 'payment_success' %}";
             }
 
             form.classList.add("was-validated");
         });
+
+        
     </script>
 {% endblock %}
