@@ -18,10 +18,22 @@
                 <h2 class="accordion-header">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            <div class="d-flex w-100 justify-content-between">
-                                <div class="ms-2 me-auto">
+                            <div class="d-flex w-100 justify-content-between align-items-start">
+                                <div class="ms-6 me-auto">
                                     <div class="fw-bold">Order Number: {{ order.id }}</div>
                                     <p>Submitted Date & Time: {{ order.order_time }}</p>
+                                </div>
+                                <div class="ms-6 me-auto">
+                                    Status: 
+                                    {% if order.is_completed %}
+                                    <span class="badge text-bg-success">Completed</span>
+                                    {% else %}
+                                        {% if order.is_paid %}
+                                        <span class="badge text-bg-info">Paid</span>
+                                        {% else %}
+                                        <span class="badge text-bg-warning">Not Submit</span>
+                                        {% endif %}
+                                    {% endif %}
                                 </div>
                             </div>
                     </button>
@@ -29,77 +41,51 @@
                 <div id="collapseOne" class="accordion-collapse collapse"
                      data-bs-parent="#accordionReservation">
                     <div class="accordion-body">
-                        <p>Name: {{ order.customer.first_name }} {{order.customer.last_name}}</p>
-                        <p>Phone: {{order.customer.profile.phone_number }}</p>
-                        {% if order.is_takeout %}
-                            <p>Take-out</p>
-                        {% else %}
-                            <p>Dine-in. Table: {{order.order_table.table.id}}</p>
-                        {% endif %}
-                        <div>
-                            {% if order.is_completed %}
-                            <span class="badge text-bg-success">Completed</span>
-                            {% else %}
-                                {% if order.is_paid %}
-                                <span class="badge text-bg-info">Submitted</span>
+                        <div class="row" style="margin-bottom: 3%;">
+                            <div class="col-md-4">Customer Name: {{ order.customer.first_name }} {{order.customer.last_name}}</div>
+                            <div class="col-md-4">Phone: {{order.customer.profile.phone_number }}</div>
+                            <div class="col-md-4">
+                                {% if order.is_takeout %}
+                                <span class="fw-bold">Take-out</span>
                                 {% else %}
-                                <span class="badge text-bg-warning">Not Submit</span>
+                                <span class="fw-bold">Dine-in @ Table {{order.order_table.table.id}}</span>
                                 {% endif %}
-                            {% endif %}
+                            </div>
                         </div>
+                        <table class="table align-middle table-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#Dish</th>
+                                    <th scope="col">Dish Name</th>
+                                    <th scope="col">Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody class="justify-content-between">
+                                {% for foodset in order.foods.all %}
+                                <tr>
+                                    <th scope="row">{{ foodset.food.id }}</th>
+                                    <td>{{ foodset.food.name }}</td>
+                                    <td><span id="id_quantity_of_{{ foodset.food.id }}" class="quantity_input">{{ foodset.quantity }}</td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
                     </div>
+
+                    {% if not order.is_completed %}
+                    <form method="POST" action="{% url 'complete_order' order.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="order_id" value="{{order.id}}">
+                        <button type="submit" class="btn btn-warning my-3"
+                            id="complete_order_{{order.id}}">Complete Order</button>
+                    </form>
+                    {% endif %}
                 </div>
             </div>
+
         {% endfor %}
     </div>
-
-    <table class="table table-striped align-middle text-center">
-        <thead class="fs-5">
-        <tr>
-            <th scope="col">#Dish</th>
-            <th scope="col">Image</th>
-            <th scope="col">Dish Name</th>
-            <th scope="col">&nbsp;</th>
-            <th scope="col">Quantity</th>
-            <th scope="col">&nbsp;</th>
-            <th scope="col">Unit Price</th>
-            <th scope="col">&nbsp;</th>
-        </tr>
-        </thead>
-        <tbody class="table-group-divider fs-5">
-        {% for foodset in food_set %}
-            <tr>
-                <th scope="row">{{ foodset.food.id }}</th>
-                <td class="d-flex justify-content-between align-items-center">
-                    <img src="{% static foodset.food.picture_dir %}" class="card shadow-sm"
-                         style="align-content:center; width: 8vw; height: 8vw; object-fit: cover;">
-                </td>
-                <td>{{ foodset.food.name }}</td>
-                <td>
-                    <button type="button" class="btn btn-outline-dark minus-btn" data-id="{{ foodset.food.id }}"> -
-                    </button>
-                </td>
-                <td><span id="id_quantity_of_{{ foodset.food.id }}" class="quantity_input">{{ foodset.quantity }}</td>
-                <td>
-                    <button type="button" class="btn btn-outline-dark plus-btn" data-id="{{ foodset.food.id }}"> +
-                    </button>
-                </td>
-                <td>{{ foodset.food.price }}</td>
-                <td>
-                    <button type="button" class="btn btn-outline-dark remove-btn" data-id="{{ foodset.food.id }}">
-                        Remove
-                    </button>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-
-
-
-
-
 
 {% endblock %}
 

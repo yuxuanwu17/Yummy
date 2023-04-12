@@ -599,10 +599,22 @@ def view_orders_action(request):
         return redirect('home')
     else: 
         orders = Order.objects.all()
-        foodset_list = [order.foods.all() for order in orders]
-
         context['orders'] = orders.order_by('order_time').reverse
-        context['foodset_list'] = foodset_list
         return render(request, 'yummy/view_orders.html', context)
         
         
+@login_required
+@staff_member_required
+def complete_order_action(request, order_id):
+    user = request.user
+    if not user.is_staff:
+        message = 'You are not authorized to do this action.'
+        messages.error(request, message)
+        return redirect('home')
+    else:
+        order = Order.objects.get(id=order_id)
+        order.is_completed = True
+        order.save()
+        print(order.is_completed)
+        return redirect('view_orders')
+
