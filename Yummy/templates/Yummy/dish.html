@@ -202,7 +202,6 @@
                          style="align-content: center; height: 18rem; width:18rem">
                 </div>
                 <br>
-
                 <h1 class="fw-light">{{ f.name }}</h1>
                 <p>
                     {% if f.is_vegetarian %}
@@ -258,6 +257,29 @@
                         <p id="num_ppl_fav" class="lead fs-5">{{ count }} people also like this dish</p>
                     {% endif %}
                 </div>
+                <p id="num_ppl_fav" class="lead fs-5">{{ count }} people also like this dish</p>
+            {% endif %}
+        </div>
+      </div>
+      
+      <div class ="col-md-6 col-sm-6">
+        <section class="comments">
+            {% if user.is_authenticated %}
+                    <form method="POST" class="form-control">
+                        {% for field in comment_form.visible_fields %}
+                            <div>
+                                <label class="col-form-label">{{ field.label_tag }}</label>
+                                <span>{{ field }}</span>
+                            </div>
+                        {% endfor %}
+                        {% csrf_token %}
+                        <button class="btn btn-secondary my-2 reserve" type="submit">Submit
+                        </button>
+                    </form>
+            {% endif %}
+            <br>
+            <div id="comment_text" class="fs-5 fw-bold" style="color:#f0ad40f6;">
+                What did other people think about this dish:
             </div>
 
             <div class="col-md-6 col-sm-6">

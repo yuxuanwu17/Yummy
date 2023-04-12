@@ -204,8 +204,8 @@ def reserve_action(request):
 
     tables = Table.objects.filter(
         capacity__gte=new_filter['number_customers'],
-        open_time__lte=new_filter['start_time'],
-        close_time__gte=new_filter['end_time']
+        open_time__gte=new_filter['start_time'],
+        close_time__lte=new_filter['end_time']
     )
 
     reservations = Reservation.objects.filter(
