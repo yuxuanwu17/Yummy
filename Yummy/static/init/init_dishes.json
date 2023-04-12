@@ -5,7 +5,17 @@
     "description": "Loaded with cherry tomatoes, red onions, chickpeas and more, with a bright, lemony flavor!",
     "picture_dir": "img/cucumber-salad.png",
     "category": "Appetizer",
-    "calories": 300,
+    "calories": 250,
+    "is_spicy": 0,
+    "is_vegetarian": 1
+  },
+  {
+    "name": "Wood Ear Mushroom Salad",
+    "price": 9,
+    "description": "A delicious dish with a unique, mildly flavored mushroom.",
+    "picture_dir": "img/mashroom.jpg",
+    "category": "Appetizer",
+    "calories": 220,
     "is_spicy": 0,
     "is_vegetarian": 1
   },
@@ -25,7 +35,7 @@
     "description": "A popular dish from Sichuan, offering you a special and spicy experience.",
     "picture_dir": "img/ma-po-tofu.png",
     "category": "Vegetable",
-    "calories": 300,
+    "calories": 350,
     "is_spicy": 1,
     "is_vegetarian": 0
   },
@@ -45,7 +55,7 @@
     "description": "Cubed pork deep-fried until golden brown, then add sweet and sour sauce.",
     "picture_dir": "img/sweet-sour-pork.png",
     "category": "Meat",
-    "calories": 400,
+    "calories": 450,
     "is_spicy": 0,
     "is_vegetarian": 0
   },
@@ -55,7 +65,7 @@
     "description": "Thin Sliced Pork Belly, Leek, Red Pepper, and Black Bean.",
     "picture_dir": "img/sichuan-pork.png",
     "category": "Meat",
-    "calories": 300,
+    "calories": 500,
     "is_spicy": 1,
     "is_vegetarian": 0
   },
@@ -75,9 +85,9 @@
     "description": "Made from dried red beans with added chewy rice cake balls made from glutinous rice flour. Creamy, nutty, and a little sweet",
     "picture_dir": "img/red-bean-porridge.png",
     "category": "Soup",
-    "calories": 400,
+    "calories": 200,
     "is_spicy": 0,
-    "is_vegetarian": 0
+    "is_vegetarian": 1
   },
   {
     "name": "Mango Pomelo Sago",
@@ -85,9 +95,9 @@
     "description": "A Cantonese-style dessert with grapefruit, mango, sago, and coconut milk, and the main cooking process is boiling.",
     "picture_dir": "img/mango-pomelo-sago.png",
     "category": "Dessert",
-    "calories": 400,
+    "calories": 150,
     "is_spicy": 0,
-    "is_vegetarian": 0
+    "is_vegetarian": 1
   },
   {
     "name": "Fruit With Yogurt",
@@ -95,9 +105,19 @@
     "description": "Collision on the tip of the tongue brought by fruit and yogurt. You can also choose fruit yourself!",
     "picture_dir": "img/fruit-with-yogurt.png",
     "category": "Dessert",
-    "calories": 400,
+    "calories": 160,
     "is_spicy": 0,
-    "is_vegetarian": 0
+    "is_vegetarian": 1
+  },
+  {
+    "name": "Pear with rock sugar",
+    "price": 9,
+    "description": "One dessert that will impress you in all ways",
+    "picture_dir": "img/pear.jpg",
+    "category": "Dessert",
+    "calories": 80,
+    "is_spicy": 0,
+    "is_vegetarian": 1
   },
   {
     "name": "Fried Pork Dumplings",
@@ -105,7 +125,7 @@
     "description": "Filled with ground pork, napa cabbage, chives, soy sauce and more.",
     "picture_dir": "img/Fried-pork-dumplings.jpg",
     "category": "Snack",
-    "calories": 400,
+    "calories": 300,
     "is_spicy": 0,
     "is_vegetarian": 0
   },
@@ -115,7 +135,7 @@
     "description": "A thin, flat, circular piece of cooked batter made from milk, pumpkin, flour, and eggs.",
     "picture_dir": "img/Pumpkin-pancake.png",
     "category": "Snack",
-    "calories": 400,
+    "calories": 250,
     "is_spicy": 0,
     "is_vegetarian": 0
   },
@@ -125,7 +145,7 @@
     "description": "Small balls made of glutinous rice flour. Very chewy and slightly sweet.",
     "picture_dir": "img/Rice-balls-in-wine-soup.png",
     "category": "Snack",
-    "calories": 400,
+    "calories": 220,
     "is_spicy": 0,
     "is_vegetarian": 0
   },
@@ -135,7 +155,7 @@
     "description": "A breakfast pancake with a lovely crispy shell and soft inside.",
     "picture_dir": "img/Scallion-pancakes.png",
     "category": "Snack",
-    "calories": 400,
+    "calories": 260,
     "is_spicy": 0,
     "is_vegetarian": 0
   },
@@ -148,5 +168,15 @@
     "calories": 600,
     "is_spicy": 0,
     "is_vegetarian": 1
+  },
+  {
+    "name": "Yang Zhou Fried Rice",
+    "price": 11,
+    "description": "A famous dish made with rice that is stir-fried with vegetables and meat",
+    "picture_dir": "img/fried-rice.jpg",
+    "category": "Rice & Noodles",
+    "calories": 400,
+    "is_spicy": 0,
+    "is_vegetarian": 0
   }
 ]

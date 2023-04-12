@@ -3,7 +3,7 @@ import datetime
 import json
 from django.contrib import messages
 
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -14,9 +14,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count
-
-from django.contrib import admin
-
+import datetime
 from Yummy.models import *
 from .forms import *
 
@@ -76,7 +74,7 @@ def register_action(request):
     return redirect('home')
 
 
-# Create your views here.
+# display pre-stored dishes
 def global_action(request):
     response_data = collections.defaultdict(list)
     # {'Meat': [{}, {}], 'Soup': [{}, {}], 'categories' = ['Meat', 'Soup']}
@@ -100,7 +98,7 @@ def global_action(request):
             response_data['foods'].append([my_item])
         else:
             response_data['foods'][curr_index].append(my_item)
-    # print(Profile.objects.get(user=request.user))
+    
     if request.user.is_authenticated:
         profiles, _ = Profile.objects.get_or_create(user=request.user)
         print(profiles)
@@ -187,7 +185,10 @@ def reserve_action(request):
     context = {}
     user = request.user
     if request.method == 'GET':
-        context['form'] = ReservationForm()
+        context['form'] = ReservationForm(initial={
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'phone_number': user.profile.phone_number, })
         return render(request, 'Yummy/reserve.html', context)
 
     new_filter = {
@@ -197,11 +198,17 @@ def reserve_action(request):
         'number_customers': request.POST['number_customers']
     }
 
-    tables = Table.objects.filter(
-        capacity__gte=new_filter['number_customers'],
-        open_time__lte=new_filter['start_time'],
-        close_time__gte=new_filter['end_time']
-    )
+    # tables = Table.objects.filter(
+    #     capacity__gte=new_filter['number_customers'],
+    #     open_time__gte=new_filter['start_time'],
+    #     close_time__lte=new_filter['end_time']
+    # )
+    # Initial tables filtering
+    tables = Table.objects.filter(capacity__gte=new_filter['number_customers'])
+    # Filter by start_time
+    tables = tables.filter(open_time__lte=new_filter['start_time'])
+    # Filter by end_time
+    tables = tables.filter(close_time__gte=new_filter['end_time'])
 
     reservations = Reservation.objects.filter(
         date=new_filter['date'],
@@ -331,8 +338,8 @@ def summary_action(request):
 def profile_action(request):
     context = {}
     profile = request.user.profile
-    orders = Order.objects.filter(customer = request.user) #, is_paid = True
-    reservations = Reservation.objects.filter(customer = request.user)
+    orders = Order.objects.filter(customer=request.user)  # , is_paid = True
+    reservations = Reservation.objects.filter(customer=request.user)
 
     if request.method == "GET":
         context['item'] = profile
@@ -340,16 +347,22 @@ def profile_action(request):
         context['favorite'] = favorite
         context['reservations'] = reservations
         if len(reservations) == 0:
-            context['no_reservation_message']="You don't have any reservations."
+            context['no_reservation_message'] = "You don't have any reservations."
         if len(favorite) == 0:
-            context['no_favorite_message']="You don't have any favorite dishes."
+            context['no_favorite_message'] = "You don't have any favorite dishes."
         if len(orders) == 0:
-            context['no_order_message']="You don't have any past orders."
+            context['no_order_message'] = "You don't have any past orders."
         else:
             context['orders'] = orders.order_by('order_time').reverse
             context['foodset_list'] = [order.foods.all() for order in orders]
 
     return render(request, 'Yummy/profile.html', context)
+
+
+def cancel_reservation_action(request, id):
+    reservation = Reservation.objects.get(id=id)
+    reservation.delete()
+    return redirect('profile')
 
 
 def dish_action(request, id):
@@ -373,6 +386,28 @@ def dish_action(request, id):
                                              creator=request.user, )
         new_comment.post_under.add(target_food)
     return render(request, 'Yummy/dish.html', context)
+
+
+def get_comments(request):
+    # values('text', 'creator__first_name', 'creator__last_name', 'creation_time'): This retrieves the specified
+    # fields from the filtered comments: 'text', 'creator__first_name', 'creator__last_name', and 'creation_time'.
+    # Note that creator__first_name and creator__last_name are used to access the related User model fields
+    # 'first_name' and 'last_name', respectively.
+    comments = Comment.objects.filter(post_under=request.GET.get('item_id')).values('text', 'creator__first_name',
+                                                                                    'creator__last_name',
+                                                                                    'creation_time')
+
+    # Convert the creation_time to the desired format
+    for comment in comments:
+        comment['formatted_creation_time'] = comment['creation_time'].strftime('%B %d, %Y, %I:%M %p')
+
+    return JsonResponse(list(comments)[::-1], safe=False)
+
+
+def get_favorite_count(request, item_id):
+    # Replace this line with the code to get the updated count for the given item_id
+    count = Food.objects.get(id=item_id).favoring.count()
+    return JsonResponse({"count": count})
 
 
 @login_required
@@ -476,7 +511,7 @@ def register_staff_action(request):
         message = 'New staff ' + user.first_name + ' ' + user.last_name + ' created.'
         messages.success(request, message)
         return redirect('home')
-    
+
     else:
         message = 'You are not authorized to do this action.'
         messages.error(request, message)
@@ -512,12 +547,12 @@ def new_tables_actions(request):
         message = 'You are not authorized to do this action.'
         messages.error(request, message)
         return redirect('home')
-    
+
     if request.method == "GET":
         results = Table.objects.values('capacity').annotate(dcount=Count('capacity')).order_by()
         context['results'] = results
         return render(request, "Yummy/new_tables.html", context)
-    
+
     if request.method == "POST":
         if 'capacity' not in request.POST or request.POST['capacity'] == '':
             message = 'Invalid input of capacity, please enter a number'
@@ -527,17 +562,17 @@ def new_tables_actions(request):
             message = 'Invalid input of number of tables to add, please enter a number'
             messages.error(request, message)
             return redirect('new_tables')
-      
+
         capacity = float(request.POST['capacity'])
         number_to_add = float(request.POST['number_to_add'])
-        if capacity<=0 or number_to_add<=0:
+        if capacity <= 0 or number_to_add <= 0:
             message = 'Input must be greater than zero'
             messages.error(request, message)
             return redirect('new_tables')
-        
+
         if capacity.is_integer() and number_to_add.is_integer():
             new_tables = []
-            for i in range(int(number_to_add)): 
+            for i in range(int(number_to_add)):
                 new_tables.append(Table(capacity=int(capacity)))
 
             Table.objects.bulk_create(new_tables)
@@ -546,13 +581,13 @@ def new_tables_actions(request):
             results = Table.objects.values('capacity').annotate(dcount=Count('capacity')).order_by()
             context['results'] = results
             return render(request, 'yummy/new_tables.html', context)
-            
+
         else:
             message = 'Input must be an integer'
             messages.error(request, message)
             return redirect('new_tables')
-        
-        
+
+                
 @login_required
 @staff_member_required
 def view_orders_action(request):
@@ -569,3 +604,5 @@ def view_orders_action(request):
         context['orders'] = orders.order_by('order_time').reverse
         context['foodset_list'] = foodset_list
         return render(request, 'yummy/view_orders.html', context)
+        
+        
