@@ -386,16 +386,18 @@ def dish_action(request, id):
     return render(request, 'Yummy/dish.html', context)
 
 
-
 def get_comments(request):
-    # Assuming you have a Comment model with these fields
+    # values('text', 'creator__first_name', 'creator__last_name', 'creation_time'): This retrieves the specified
+    # fields from the filtered comments: 'text', 'creator__first_name', 'creator__last_name', and 'creation_time'.
+    # Note that creator__first_name and creator__last_name are used to access the related User model fields
+    # 'first_name' and 'last_name', respectively.
     comments = Comment.objects.filter(post_under=request.GET.get('item_id')).values('text', 'creator__first_name',
                                                                                     'creator__last_name',
                                                                                     'creation_time')
 
     # Convert the creation_time to the desired format
     for comment in comments:
-        comment['formatted_creation_time'] = comment['creation_time'].strftime('%B %-d, %Y, %-I:%M %p')
+        comment['formatted_creation_time'] = comment['creation_time'].strftime('%B %d, %Y, %I:%M %p')
 
     return JsonResponse(list(comments)[::-1], safe=False)
 
