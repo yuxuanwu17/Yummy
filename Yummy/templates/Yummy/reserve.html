@@ -2,70 +2,72 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="../../static/Yummy/reserve.css">
+    <link rel="stylesheet" href="../../static/Yummy/reserve.css">
 
-<script>
-function hideReservationButton() {
-    console.log('test')
-    var reservation_button = document.getElementById('reservation_button');
-    if (reservation_button.classList.contains('hidden')) {
-        reservation_button.classList.remove('hidden');
-    }
-}
-</script>
+    <script>
+        function hideReservationButton() {
+            console.log('test')
+            var reservation_button = document.getElementById('reservation_button');
+            if (reservation_button.classList.contains('hidden')) {
+                reservation_button.classList.remove('hidden');
+            }
+        }
+    </script>
 
 {% endblock %}
 
 {% block posts_header %}
-<section class="py-5 text-center container">
-    <div class="row py-lg-5">
-        <div class="col-lg-6 col-md-8 mx-auto">
-            <h1 class="fw-light">Reserve Your Table</h1>
-            <p class="lead text-muted">
-                Enjoy your food
-            </p>
+    <section class="py-5 text-center container">
+        <div class="row py-lg-5">
+            <div class="col-lg-6 col-md-8 mx-auto">
+                <h1 class="fw-light">Reserve Your Table</h1>
+                <p class="lead text-muted">
+                    Valid Reservation Time: 11:00 A.M to 7:00 P.M Everyday
+                    Rules: Each reservation would hold for 2 hours
+                </p>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 {% endblock %}
 
 
 {% block content %}
 
-<section class="reservation">
-    <div id="reservation form">
+    <section class="reservation">
+        <div id="reservation form">
         <span {% if table_reserved %}
-        class="hidden"
-        {% else %} 
-        class="step-title"
+            class="hidden"
+        {% else %}
+            class="step-title"
         {% endif %}> Your Information </span>
-        <form class="reservation_form" method="POST" onsubmit="hideReservationButton()">
-            {% for field in form.visible_fields %}
-            {% csrf_token %}
-            <div>
-                <span>{{field.label_tag}}</span>
-                <span>{{field}}</span>
-            </div>
-            {% endfor %}
-            {% csrf_token %}
-            <p>
-                <button action="{% url 'reserve' %}" 
-                {% if table_reserved %}
-                class="hidden"
-                {% else %}
-                class="btn btn-primary my-2 reserve"  
-                {% endif %}
-                type="submit"
-                id="reservation_button"
-                >Reserve</button>
-            </p>
-        </form>
-        <span class="lead text-muted message">{{reserve_message}}</span>
-        
-    </div>
-    <br>
+            <form class="reservation_form" method="POST" onsubmit="hideReservationButton()">
+                {% for field in form.visible_fields %}
+                    {% csrf_token %}
+                    <div>
+                        <span>{{ field.label_tag }}</span>
+                        <span>{{ field }}</span>
+                    </div>
+                {% endfor %}
+                {% csrf_token %}
+                <p>
+                    <button action="{% url 'reserve' %}"
+                            {% if table_reserved %}
+                            class="hidden"
+                            {% else %}
+                            class="btn btn-primary my-2 reserve"
+                            {% endif %}
+                            type="submit"
+                            id="reservation_button"
+                    >Reserve
+                    </button>
+                </p>
+            </form>
+            <span class="lead text-muted message">{{ reserve_message }}</span>
+
+        </div>
+        <br>
 
 
-</section>
+    </section>
 
 {% endblock %}
