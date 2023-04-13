@@ -173,6 +173,15 @@ def get_order_total_price(request):
     try:
         order = Order.objects.get(customer=user, is_paid=False, is_completed=False)
         food_quantities = order.foods.values('food_id', 'quantity')
+
+        order_total = 0.0
+        for foodset in food_quantities:
+            price = Food.objects.get(id=foodset['food_id']).price
+            quantity = foodset['quantity']
+            order_total += price * quantity
+        order.total_price = order_total
+        order.save()
+
         return JsonResponse(
             {"success": True, "order_id": order.id, "total_price": order.total_price,
              "food_quantities": list(food_quantities)}, status=200)
