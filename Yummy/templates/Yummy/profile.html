@@ -73,13 +73,22 @@
                                         </table>
 
                                         <!-- Only show cancel button when reservation date is in the future -->
-                                        {% if reservation.date >= today_date and reservation.time > today_time %}
-                                        <form method="POST" action="{% url 'cancel_reservation_action' reservation.id %}">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="reservation_id" value="{{reservation.id}}">
-                                            <button type="submit" class="btn btn-light my-2 cancel-reserve"
-                                                id="cancel_reservation_{{reservation.id}}">Cancel</button>
-                                        </form>
+                                        {% if reservation.date > today_date %}
+                                            <form method="POST" action="{% url 'cancel_reservation_action' reservation.id %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="reservation_id" value="{{reservation.id}}">
+                                                <button type="submit" class="btn btn-light my-2 cancel-reserve"
+                                                    id="cancel_reservation_{{reservation.id}}">Cancel</button>
+                                            </form>
+                                        {% elif reservation.date == today_date %}
+                                            {% if reservation.time > today_time %}
+                                            <form method="POST" action="{% url 'cancel_reservation_action' reservation.id %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="reservation_id" value="{{reservation.id}}">
+                                                <button type="submit" class="btn btn-light my-2 cancel-reserve"
+                                                    id="cancel_reservation_{{reservation.id}}">Cancel</button>
+                                            </form>
+                                            {% endif %}
                                         {% endif %}
                                     </div>
                                 </div>
