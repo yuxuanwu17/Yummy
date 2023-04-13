@@ -134,6 +134,6 @@ class FoodForm(forms.Form):
 
         # We must return the cleaned data we got from the cleaned_data
         # dictionary
-        return dish_name
+        return dish_name.title()
 
  

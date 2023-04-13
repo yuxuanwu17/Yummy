@@ -618,3 +618,19 @@ def complete_order_action(request, order_id):
         print(order.is_completed)
         return redirect('view_orders')
 
+
+@login_required
+@staff_member_required
+def delete_dish_action(request, dish_id):
+    user = request.user
+    if not user.is_staff:
+        message = 'You are not authorized to do this action.'
+        messages.error(request, message)
+        return redirect('home')
+    else:
+        dish = Food.objects.get(id=dish_id)
+        dish_name = dish.name
+        dish.delete()
+        message = 'Dish '+ dish_name + ' deleted.'
+        messages.success(request, message)
+        return redirect('home')

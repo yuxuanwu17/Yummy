@@ -40,4 +40,5 @@ urlpatterns = [
     path('get_comments/', views.get_comments, name='get_comments'),
     path('favorite_count/<int:item_id>/', views.get_favorite_count, name='favorite_count'),
     path('complete_order/<int:order_id>/', views.complete_order_action, name='complete_order'),
+    path('delete_dish/<int:dish_id>/', views.delete_dish_action, name='delete_dish'),
 ]
