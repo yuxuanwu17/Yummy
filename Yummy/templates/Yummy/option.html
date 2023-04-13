@@ -47,8 +47,7 @@
 
         $("#id_table_number_form").submit(function (e) {
           e.preventDefault(); 
-          var tableNumber = document.getElementById('id_table_number_input').value
-          console.log('table number:', tableNumber)
+          var partySize = document.getElementById('party_size_input').value
           $.ajax({
             url: '/yummy/get_order_total_price',
             method: 'GET',
@@ -62,7 +61,7 @@
                         data: {
                             order_id: orderId,
                             action: 'dine-in',
-                            table_number: tableNumber,
+                            party_size: partySize,
                             csrfmiddlewaretoken: '{{csrf_token}}'
                         },
                         success: function(response) {
@@ -77,7 +76,7 @@
                             var responseText = JSON.parse(xhr.responseText)
                             if (responseText.error_message) {
                                 error_message = document.getElementById('dine_in_message')
-                                error_message.innerHTML = responseText.error_message
+                                error_message.innerHTML = '<div class="row justify-content-center"><div class="alert alert-warning" role="alert" style="width: 60%">' + responseText.error_message + '</div></div>'
                             }
                         }
                     })
@@ -105,18 +104,18 @@
     </div>
 </section>
 
-<!-- if dine in button is clicked, show the form below to let user enter table number -->
+<div id="dine_in_message"></div>
+
 <div id="id_table_number_div" class="form_1" style="visibility:hidden">
     <form id="id_table_number_form" method="POST">
-        <p id="dine_in_message"></p>
-        <label class="lead text-muted">Please enter your table number (1-12) if you are dining in:</label>
-        <input id="id_table_number_input" type="text" name="table_number">
+        <label class="lead text-muted">Please enter your party size:</label>
+        <input id="party_size_input" type="text" name="party_size">
+        <p class="lead">If your party size is greater than 10 people, please enter 10 and reach out to our server.</p>
         <div>
             <button id="id_table_number_button" 
             class="btn btn-secondary my-2"
             action="{% url 'option' %}">Submit</button>
         </div>
-
         {% csrf_token %}
     </form>
 </div>

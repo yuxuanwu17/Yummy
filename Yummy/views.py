@@ -274,10 +274,20 @@ def option_action(request):
 @login_required
 @csrf_exempt
 def set_take_out(request):
+    user = request.user
     if request.method == 'POST':
         order_id = request.POST.get('order_id')
         action = request.POST.get('action')
-        print(action)
+
+        OPEN_TIME = datetime.time(11,00,00)
+        CLOSE_TIME = datetime.time(21,00,00)
+        print(datetime.datetime.now().time())
+        if datetime.datetime.now().time() < OPEN_TIME or datetime.datetime.now().time() > CLOSE_TIME:
+            print('Close')
+            return JsonResponse({"success": False, "error_message": "Sorry we are closed now."},
+                                        status=400)
+        else:
+            print('opening')
 
         try:
             order = Order.objects.get(id=order_id)
@@ -291,27 +301,81 @@ def set_take_out(request):
             if action == 'dine-in':
                 order.is_takeout = False
                 order.save()
-                if 'table_number' not in request.POST or request.POST['table_number'] == '':
-                    return JsonResponse({"success": False, "error_message": "Please enter a valid table number."},
+                
+                if 'party_size' not in request.POST or request.POST['party_size'] == '':
+                    return JsonResponse({"success": False, "error_message": "Please enter a valid number for your party size."},
                                         status=400)
                 else:
-                    table_number = request.POST['table_number']
-                    try:
-                        table = Table.objects.get(id=table_number)
+                    # check if customer have any reservation 
+                    # customer can order either 30 minutes before their reservation, or 1.5 hour after the reservation
+                    user_reservation = Reservation.objects.filter(customer=user, date=datetime.datetime.today(),
+                                                                  time__range=((datetime.datetime.now() - datetime.timedelta(hours=2)).time(),
+                                                                               (datetime.datetime.now() - datetime.timedelta(minutes=30)).time()))
+                    
+                    if user_reservation:
+                        print(user_reservation)
+                        reserved_table = user_reservation[0].table
                         if OrderTable.objects.filter(order=order).exists():
                             order_table = OrderTable.objects.get(order=order)
-                            order_table.table = table
-                            # table.orders.add(order)
+                            order_table.table = reserved_table
                             order_table.save()
                             order.save()
-                            table.save()
                         else:
-                            new_order_table = OrderTable.objects.create(order=order, table=table)
+                            new_order_table = OrderTable.objects.create(order=order, table=reserved_table)
                             new_order_table.save()
 
-                    except Table.DoesNotExist:
-                        return JsonResponse({"success": False, "error_message": "Please enter a valid table number."},
-                                            status=400)
+                    else:
+                        # if no reservation, find an available table and assign to this order
+                        party_size = request.POST['party_size']
+
+                        new_filter = {
+                            'date': datetime.date.today(),
+                            'start_time': datetime.datetime.now().time(),
+                            'end_time': (datetime.datetime.now() + datetime.timedelta(hours=2)).time(),
+                            'number_customers': party_size
+                        }
+                        print(new_filter)
+                        try:
+                            # 1. Filter out the tables by capacity and open/close time
+                            tables = Table.objects.filter(capacity__gte=new_filter['number_customers'])
+                            # tables = tables.filter(open_time__lte=new_filter['start_time'])
+                            # tables = tables.filter(close_time__gte=new_filter['end_time'])
+                            print(tables)
+
+                            # 2. Filter out the tables being reserved within 2 hours before and 2 hours later
+                            reservations = Reservation.objects.filter(
+                            date=new_filter['date'],
+                            time__range=((datetime.datetime.now() - datetime.timedelta(hours=2)).time(),
+                                         (datetime.datetime.now() + datetime.timedelta(hours=2)).time())
+                            )
+                            unavailable_tableid = [reservation.table.id for reservation in reservations]
+                            filtered_tables = tables.exclude(id__in=unavailable_tableid)
+
+                            # 3. Filter out the tables which are occupied right now
+                            orders = Order.objects.filter(is_takeout = False, 
+                                                        order_time__gte=(datetime.datetime.now() - datetime.timedelta(hours=2)))
+                                                                            
+                            unavailable_tableid = [order.order_table for order in orders]
+                            filtered_tables = filtered_tables.exclude(id__in=unavailable_tableid)
+
+                            if len(filtered_tables) == 0:
+                                return JsonResponse({"success": False, "error_message": "All tables are being reserved or occupied right now."},
+                                                status=400)
+                            else:
+                                assigned_table = filtered_tables[0]
+                            if OrderTable.objects.filter(order=order).exists():
+                                order_table = OrderTable.objects.get(order=order)
+                                order_table.table = assigned_table
+                                # table.orders.add(order)
+                                order_table.save()
+                                order.save()
+                            else:
+                                new_order_table = OrderTable.objects.create(order=order, table=assigned_table)
+                                new_order_table.save()
+
+                        except Table.DoesNotExist:
+                            return JsonResponse({"success": False, "error_message": "Please enter a valid table number."},
+                                                status=400)
 
             return JsonResponse({"success": True, 'Cache-Control': 'no-cache'}, status=200)
         except (Order.DoesNotExist):
@@ -557,6 +621,7 @@ def new_tables_actions(request):
         messages.error(request, message)
         return redirect('home')
 
+# Display all the tables in the restaurant
     if request.method == "GET":
         results = Table.objects.values('capacity').annotate(dcount=Count('capacity')).order_by()
         context['results'] = results
@@ -579,6 +644,7 @@ def new_tables_actions(request):
             messages.error(request, message)
             return redirect('new_tables')
 
+        # create tables according to the number and capacity user input
         if capacity.is_integer() and number_to_add.is_integer():
             new_tables = []
             for i in range(int(number_to_add)):
@@ -643,3 +709,4 @@ def delete_dish_action(request, dish_id):
         message = 'Dish '+ dish_name + ' deleted.'
         messages.success(request, message)
         return redirect('home')
+    
