@@ -17,6 +17,7 @@ from django.db.models import Count
 import datetime
 from Yummy.models import *
 from .forms import *
+from dateutil.parser import parse
 
 
 def login_action(request):
@@ -245,6 +246,45 @@ def reserve_action(request):
     context['reserve_message'] = 'You are all set. Enjoy your meal!'
     context['table_reserved'] = True
     return render(request, 'Yummy/reserve.html', context)
+
+@csrf_exempt
+def fetch_events(request):
+    start_date_str = request.GET.get('start', None)
+    end_date_str = request.GET.get('end', None)
+    print("start, end input")
+    print(start_date_str, end_date_str)
+    if start_date_str and end_date_str:
+        start_date = parse(start_date_str).date()
+        end_date = parse(end_date_str).date()
+
+        reservations = Reservation.objects.filter(date__range=[start_date, end_date])
+        reserved_tables = reservations.values('date', 'time', 'number_customers').annotate(total=Count('table'))
+        total_tables = Table.objects.count()
+
+        print(total_tables)
+
+        event_list = []
+
+        for reserved in reserved_tables:
+            date = reserved['date']
+            time = reserved['time']
+            number_customers = reserved['number_customers']
+            total_reserved = reserved['total']
+
+            available_tables = total_tables - total_reserved
+
+            event_list.append({
+                'title': f'Available Tables: {available_tables}',
+                'start': datetime.datetime.combine(date, time).strftime('%Y-%m-%dT%H:%M:%S'),
+                'end': (datetime.datetime.combine(date, time) + datetime.timedelta(hours=2)).strftime(
+                    '%Y-%m-%dT%H:%M:%S'),
+                'color': 'red' if available_tables == 0 else 'transparent',
+                'textColor': 'transparent',
+                'rendering': 'background',
+                'available_tables': available_tables
+            })
+
+        return JsonResponse(event_list, safe=False)
 
 
 @login_required
