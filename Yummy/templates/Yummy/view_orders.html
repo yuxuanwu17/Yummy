@@ -16,20 +16,20 @@
         {% for order in orders %}
             <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                    <button class="accordion-button text-bg-light" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                             <div class="d-flex w-100 justify-content-between align-items-start">
-                                <div class="ms-6 me-auto">
+                                <div class="col-10 ms-6 me-auto">
                                     <div class="fw-bold">Order Number: {{ order.id }}</div>
-                                    <p>Submitted Date & Time: {{ order.order_time }}</p>
+                                    <p>Submitted Time: {{ order.order_time }}</p>
                                 </div>
-                                <div class="ms-6 me-auto">
+                                <div class="col-2 ms-6 me-auto text-center">
                                     Status: 
                                     {% if order.is_completed %}
                                     <span class="badge text-bg-success">Completed</span>
                                     {% else %}
                                         {% if order.is_paid %}
-                                        <span class="badge text-bg-info">Paid</span>
+                                        <span class="badge text-bg-primary">Paid</span>
                                         {% else %}
                                         <span class="badge text-bg-warning">Not Submit</span>
                                         {% endif %}

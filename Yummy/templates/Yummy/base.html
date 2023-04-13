@@ -96,10 +96,11 @@
 
 {% if messages %}
     {% for message in messages %}
-        <div id="error_message" class="row justify-content-center">
-            <div class="alert {% if message.tags %}alert-{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}danger{% else %}{{ message.tags }}{% endif %}{% endif %}"
+        <div id="error_message" class="row justify-content-center" style="margin-top: 3%;">
+            <div class="alert {% if message.tags %}alert-{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}danger{% else %}{{ message.tags }}{% endif %}{% endif %} alert-dismissible fade show"
                  role="alert" style="width: 80%">
                 {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         </div>
     {% endfor %}
