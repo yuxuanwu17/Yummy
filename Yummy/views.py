@@ -98,7 +98,7 @@ def global_action(request):
             response_data['foods'].append([my_item])
         else:
             response_data['foods'][curr_index].append(my_item)
-    
+
     if request.user.is_authenticated:
         profiles, _ = Profile.objects.get_or_create(user=request.user)
         print(profiles)
@@ -662,7 +662,7 @@ def new_tables_actions(request):
             messages.error(request, message)
             return redirect('new_tables')
 
-                
+
 @login_required
 @staff_member_required
 def view_orders_action(request):
@@ -672,12 +672,12 @@ def view_orders_action(request):
         message = 'You are not authorized to do this action.'
         messages.error(request, message)
         return redirect('home')
-    else: 
+    else:
         orders = Order.objects.all()
         context['orders'] = orders.order_by('order_time').reverse
         return render(request, 'yummy/view_orders.html', context)
-        
-        
+
+
 @login_required
 @staff_member_required
 def complete_order_action(request, order_id):
@@ -709,4 +709,3 @@ def delete_dish_action(request, dish_id):
         message = 'Dish '+ dish_name + ' deleted.'
         messages.success(request, message)
         return redirect('home')
-    
