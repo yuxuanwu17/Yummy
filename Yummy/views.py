@@ -457,7 +457,9 @@ def profile_action(request):
     if request.method == "GET":
         context['item'] = profile
         favorite = profile.favorite.all()
+        phone_number = profile.phone_number
         context['favorite'] = favorite
+        context['phone_number'] = phone_number
         context['reservations'] = reservations.order_by('date','time').reverse
         if len(reservations) == 0:
             context['no_reservation_message'] = "You don't have any reservations."
@@ -469,7 +471,20 @@ def profile_action(request):
             context['orders'] = orders.order_by('order_time').reverse
             context['today_date'] = datetime.datetime.today().date()
             context['today_time'] = datetime.datetime.now().time()
-
+    else:
+        if 'phone_number' in request.POST:
+            phone_number = request.POST['phone_number']
+            if len(phone_number) != 10:
+                message = 'Invalid phone number'
+                messages.warning(request, message)
+                return redirect('profile')
+            else:
+                profile.phone_number = phone_number
+                profile.save()
+                message = 'Phone number updated successfully'
+                messages.success(request, message)
+                return redirect('profile')
+        
     return render(request, 'Yummy/profile.html', context)
 
 
@@ -652,6 +667,8 @@ def payment_success(request):
     # change the payment status of the most recent order of current user
     # Get the ongoing order for the user (is_paid=False)
     order = Order.objects.get(customer=request.user, is_paid=False, is_completed=False)
+    # update the order time to the time that customer actually paid and submit order
+    order.order_time = datetime.datetime.now()
     order.is_paid = True
     order.save()
 

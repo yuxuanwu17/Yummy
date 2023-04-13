@@ -11,7 +11,16 @@
         <h1 id="id_page_title" class="fw-light">Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
         <div class="col-lg-6 mx-auto">
             <p class="lead mb-4">View your reservations, favorite dishes and order history.</p>
-            <p>Phone: {{ user.profile.phone_number }}</p>
+                <form method="POST" class="row lead justify-content-between" style="margin-bottom: 3%;">
+                    <div class="col-8 text-end">
+                        <label>Phone Number:</label>
+                        <input type="text" id="id_phone_number" name="phone_number" placeholder="{{ phone_number }}">
+                    </div>
+                    <div class="col-4 text-start">
+                        <button class="btn btn-outline-dark" type="submit" action="{% url 'profile' %}">Update
+                    </div>
+                    {% csrf_token %}
+                </form>
         </div>
 
         <div id="id_profile_container">
