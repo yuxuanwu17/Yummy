@@ -467,7 +467,6 @@ def profile_action(request):
             context['no_order_message'] = "You don't have any past orders."
         else:
             context['orders'] = orders.order_by('order_time').reverse
-            context['foodset_list'] = [order.foods.all() for order in orders]
             context['today_date'] = datetime.datetime.today().date()
             context['today_time'] = datetime.datetime.now().time()
 

@@ -55,12 +55,22 @@
                                 <div id="collapseOne" class="accordion-collapse collapse"
                                      data-bs-parent="#accordionReservation">
                                     <div class="accordion-body">
-                                        <p>Name: {{ reservation.first_name }} {{reservation.last_name}}</p>
-                                        <p>Phone: {{reservation.phone_number }}</p>
-                                        <p>Number of customers: {{ reservation.number_customers }}</p>
-                                        <p>Assigned table: #{{ reservation.table.id }}</p>
-                                        <p>Table capacity: {{ reservation.table.capacity }}</p>
-                                        <p>Special comments: {{ reservation.comment }}</p>
+                                        <table class="table table-striped align-middle text-left">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Name: {{ reservation.first_name }} {{reservation.last_name}}</td>
+                                                    <td>Phone: {{reservation.phone_number }}</td>
+                                                    <td>Party size: {{ reservation.number_customers }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Assigned table: #{{ reservation.table.id }}</td>
+                                                    <td colspan="2">Table capacity: {{ reservation.table.capacity }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="3">Special comments: {{ reservation.comment }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
 
                                         <!-- Only show cancel button when reservation date is in the future -->
                                         {% if reservation.date >= today_date and reservation.time > today_time %}
@@ -113,7 +123,7 @@
                                                     <span class="badge text-bg-success">Completed</span>
                                                     {% else %}
                                                         {% if order.is_paid %}
-                                                        <span class="badge text-bg-info">Submitted</span>
+                                                        <span class="badge text-bg-info">Paid</span>
                                                         {% else %}
                                                         <span class="badge text-bg-warning">Not Submit</span>
                                                         {% endif %}
