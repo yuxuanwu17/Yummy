@@ -10,6 +10,7 @@
         <h1 id="id_page_title" class="fw-light">Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
         <div class="col-lg-6 mx-auto">
             <p class="lead mb-4">View your reservations, favorite dishes and order history.</p>
+            <p>Phone: {{ user.profile.phone_number }}</p>
         </div>
 
         <div id="id_profile_container">
@@ -57,7 +58,8 @@
                                         <p>Name: {{ reservation.first_name }} {{reservation.last_name}}</p>
                                         <p>Phone: {{reservation.phone_number }}</p>
                                         <p>Number of customers: {{ reservation.number_customers }}</p>
-                                        <p>Assigned table: {{ reservation.table }}</p>
+                                        <p>Assigned table: #{{ reservation.table.id }}</p>
+                                        <p>Table capacity: {{ reservation.table.capacity }}</p>
                                         <p>Special comments: {{ reservation.comment }}</p>
 
                                         <form method="POST" action="{% url 'cancel_reservation_action' reservation.id %}">

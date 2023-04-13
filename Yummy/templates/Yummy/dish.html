@@ -122,7 +122,7 @@
                         $(this).data('favorited', isFavorited);
                         $(this).text(isFavorited ? 'Cancel' : 'Favorite');
                         var count = response.num_ppl_fav
-                        $("#num_ppl_fav").text(count + ' people also like this dish');
+                        $("#num_ppl_fav").text(count + ' people like this dish');
                     },
                     error: (response) => {
                         console.log("An error occurred while updating the favorite status");
@@ -174,8 +174,8 @@
                     response.forEach(function (comment) {
                         var listItem = $('<li class="list-group-item d-flex justify-content-between align-items-start"></li>');
                         var commentDiv = $('<div class="ms-2 me-auto"></div>');
-                        commentDiv.append('<div class="fw-bold">' + comment.text + '</div>');
-                        commentDiv.append('By ' + comment.creator__first_name + ' ' + comment.creator__last_name);
+                        commentDiv.append('<div class="fw-bold text-start">' + comment.text + '</div>');
+                        commentDiv.append('<div class="text-start">By ' + comment.creator__first_name + ' ' + comment.creator__last_name + '</div>');
                         listItem.append(commentDiv);
                         listItem.append('<span class="badge text-bg-light">' + comment.formatted_creation_time + '</span>');
                         commentsList.append(listItem);
@@ -194,7 +194,7 @@
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
-                    $('#num_ppl_fav').text(`${data.count} people also like this dish`);
+                    $('#num_ppl_fav').text(`${data.count} people like this dish`);
                 },
                 error: function (xhr, status, error) {
                     console.error(`Error fetching favorite count: ${error}`);
@@ -204,9 +204,9 @@
 
 
         // Call updateComments() every 5 seconds (5000 milliseconds)
-        setInterval(updateComments, 1000);
+        setInterval(updateComments, 5000);
         const item_id = {{ f.id }}; // Get the item_id from your template context
-        setInterval(() => updateFavoriteCount(item_id), 1000); // Update the favorite count every 5 seconds
+        setInterval(() => updateFavoriteCount(item_id), 5000); // Update the favorite count every 5 seconds
 
         // Fetch and display comments when the page loads
         updateComments();
@@ -221,20 +221,19 @@
                 </div>
                 <br>
 
-                <h1 class="fw-light">{{ f.name }}</h1>
-                <p>
-                    {% if f.is_vegetarian %}
-                        &#x1F96C;
-                    {% endif %}
-                    {% if f.is_spicy %}
-                        &#x1F336;&#xFE0F;
-                    {% endif %}
-                </p>
+                <h1 class="fw-light">{{ f.name }} 
+                {% if f.is_vegetarian %}
+                    &#x1F96C;
+                {% endif %}
+                {% if f.is_spicy %}
+                    &#x1F336;&#xFE0F;
+                {% endif %}</h1>
+
                 <p class="lead">
                     {{ f.description }}
                 </p>
                 <p id="calories" class="lead fw-light">
-                    Calories: {{ f.calories }}
+                    Calories: {{ f.calories }} kcal
                 </p>
                 <p id="price" class="lead fw-light-bolder fs-4">
                     ${{ f.price }}
@@ -271,15 +270,24 @@
                                     data-item="{{ f.id }}">
                                 <span class="plus_sign">&#10133;</span>
                             </button>
-                        </div>
-                        <br>
-                        <p id="num_ppl_fav" class="lead fs-5">{{ count }} people also like this dish</p>
+                        </div> 
+                    {% endif %}
+                    <br>
+                    <p id="num_ppl_fav" class="lead fs-5">{{ count }} people like this dish</p>
+                    {% if user.is_staff %}
+                    <form method="POST" action="{% url 'delete_dish' f.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="dish_id" value="{{f.id}}">
+                        <button type="submit" class="btn btn-warning my-3"
+                            id="delete_dish_{{f.id}}">Delete this dish</button>
+                    </form>
                     {% endif %}
                 </div>
             </div>
 
             <div class="col-md-6 col-sm-6">
-                <section class="comments">
+                
+                <section class="comments px-4 ">
                     {% if user.is_authenticated %}
                         <form method="POST" class="form-control">
                             {% for field in comment_form.visible_fields %}
@@ -294,16 +302,16 @@
                         </form>
                     {% endif %}
                     <br>
-                    <div id="comment_text" class="fs-5 fw-bold" style="color:#f0ad40f6;">
+                    <div id="comment_text" class="px-4 fs-5 fw-bold" style="color:#f0ad40f6;">
                         What did other people think about this dish:
                     </div>
-                    <div id="comment_dish_user" class="px-4 my-5 text-center">
+                    <div id="comment_dish_user" class="px-4 my-2 text-center">
                         <ul class="list-group overflow-auto shadow" style="max-height:23vw;">
                             {% for comment in comments %}
-                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <li class="list-group-item d-flex justify-content-center align-items-start">
                                     <div class="ms-2 me-auto">
-                                        <div class="fw-bold">{{ comment.text }}</div>
-                                        By {{ comment.creator.first_name }} {{ comment.creator.last_name }}
+                                        <div class="fw-bold text-start">{{ comment.text }}</div>
+                                        <div class="text-start">By {{ comment.creator.first_name }} {{ comment.creator.last_name }}</div>
                                     </div>
                                     <span class="badge text-bg-light">{{ comment.creation_time }}</span>
                                 </li>

@@ -173,6 +173,15 @@ def get_order_total_price(request):
     try:
         order = Order.objects.get(customer=user, is_paid=False, is_completed=False)
         food_quantities = order.foods.values('food_id', 'quantity')
+
+        order_total = 0.0
+        for foodset in food_quantities:
+            price = Food.objects.get(id=foodset['food_id']).price
+            quantity = foodset['quantity']
+            order_total += price * quantity
+        order.total_price = order_total
+        order.save()
+
         return JsonResponse(
             {"success": True, "order_id": order.id, "total_price": order.total_price,
              "food_quantities": list(food_quantities)}, status=200)
@@ -599,8 +608,39 @@ def view_orders_action(request):
         return redirect('home')
     else:
         orders = Order.objects.all()
-        foodset_list = [order.foods.all() for order in orders]
-
         context['orders'] = orders.order_by('order_time').reverse
-        context['foodset_list'] = foodset_list
         return render(request, 'yummy/view_orders.html', context)
+
+
+@login_required
+@staff_member_required
+def complete_order_action(request, order_id):
+    user = request.user
+    if not user.is_staff:
+        message = 'You are not authorized to do this action.'
+        messages.error(request, message)
+        return redirect('home')
+    else:
+        order = Order.objects.get(id=order_id)
+        order.is_completed = True
+        order.save()
+        print(order.is_completed)
+        return redirect('view_orders')
+
+
+@login_required
+@staff_member_required
+def delete_dish_action(request, dish_id):
+    user = request.user
+    if not user.is_staff:
+        message = 'You are not authorized to do this action.'
+        messages.error(request, message)
+        return redirect('home')
+    else:
+        dish = Food.objects.get(id=dish_id)
+        dish_name = dish.name
+        dish.delete()
+        message = 'Dish '+ dish_name + ' deleted.'
+        messages.success(request, message)
+        return redirect('home')
+

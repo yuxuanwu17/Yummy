@@ -9,20 +9,12 @@
     </div>
 </div>
 
-{% if message %}
-<div class="row justify-content-center" >
-    <div class="alert alert-warning" role="alert" style="width: 60%">
-        {{ message }}
-    </div>
-</div>
-{% endif %}
     
 
 <div class="mx-auto col-10 col-md-10 col-lg-6">
     <div class="form-group">
         <form method="post" id="id_report_form" action="{% url 'new_dish' %}" enctype="multipart/form-data">
             {% for field in form %}
-                <field class="error">{{field.errors}}</field> 
                 {{ field.label_tag }} {{ field }}
             {% endfor %}
             <div class="d-flex justify-content-center">
