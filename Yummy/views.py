@@ -738,8 +738,9 @@ def view_orders_action(request):
         messages.error(request, message)
         return redirect('home')
     else:
-        orders = Order.objects.all()
-        context['orders'] = orders.order_by('order_time').reverse
+        # can only view the submitted orders
+        orders = Order.objects.filter(is_paid=True)
+        context['orders'] = orders.order_by('is_completed', '-order_time')
         return render(request, 'yummy/view_orders.html', context)
 
 
