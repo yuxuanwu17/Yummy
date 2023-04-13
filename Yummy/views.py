@@ -481,7 +481,7 @@ def profile_action(request):
             else:
                 profile.phone_number = phone_number
                 profile.save()
-                message = 'Phone number updated successfully'
+                message = 'Phone number updated successfully. It will take effect from your next reservation.'
                 messages.success(request, message)
                 return redirect('profile')
         
