@@ -93,43 +93,47 @@
 
 
 {% block content %}
-
-    <section class="reservation">
-        <div id="reservation form">
-        <span {% if table_reserved %}
-            class="hidden"
-        {% else %}
-            class="step-title"
-        {% endif %}> Your Information </span>
-            <form class="reservation_form" method="POST" onsubmit="hideReservationButton()">
-                {% for field in form.visible_fields %}
-                    {% csrf_token %}
-                    <div>
-                        <span>{{ field.label_tag }}</span>
-                        <span>{{ field }}</span>
-                    </div>
-                {% endfor %}
-                {% csrf_token %}
-                <p>
-                    <button action="{% url 'reserve' %}"
-                            {% if table_reserved %}
-                            class="hidden"
+    <div class="container">
+        <section class="reservation">
+            <div class="row d-flex align-items-center justify-content-center">
+                <div class="col-md-6">
+                    <div id="reservation form">
+                        <div>
+                            <span {% if table_reserved %}
+                                class="hidden"
                             {% else %}
-                            class="btn btn-primary my-2 reserve"
-                            {% endif %}
-                            type="submit"
-                            id="reservation_button"
-                    >Reserve
-                    </button>
-                </p>
-            </form>
-            <span class="lead text-muted message">{{ reserve_message }}</span>
-
-        </div>
-        <br>
-        <div id="calendar"></div>
-
-
-    </section>
-
+                                class="step-title"
+                            {% endif %}> Your Information </span>
+                            <form class="reservation_form" method="POST" onsubmit="hideReservationButton()">
+                                {% for field in form.visible_fields %}
+                                    {% csrf_token %}
+                                    <div>
+                                        <span>{{ field.label_tag }}</span>
+                                        <span>{{ field }}</span>
+                                    </div>
+                                {% endfor %}
+                                {% csrf_token %}
+                                <p>
+                                    <button action="{% url 'reserve' %}"
+                                            {% if table_reserved %}
+                                            class="hidden"
+                                            {% else %}
+                                            class="btn btn-primary my-2 reserve"
+                                            {% endif %}
+                                            type="submit"
+                                            id="reservation_button"
+                                    >Reserve
+                                    </button>
+                                </p>
+                            </form>
+                            <span class="lead text-muted message">{{ reserve_message }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+        </section>
+    </div>
 {% endblock %}
