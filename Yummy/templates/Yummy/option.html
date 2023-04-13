@@ -38,6 +38,13 @@
                             } else {
                                 console.log('Error occurred')
                             }
+                        },
+                        error: function(xhr, status, error) {
+                            var responseText = JSON.parse(xhr.responseText)
+                            if (responseText.error_message) {
+                                error_message = document.getElementById('dine_in_message')
+                                error_message.innerHTML = '<div class="row justify-content-center"><div class="alert alert-warning" role="alert" style="width: 60%">' + responseText.error_message + '</div></div>'
+                            }
                         }
                     })
                 }

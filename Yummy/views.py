@@ -392,7 +392,7 @@ def set_take_out(request):
                             filtered_tables = tables.exclude(id__in=unavailable_tableid)
 
                             # 3. Filter out the tables which are occupied right now
-                            orders = Order.objects.filter(is_takeout = False, 
+                            orders = Order.objects.filter(is_takeout = False, order_table__isnull = False,
                                                         order_time__gte=(datetime.datetime.now() - datetime.timedelta(hours=2)))
                                                                             
                             unavailable_tableid = [order.order_table for order in orders]
@@ -458,7 +458,7 @@ def profile_action(request):
         context['item'] = profile
         favorite = profile.favorite.all()
         context['favorite'] = favorite
-        context['reservations'] = reservations
+        context['reservations'] = reservations.order_by('date','time').reverse
         if len(reservations) == 0:
             context['no_reservation_message'] = "You don't have any reservations."
         if len(favorite) == 0:
@@ -468,6 +468,8 @@ def profile_action(request):
         else:
             context['orders'] = orders.order_by('order_time').reverse
             context['foodset_list'] = [order.foods.all() for order in orders]
+            context['today_date'] = datetime.datetime.today().date()
+            context['today_time'] = datetime.datetime.now().time()
 
     return render(request, 'Yummy/profile.html', context)
 
