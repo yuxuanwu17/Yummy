@@ -474,9 +474,16 @@ def profile_action(request):
 
 
 def cancel_reservation_action(request, id):
-    reservation = Reservation.objects.get(id=id)
-    reservation.delete()
-    return redirect('profile')
+    try:
+        reservation = Reservation.objects.get(id=id)
+        reservation.delete()
+        message = 'Reservation canceled.'
+        messages.success(request, message)
+        return redirect('profile')
+    except Reservation.DoesNotExist:
+        message = 'Error happened when canceling this reservation. Please contact the restaurant.'
+        messages.error(request, message)
+        return redirect('profile')
 
 
 def dish_action(request, id):
