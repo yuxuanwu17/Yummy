@@ -4,6 +4,16 @@
 {% block extra_css %}
     <link rel="stylesheet" href="../../static/Yummy/reserve.css">
 
+
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="../../static/Yummy/dist/js/moment.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
     <script>
         function hideReservationButton() {
             console.log('test')
@@ -44,7 +54,7 @@
                 minTime: "11:00:00",
                 maxTime: "21:00:00",
                 slotDuration: "00:30:00",
-                weekends: false,
+                weekends: true,
                 eventMouseover: function (event, jsEvent, view) {
                     if (event.available_tables > 0) {
                         $(jsEvent.target).css('background-color', 'rgba(128, 128, 128, 0.7)');
@@ -63,15 +73,6 @@
         });
 
     </script>
-
-{% endblock %}
-
-{% block extra_js %}
-    <script src="../../static/Yummy/dist/js/moment.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css"/>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
 {% endblock %}
 
 {% block posts_header %}
