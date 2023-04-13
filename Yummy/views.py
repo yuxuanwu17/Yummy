@@ -319,7 +319,7 @@ def set_take_out(request):
         order_id = request.POST.get('order_id')
         action = request.POST.get('action')
 
-        OPEN_TIME = datetime.time(11,00,00)
+        OPEN_TIME = datetime.time(10,00,00)
         CLOSE_TIME = datetime.time(21,00,00)
         print(datetime.datetime.now().time())
         if datetime.datetime.now().time() < OPEN_TIME or datetime.datetime.now().time() > CLOSE_TIME:
