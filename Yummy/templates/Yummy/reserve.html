@@ -12,8 +12,66 @@
                 reservation_button.classList.remove('hidden');
             }
         }
+
+
+        $(document).ready(function () {
+            function fetchEvents(start, end, timezone, callback) {
+                $.ajax({
+                    url: '{% url "fetch_events" %}',
+                    data: {
+                        start: start.format(),
+                        end: end.format(),
+                    },
+                    success: function (events) {
+                        callback(events);
+                    }
+                });
+            }
+
+            $('#calendar').fullCalendar({
+                events: fetchEvents,
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                defaultView: 'agendaWeek',
+                allDaySlot: false,
+                selectable: true,
+                selectHelper: true,
+                editable: false,
+                eventLimit: true,
+                minTime: "11:00:00",
+                maxTime: "21:00:00",
+                slotDuration: "00:30:00",
+                weekends: false,
+                eventMouseover: function (event, jsEvent, view) {
+                    if (event.available_tables > 0) {
+                        $(jsEvent.target).css('background-color', 'rgba(128, 128, 128, 0.7)');
+                        $(jsEvent.target).css('border-color', 'rgba(128, 128, 128, 0.7)');
+                        $(jsEvent.target).css('color', 'white');
+                    }
+                },
+                eventMouseout: function (event, jsEvent, view) {
+                    if (event.available_tables > 0) {
+                        $(jsEvent.target).css('background-color', 'transparent');
+                        $(jsEvent.target).css('border-color', 'transparent');
+                        $(jsEvent.target).css('color', 'transparent');
+                    }
+                }
+            });
+        });
+
     </script>
 
+{% endblock %}
+
+{% block extra_js %}
+    <script src="../../static/Yummy/dist/js/moment.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
 {% endblock %}
 
 {% block posts_header %}
@@ -69,6 +127,7 @@
 
         </div>
         <br>
+        <div id="calendar"></div>
 
 
     </section>
