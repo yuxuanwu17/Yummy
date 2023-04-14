@@ -775,3 +775,23 @@ def delete_dish_action(request, dish_id):
         message = 'Dish '+ dish_name + ' deleted.'
         messages.success(request, message)
         return redirect('home')
+    
+
+
+@login_required
+@staff_member_required
+def edit_dish_action(request, dish_id):
+    user = request.user
+    context = {}
+    if not user.is_staff:
+        message = 'You are not authorized to do this action.'
+        messages.error(request, message)
+        return redirect('home')
+    else:
+        if request.method == "GET":
+            # display form with dish info
+            return render(request, 'yummy/edit_dish.html', context)
+        
+        elif request.method == "POST":
+            # update dish info and save
+            pass
