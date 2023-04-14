@@ -4,7 +4,7 @@
     <h1 class="fw-light">Register</h1>
 </div>
     <div class="text-center">
-        <form method="post" action="register" class="row1">
+        <form method="post" action="{% url 'register' %}" class="row1">
             <table class="login_register_table">
                 {{ form }}
             </table>

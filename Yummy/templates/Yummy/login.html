@@ -30,7 +30,7 @@
         <h1 class="fw-light">Login</h1>
     </div>
     <div class="text-center">
-        <form method="post" action="login" class="row1">
+        <form method="post" action="{% url 'login' %}" class="row1">
             <table class="login_register_table">
                 {{ form }}
             </table>
