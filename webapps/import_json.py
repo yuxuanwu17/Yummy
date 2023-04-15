@@ -3,6 +3,7 @@ import json
 from django.core.files import File
 from django.core.serializers import deserialize
 from django.apps import apps
+from django.contrib.auth.models import User
 
 from Yummy.models import Category, Food, Table
 
@@ -35,3 +36,8 @@ def create_initial_table():
             Table.objects.create(capacity=4)
         for i in range(2):
             Table.objects.create(capacity=10)
+
+# create superuser
+def create_superuser():
+    superuser = User.objects.create_superuser('admin', 'admin@gmail.com', 'admin')
+    superuser.save()
