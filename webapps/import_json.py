@@ -31,7 +31,7 @@ def import_data_from_json_file(json_file_path):
 
 def create_initial_table():
     if len(Table.objects.all()) == 0:
-        for i in range(10):
+        for i in range(2):
             Table.objects.create(capacity=4)
         for i in range(2):
             Table.objects.create(capacity=10)
