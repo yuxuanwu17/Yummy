@@ -14,6 +14,7 @@ MAX_PASSWORD_LENGTH = 20
 MAX_NAME_LENGTH = 20
 MAX_PHONE_LENGTH = 20
 MAX_COMMENTS_LENGTH = 100
+MAX_DESCRIPTION_LENGTH = 500
 MAX_UPLOAD_SIZE = 250000000
 
 MAX_DISH_NAME_LENGTH = 50
@@ -106,7 +107,7 @@ class FoodForm(forms.Form):
                              min_value=0,
                              widget=forms.NumberInput(attrs={'class':'form-control'}))
     description = forms.CharField(label='Description', required=True, 
-                                  max_length=MAX_COMMENTS_LENGTH, min_length=20, 
+                                  max_length=MAX_DESCRIPTION_LENGTH, min_length=20, 
                                   widget=forms.Textarea(attrs={'class':'form-control'}))
     category = forms.CharField(label='Category', required=True, 
                                widget=forms.Select(choices=FOOD_CATEGORIES, attrs={'class':'form-control'}))

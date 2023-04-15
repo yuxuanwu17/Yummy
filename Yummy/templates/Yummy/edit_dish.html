@@ -18,19 +18,27 @@
 {% endblock %}
 
 {% block content %}
-
 <div class="mx-auto col-10 col-md-10 col-lg-6">
-    <img src="{% static picture_dir %}">
-    <div class="form-group">
-        <form method="post" action="{% url 'edit_dish' dish.id %}" enctype="multipart/form-data">
-            {% for field in form %}
-                {{ field.label_tag }} {{ field }}
-            {% endfor %}
-            <div class="d-flex justify-content-center">
-                <button id="report-button" type="submit" class="btn btn-primary btn-lg px-4 gap-3">Submit</button>
-            </div>
-            {% csrf_token %}
-        </form>
+    <div class="row">
+        <div class="dish_pic d-flex justify-content-center">
+            <img id="id_user_picture" src="{% static  dish.picture_dir %}" class="card shawdow-sm"
+                 style="align-content: center; height: 20rem; width:20rem">
+        </div>
     </div>
+    <br>
+    <div class="row">
+        <div class="form-group">
+            <form method="post" action="{% url 'edit_dish' dish.id %}" enctype="multipart/form-data">
+                {% for field in form %}
+                    {{ field.label_tag }} {{ field }}
+                {% endfor %}
+                <div class="d-flex justify-content-center">
+                    <button id="report-button" type="submit" class="btn btn-primary btn-lg px-4 gap-3">Submit</button>
+                </div>
+                {% csrf_token %}
+            </form>
+        </div>
+    </div>
+    
 </div>
 {% endblock %}

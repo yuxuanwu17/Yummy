@@ -721,7 +721,7 @@ def new_tables_actions(request):
             messages.success(request, message)
             results = Table.objects.values('capacity').annotate(dcount=Count('capacity')).order_by()
             context['results'] = results
-            return render(request, 'yummy/new_tables.html', context)
+            return render(request, 'Yummy/new_tables.html', context)
 
         else:
             message = 'Input must be an integer'
@@ -742,7 +742,7 @@ def view_orders_action(request):
         # can only view the submitted orders
         orders = Order.objects.filter(is_paid=True)
         context['orders'] = orders.order_by('is_completed', '-order_time')
-        return render(request, 'yummy/view_orders.html', context)
+        return render(request, 'Yummy/view_orders.html', context)
 
 
 @login_required
@@ -806,15 +806,14 @@ def edit_dish_action(request, dish_id):
 
             if request.method == "GET":
                 # display form with dish info
-                initial = {'dish_name': dish.name, 'price': dish.price, 'category': dish.category,
-                'description': dish.description, 'calories': dish.calories,
-                'is_spicy': dish.is_spicy, 'is_vegetarian': dish.is_vegetarian, 'picture': dish_picture.picture}
+                    initial = {'dish_name': dish.name, 'price': dish.price, 'category': dish.category,
+                    'description': dish.description, 'calories': dish.calories,
+                    'is_spicy': dish.is_spicy, 'is_vegetarian': dish.is_vegetarian, 'picture': dish_picture.picture}
 
-                edit_form = FoodForm(initial=initial, disable_clean=True, picture_required=False)
-                context['form'] = edit_form
-                context['dish'] = dish
-                context['picture_dir'] = picture_dir
-                return render(request, 'Yummy/edit_dish.html', context)
+                    edit_form = FoodForm(initial=initial, disable_clean=True, picture_required=False)
+                    context['form'] = edit_form
+                    context['dish'] = dish
+                    return render(request, 'Yummy/edit_dish.html', context)
             
             elif request.method == "POST":
                 # update dish info and save
@@ -824,7 +823,7 @@ def edit_dish_action(request, dish_id):
                     context['dish'] = dish
                     context['form'] = form
                     context['message'] = form.errors
-                    return render(request, 'yummy/edit_dish.html', context)
+                    return render(request, 'Yummy/edit_dish.html', context)
                 
                 context['dish'] = dish
                 category = form.cleaned_data['category']
@@ -839,7 +838,7 @@ def edit_dish_action(request, dish_id):
                 dish.save()
 
                 if form.cleaned_data['picture']:
-                    new_picture = form.cleaned_date['picture']
+                    new_picture = form.cleaned_data['picture']
                 else:
                     new_picture = dish_picture.picture
 
@@ -850,9 +849,9 @@ def edit_dish_action(request, dish_id):
                 dish_picture.save()
                 print('save new picture')
             
-                return redirect('dish', id=dish.id)
+                return redirect('dish', id=dish.id)  
             
         except Food.DoesNotExist:
-            message = 'This dish does not exist'
+            message = 'Dish with ID {} does not exist.'.format(dish_id)
             messages.error(request, message)
             return redirect('home')
