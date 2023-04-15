@@ -339,7 +339,7 @@ def set_take_out(request):
                 if OrderTable.objects.filter(order=order).exists():
                     OrderTable.objects.filter(order=order).delete()
 
-            if action == 'dine-in':
+            elif action == 'dine-in':
                 order.is_takeout = False
                 order.save()
                 
@@ -356,12 +356,13 @@ def set_take_out(request):
                     if user_reservation:
                         print(user_reservation)
                         reserved_table = user_reservation[0].table
-                        if OrderTable.objects.filter(order=order).exists():
+                        # if OrderTable.objects.filter(order=order).exists():
+                        try:
                             order_table = OrderTable.objects.get(order=order)
                             order_table.table = reserved_table
                             order_table.save()
                             order.save()
-                        else:
+                        except OrderTable.DoesNotExist:
                             new_order_table = OrderTable.objects.create(order=order, table=reserved_table)
                             new_order_table.save()
 
@@ -404,21 +405,21 @@ def set_take_out(request):
                                                 status=400)
                             else:
                                 assigned_table = filtered_tables[0]
-                            if OrderTable.objects.filter(order=order).exists():
+                            # if OrderTable.objects.filter(order=order).exists():
+                            try:
                                 order_table = OrderTable.objects.get(order=order)
                                 order_table.table = assigned_table
-                                # table.orders.add(order)
                                 order_table.save()
                                 order.save()
-                            else:
+                            except OrderTable.DoesNotExist:
                                 new_order_table = OrderTable.objects.create(order=order, table=assigned_table)
                                 new_order_table.save()
 
                         except Table.DoesNotExist:
                             return JsonResponse({"success": False, "error_message": "Please enter a valid table number."},
                                                 status=400)
-
             return JsonResponse({"success": True, 'Cache-Control': 'no-cache'}, status=200)
+        
         except (Order.DoesNotExist):
             return JsonResponse({"success": False}, status=400)
 
@@ -431,21 +432,26 @@ def summary_action(request):
     json_response = json.loads(response.content)
     order_id = json_response['order_id']
 
-    order = Order.objects.get(id=order_id)
-    if not order.is_takeout:
-        order_table = get_object_or_404(OrderTable, order=order)
-        table = order_table.table
-        context['table'] = table
+    try:
+        order = Order.objects.get(id=order_id)
+        if not order.is_takeout:
+            order_table = get_object_or_404(OrderTable, order=order)
+            table = order_table.table
+            context['table'] = table
 
-    food_set = order.foods.all()
-    context['order'] = order
-    context['food_set'] = food_set
-    context['pretax'] = order.total_price
-    context['tax'] = round(order.total_price * 0.07, 2)
-    context['tips'] = round(order.total_price * 0.18, 2)
-    context['total'] = order.total_price + context['tax'] + context['tips']
-
-    return render(request, 'Yummy/summary.html', context)
+        food_set = order.foods.all()
+        context['order'] = order
+        context['food_set'] = food_set
+        context['pretax'] = order.total_price
+        context['tax'] = round(order.total_price * 0.07, 2)
+        context['tips'] = round(order.total_price * 0.18, 2)
+        context['total'] = order.total_price + context['tax'] + context['tips']
+        return render(request, 'Yummy/summary.html', context)
+    
+    except Order.DoesNotExist:
+            message = 'Order ID {} does not exist.'.format(order_id)
+            messages.error(request, message)
+            return redirect('home')
 
 
 @login_required
@@ -555,25 +561,34 @@ def get_favorite_count(request, item_id):
 @login_required
 def favorite_food_action(request):
     # Get my info first
-    my_info = Profile.objects.get(user=request.user)
+    try:
+        my_info = Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
+        message = 'Profile does not exist.'
+        messages.error(request, message)
+        return redirect('home')
 
     # Get the food_id and action from the request data
     food_id = request.POST.get('food_id')
     action = request.POST.get('action')
 
     # Get the food item
-    curr_food = get_object_or_404(Food, id=food_id)
+    try:
+        curr_food = Food.objects.get(id=food_id)
 
-    if action == 'favorite':
-        my_info.favorite.add(curr_food)
-    elif action == 'unfavorite':
-        my_info.favorite.remove(curr_food)
+        if action == 'favorite':
+            my_info.favorite.add(curr_food)
+        elif action == 'unfavorite':
+            my_info.favorite.remove(curr_food)
 
-    my_info.save()
-    # get number of user like this dish
-    count = curr_food.favoring.count()
+        my_info.save()
+        # get number of user like this dish
+        count = curr_food.favoring.count()
 
-    return JsonResponse({'success': True, 'num_ppl_fav': count})
+        return JsonResponse({'success': True, 'num_ppl_fav': count}, status=200)
+    
+    except Food.DoesNotExist:
+        return JsonResponse({'success': False}, status=400)
 
 
 @login_required
@@ -604,7 +619,12 @@ def new_dish_action(request):
             picture = form.cleaned_data['picture']
 
             # get the Category object with var. category
-            category = Category.objects.get(name=category)
+            try:
+                category = Category.objects.get(name=category)
+            except Category.DoesNotExist:
+                message = 'Category does not exist'
+                messages.error(request, message)
+                return redirect('home')
 
             # create new objects
             new_dish = Food.objects.create(name=name, price=price, description=desc, category=category,
@@ -672,14 +692,19 @@ def checkout(request):
 def payment_success(request):
     # change the payment status of the most recent order of current user
     # Get the ongoing order for the user (is_paid=False)
-    order = Order.objects.get(customer=request.user, is_paid=False, is_completed=False)
-    # update the order time to the time that customer actually paid and submit order
-    order.order_time = datetime.datetime.now()
-    order.is_paid = True
-    order.save()
-
-    context = {}
-    return render(request, "Yummy/payment_success.html", context)
+    try:
+        order = Order.objects.get(customer=request.user, is_paid=False, is_completed=False)
+        # update the order time to the time that customer actually paid and submit order
+        order.order_time = datetime.datetime.now()
+        order.is_paid = True
+        order.save()
+        context = {}
+        return render(request, "Yummy/payment_success.html", context)
+    
+    except Order.DoesNotExist:
+        message = 'Order does not exist.'
+        messages.error(request, message)
+        return redirect('home')
 
 
 @login_required
@@ -759,11 +784,16 @@ def complete_order_action(request, order_id):
         messages.error(request, message)
         return redirect('home')
     else:
-        order = Order.objects.get(id=order_id)
-        order.is_completed = True
-        order.save()
-        print(order.is_completed)
-        return redirect('view_orders')
+        try:
+            order = Order.objects.get(id=order_id)
+            order.is_completed = True
+            order.save()
+            print(order.is_completed)
+            return redirect('view_orders')
+        except Order.DoesNotExist:
+            message = 'Order ID {} does not exist.'.format(order_id)
+            messages.error(request, message)
+            return redirect('view_orders')
 
 
 @login_required
@@ -775,12 +805,17 @@ def delete_dish_action(request, dish_id):
         messages.error(request, message)
         return redirect('home')
     else:
-        dish = Food.objects.get(id=dish_id)
-        dish_name = dish.name
-        dish.delete()
-        message = 'Dish '+ dish_name + ' deleted.'
-        messages.success(request, message)
-        return redirect('home')
+        try:
+            dish = Food.objects.get(id=dish_id)
+            dish_name = dish.name
+            dish.delete()
+            message = 'Dish '+ dish_name + ' deleted.'
+            messages.success(request, message)
+            return redirect('home')
+        except Food.DoesNotExist:
+            message = 'Dish ID {} does not exist.'.format(dish_id)
+            messages.error(request, message)
+            return redirect('home')
     
 
 
@@ -795,7 +830,7 @@ def edit_dish_action(request, dish_id):
         return redirect('home')
     else:
         try:
-            dish = get_object_or_404(Food, id=dish_id)
+            dish = Food.objects.get(id=dish_id)
             picture_dir = dish.picture_dir
 
             try:
@@ -837,7 +872,7 @@ def edit_dish_action(request, dish_id):
                 dish.price = form.cleaned_data['price']
                 dish.description = form.cleaned_data['description']
                 dish.calories = form.cleaned_data['calories']
-                dish.category = Category.objects.get(name=category)
+                dish.category = get_object_or_404(Category, name=category)
                 dish.is_spicy = form.cleaned_data['is_spicy']
                 dish.is_vegetarian = form.cleaned_data['is_vegetarian']
                 dish.save()
