@@ -592,7 +592,7 @@ def favorite_food_action(request):
 
 
 @login_required
-@staff_member_required
+# @staff_member_required
 def new_dish_action(request):
     context = {}
     user = request.user
@@ -708,7 +708,7 @@ def payment_success(request):
 
 
 @login_required
-@staff_member_required
+# @staff_member_required
 def new_tables_actions(request):
     context = {}
     user = request.user
@@ -760,7 +760,7 @@ def new_tables_actions(request):
 
 
 @login_required
-@staff_member_required
+# @staff_member_required
 def view_orders_action(request):
     context = {}
     user = request.user
@@ -776,7 +776,7 @@ def view_orders_action(request):
 
 
 @login_required
-@staff_member_required
+# @staff_member_required
 def complete_order_action(request, order_id):
     user = request.user
     if not user.is_staff:
@@ -797,7 +797,7 @@ def complete_order_action(request, order_id):
 
 
 @login_required
-@staff_member_required
+# @staff_member_required
 def delete_dish_action(request, dish_id):
     user = request.user
     if not user.is_staff:
@@ -820,7 +820,7 @@ def delete_dish_action(request, dish_id):
 
 
 @login_required
-@staff_member_required
+# @staff_member_required
 def edit_dish_action(request, dish_id):
     user = request.user
     context = {}
