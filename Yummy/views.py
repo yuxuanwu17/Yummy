@@ -503,26 +503,31 @@ def cancel_reservation_action(request, id):
 
 
 def dish_action(request, id):
-    target_food = Food.objects.get(id=id)
-    context = {}
-    context['comment_form'] = CommentForm()
-    context['comments'] = target_food.comments.all().order_by('creation_time').reverse
-    context['f'] = target_food
+    try:
+        target_food = Food.objects.get(id=id)
+        context = {}
+        context['comment_form'] = CommentForm()
+        context['comments'] = target_food.comments.all().order_by('creation_time').reverse
+        context['f'] = target_food
 
-    # get number of user like this dish
-    count = target_food.favoring.count()
-    context['count'] = count
+        # get number of user like this dish
+        count = target_food.favoring.count()
+        context['count'] = count
 
-    if request.user.is_authenticated:
-        profiles = Profile.objects.get(user=request.user)
-        context['favorite_list'] = [x.name for x in profiles.favorite.all()]
+        if request.user.is_authenticated:
+            profiles = Profile.objects.get(user=request.user)
+            context['favorite_list'] = [x.name for x in profiles.favorite.all()]
 
-    if 'text' in request.POST:
-        new_comment = Comment.objects.create(text=request.POST['text'],
-                                             creation_time=timezone.now(),
-                                             creator=request.user, )
-        new_comment.post_under.add(target_food)
-    return render(request, 'Yummy/dish.html', context)
+        if 'text' in request.POST:
+            new_comment = Comment.objects.create(text=request.POST['text'],
+                                                creation_time=timezone.now(),
+                                                creator=request.user, )
+            new_comment.post_under.add(target_food)
+        return render(request, 'Yummy/dish.html', context)
+    except Food.DoesNotExist:
+        message = 'Dish with ID {} does not exist.'.format(id)
+        messages.error(request, message)
+        return redirect('home')
 
 
 def get_comments(request):
