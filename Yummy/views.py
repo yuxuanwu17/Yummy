@@ -848,7 +848,7 @@ def edit_dish_action(request, dish_id):
                 # display form with dish info
                     initial = {'dish_name': dish.name, 'price': dish.price, 'category': dish.category,
                     'description': dish.description, 'calories': dish.calories,
-                    'is_spicy': dish.is_spicy, 'is_vegetarian': dish.is_vegetarian, 'picture': dish_picture.picture}
+                    'is_spicy': dish.is_spicy, 'is_vegetarian': dish.is_vegetarian}
 
                     edit_form = FoodForm(initial=initial, disable_clean=True, picture_required=False)
                     context['form'] = edit_form

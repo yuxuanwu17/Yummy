@@ -39,5 +39,6 @@ def create_initial_table():
 
 # create superuser
 def create_superuser():
-    superuser = User.objects.create_superuser('admin', 'admin@gmail.com', 'admin')
-    superuser.save()
+    if not User.objects.filter(username = 'admin').exists():
+        superuser = User.objects.create_superuser('admin', 'admin@gmail.com', 'admin')
+        superuser.save()
