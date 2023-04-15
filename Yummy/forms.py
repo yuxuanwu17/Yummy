@@ -14,6 +14,7 @@ MAX_PASSWORD_LENGTH = 20
 MAX_NAME_LENGTH = 20
 MAX_PHONE_LENGTH = 20
 MAX_COMMENTS_LENGTH = 100
+MAX_DESCRIPTION_LENGTH = 500
 MAX_UPLOAD_SIZE = 250000000
 
 MAX_DISH_NAME_LENGTH = 50
@@ -106,34 +107,39 @@ class FoodForm(forms.Form):
                              min_value=0,
                              widget=forms.NumberInput(attrs={'class':'form-control'}))
     description = forms.CharField(label='Description', required=True, 
-                                  max_length=MAX_COMMENTS_LENGTH, min_length=20, 
+                                  max_length=MAX_DESCRIPTION_LENGTH, min_length=20, 
                                   widget=forms.Textarea(attrs={'class':'form-control'}))
     category = forms.CharField(label='Category', required=True, 
                                widget=forms.Select(choices=FOOD_CATEGORIES, attrs={'class':'form-control'}))
     calories = forms.FloatField(label='Calroies', required=True, 
                                 min_value=0,
                                 widget=forms.NumberInput(attrs={'class':'form-control'}))
-    
     is_spicy = forms.BooleanField(label='Is this dish spicy?', required=False,
                                   widget=forms.Select(choices=BOOL_CHOICES, attrs={'class':'form-control'}), initial=None)
     is_vegetarian = forms.BooleanField(label='Is this dish vegetarian?', required=False,
                                        widget=forms.Select(choices=BOOL_CHOICES, attrs={'class':'form-control'}), initial=None)
-    picture = forms.ImageField(max_length=MAX_UPLOAD_SIZE, required=True)
+    picture = forms.ImageField(max_length=MAX_UPLOAD_SIZE, required=False)
+
+
+    def __init__(self, *args, **kwargs):
+        disable_clean = kwargs.pop('disable_clean', False)
+        picture_required = kwargs.pop('picture_required', True)
+        super().__init__(*args, **kwargs)
+        self.disable_clean = disable_clean
+        self.fields['picture'].require = picture_required
 
     def clean(self):
         cleaned_data = super().clean()
-
         return cleaned_data
     
     def clean_dish_name(self):
-        # Confirms that the username is not already present in the
-        # User model database.
-        dish_name = self.cleaned_data.get('dish_name')
-        if Food.objects.filter(name__icontains=dish_name):
-            raise forms.ValidationError("This dish is already in the menu.")
+        if self.disable_clean:
+            return self.cleaned_data['dish_name'].title()
+        else:
+            dish_name = self.cleaned_data.get('dish_name')
+            if Food.objects.filter(name__icontains=dish_name):
+                raise forms.ValidationError("This dish is already in the menu.")
 
-        # We must return the cleaned data we got from the cleaned_data
-        # dictionary
-        return dish_name.title()
+            return dish_name.title()
 
- 
+
