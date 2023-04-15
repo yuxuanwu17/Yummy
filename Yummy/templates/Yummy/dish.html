@@ -278,12 +278,10 @@
                     {% if user.is_staff %}
                     <div class="row">
                         <div class="col-6 text-end">
-                            <form method="GET" action="{% url 'edit_dish' f.id %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="dish_id" value="{{f.id}}">
-                                <button type="button" class="btn btn-warning my-3"
-                                    id="edit_dish_{{f.id}}">Edit this dish</button>
-                            </form>
+                            <a href="{% url 'edit_dish' f.id %}">
+                                <button class="btn btn-warning my-3" type="submit" name="dish_id" value="{{f.id}}">Edit this dish</button>
+                            </a>
+                            
                         </div>
 
                         <div class="col-6 text-start">

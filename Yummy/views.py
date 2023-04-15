@@ -2,6 +2,7 @@ import collections
 import datetime
 import json
 from django.contrib import messages
+import os
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -72,7 +73,7 @@ def register_action(request):
     new_profile = Profile(user=request.user, phone_number=form.cleaned_data['phone_number'])
     new_profile.save()
 
-    return redirect('home')
+    return redirect(reverse('home'))
 
 
 # display pre-stored dishes
@@ -788,10 +789,70 @@ def edit_dish_action(request, dish_id):
         messages.error(request, message)
         return redirect('home')
     else:
-        if request.method == "GET":
-            # display form with dish info
-            return render(request, 'yummy/edit_dish.html', context)
-        
-        elif request.method == "POST":
-            # update dish info and save
-            pass
+        try:
+            dish = get_object_or_404(Food, id=dish_id)
+            picture_dir = dish.picture_dir
+
+            try:
+                dish_picture = FoodPicture.objects.get(food=dish)
+            except FoodPicture.DoesNotExist:  # create a FoodPicture object for Food does not have this object
+                # get the directory
+                file_path = os.path.abspath(__file__) # /Users/kellyhsieh/s23_team_1/Yummy/views.py
+                base_dir = os.path.abspath(os.path.join(file_path, '../'))
+                file_name =picture_dir[4:]
+                dish_picture = FoodPicture.objects.create(food=dish)
+                with open(base_dir+'/static/'+picture_dir, 'rb') as f:
+                    dish_picture.picture.save(file_name, f, save=True)
+
+            if request.method == "GET":
+                # display form with dish info
+                initial = {'dish_name': dish.name, 'price': dish.price, 'category': dish.category,
+                'description': dish.description, 'calories': dish.calories,
+                'is_spicy': dish.is_spicy, 'is_vegetarian': dish.is_vegetarian, 'picture': dish_picture.picture}
+
+                edit_form = FoodForm(initial=initial, disable_clean=True, picture_required=False)
+                context['form'] = edit_form
+                context['dish'] = dish
+                context['picture_dir'] = picture_dir
+                return render(request, 'Yummy/edit_dish.html', context)
+            
+            elif request.method == "POST":
+                # update dish info and save
+                form = FoodForm(data=request.POST, files=request.FILES, disable_clean=True, picture_required=False)
+                if not form.is_valid():
+                    print('form not valid')
+                    context['dish'] = dish
+                    context['form'] = form
+                    context['message'] = form.errors
+                    return render(request, 'yummy/edit_dish.html', context)
+                
+                context['dish'] = dish
+                category = form.cleaned_data['category']
+                
+                dish.name = form.cleaned_data['dish_name']
+                dish.price = form.cleaned_data['price']
+                dish.description = form.cleaned_data['description']
+                dish.calories = form.cleaned_data['calories']
+                dish.category = Category.objects.get(name=category)
+                dish.is_spicy = form.cleaned_data['is_spicy']
+                dish.is_vegetarian = form.cleaned_data['is_vegetarian']
+                dish.save()
+
+                if form.cleaned_data['picture']:
+                    new_picture = form.cleaned_date['picture']
+                else:
+                    new_picture = dish_picture.picture
+
+                dish_picture.picture = new_picture
+                dish.picture_dir = 'img/' + dish_picture.picture.name
+
+                dish.save()
+                dish_picture.save()
+                print('save new picture')
+            
+                return redirect('dish', id=dish.id)
+            
+        except Food.DoesNotExist:
+            message = 'This dish does not exist'
+            messages.error(request, message)
+            return redirect('home')
