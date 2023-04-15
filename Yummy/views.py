@@ -880,6 +880,7 @@ def edit_dish_action(request, dish_id):
                 if form.cleaned_data['picture']:
                     new_picture = form.cleaned_data['picture']
                 else:
+                    # if no new picture uploaded by user, use the original picture.
                     new_picture = dish_picture.picture
 
                 dish_picture.picture = new_picture
