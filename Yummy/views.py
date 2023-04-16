@@ -397,7 +397,7 @@ def set_take_out(request):
                             orders = Order.objects.filter(is_takeout = False, order_table__isnull = False,
                                                         order_time__gte=(datetime.datetime.now() - datetime.timedelta(hours=2)))
                                                                             
-                            unavailable_tableid = [order.order_table for order in orders]
+                            unavailable_tableid = [order.order_table.table.id for order in orders]
                             filtered_tables = filtered_tables.exclude(id__in=unavailable_tableid)
 
                             if len(filtered_tables) == 0:
