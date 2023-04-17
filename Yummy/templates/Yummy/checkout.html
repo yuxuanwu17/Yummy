@@ -57,7 +57,6 @@
 
 <!-- Custom styles for this template -->
 <link href="../../static/Yummy/checkout.css" rel="stylesheet">
-<script src="{% static 'Yummy/dist/js/checkout.js' %}?v={% now 'U' %}" type="text/javascript"></script>
 
 {% block content %}
     <body class="bg-light">
@@ -311,84 +310,8 @@
 
     </body>
 
-
+    <script src="{% static 'Yummy/dist/js/checkout.js' %}?v={% now 'U' %}" type="text/javascript"></script>
     <script>
-        function luhnCheck(value) {
-            let sum = 0;
-            let shouldDouble = false;
-            for (let i = value.length - 1; i >= 0; i--) {
-                let digit = parseInt(value.charAt(i), 10);
-
-                if (shouldDouble) {
-                    if ((digit *= 2) > 9) {
-                        digit -= 9;
-                    }
-                }
-
-                sum += digit;
-                shouldDouble = !shouldDouble;
-            }
-
-            return (sum % 10) === 0;
-        }
-
-        function validateCard(input) {
-            console.log("input.val" + input.value)
-            if (!luhnCheck(input.value)) {
-                input.setCustomValidity("Invalid credit card number.");
-            } else {
-                input.setCustomValidity("");
-            }
-        }
-
-        function isValidExpirationDate(expiration) {
-            const currentDate = new Date();
-            const currentMonth = currentDate.getMonth() + 1;
-            const currentYear = currentDate.getFullYear();
-
-            const [month, year] = expiration.split('/');
-            const expMonth = parseInt(month, 10);
-            const expYear = parseInt(year, 10);
-
-            if (!month || !year || isNaN(expMonth) || isNaN(expYear)) {
-                return false;
-            }
-
-            if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
-                return false;
-            }
-
-            return true;
-        }
-
-        function isValidCVV(cvv) {
-            const cvvRegex = /^[0-9]{3,4}$/;
-            return cvvRegex.test(cvv);
-        }
-
-
-        function isValidNameOnCard(name) {
-            const nameRegex = /^[a-zA-Z\s]+$/;
-            return nameRegex.test(name);
-        }
-
-        function validateNameOnCard(input) {
-            input.setCustomValidity(isValidNameOnCard(input.value) ? "" : "Invalid name on card.");
-        }
-
-        function validateCardNumber(input) {
-            input.setCustomValidity(luhnCheck(input.value) ? "" : "Invalid credit card number.");
-        }
-
-        function validateExpirationDate(input) {
-            input.setCustomValidity(isValidExpirationDate(input.value) ? "" : "Invalid expiration date.");
-        }
-
-        function validateCVV(input) {
-            input.setCustomValidity(isValidCVV(input.value) ? "" : "Invalid CVV.");
-        }
-
-
         document.getElementById("payment-form").addEventListener("submit", function (event) {
             event.preventDefault();
             event.stopPropagation();
@@ -425,7 +348,5 @@
 
             form.classList.add("was-validated");
         });
-
-        
     </script>
 {% endblock %}
