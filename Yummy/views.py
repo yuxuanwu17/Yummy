@@ -17,7 +17,8 @@ from django.db.models import Count
 import datetime
 from Yummy.models import *
 from .forms import *
-
+from .serializers import OrderSerializer
+from rest_framework import generics
 
 def login_action(request):
     context = {}
@@ -606,3 +607,9 @@ def view_orders_action(request):
         return render(request, 'yummy/view_orders.html', context)
         
         
+class OrderAPIView(generics.RetrieveAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+
+def menu(request):
+    return render(request, 'menu/index.html')
