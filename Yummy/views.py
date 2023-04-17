@@ -2,6 +2,7 @@ import collections
 import datetime
 import json
 from django.contrib import messages
+import os
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -19,6 +20,8 @@ from Yummy.models import *
 from .forms import *
 from .serializers import OrderSerializer
 from rest_framework import generics
+from dateutil.parser import parse
+
 
 def login_action(request):
     context = {}
@@ -72,7 +75,7 @@ def register_action(request):
     new_profile = Profile(user=request.user, phone_number=form.cleaned_data['phone_number'])
     new_profile.save()
 
-    return redirect('home')
+    return redirect(reverse('home'))
 
 
 # display pre-stored dishes
@@ -99,7 +102,7 @@ def global_action(request):
             response_data['foods'].append([my_item])
         else:
             response_data['foods'][curr_index].append(my_item)
-    
+
     if request.user.is_authenticated:
         profiles, _ = Profile.objects.get_or_create(user=request.user)
         print(profiles)
@@ -174,6 +177,15 @@ def get_order_total_price(request):
     try:
         order = Order.objects.get(customer=user, is_paid=False, is_completed=False)
         food_quantities = order.foods.values('food_id', 'quantity')
+
+        order_total = 0.0
+        for foodset in food_quantities:
+            price = Food.objects.get(id=foodset['food_id']).price
+            quantity = foodset['quantity']
+            order_total += price * quantity
+        order.total_price = order_total
+        order.save()
+
         return JsonResponse(
             {"success": True, "order_id": order.id, "total_price": order.total_price,
              "food_quantities": list(food_quantities)}, status=200)
@@ -247,6 +259,45 @@ def reserve_action(request):
     context['table_reserved'] = True
     return render(request, 'Yummy/reserve.html', context)
 
+@csrf_exempt
+def fetch_events(request):
+    start_date_str = request.GET.get('start', None)
+    end_date_str = request.GET.get('end', None)
+    print("start, end input")
+    print(start_date_str, end_date_str)
+    if start_date_str and end_date_str:
+        start_date = parse(start_date_str).date()
+        end_date = parse(end_date_str).date()
+
+        reservations = Reservation.objects.filter(date__range=[start_date, end_date])
+        reserved_tables = reservations.values('date', 'time', 'number_customers').annotate(total=Count('table'))
+        total_tables = Table.objects.count()
+
+        print(total_tables)
+
+        event_list = []
+
+        for reserved in reserved_tables:
+            date = reserved['date']
+            time = reserved['time']
+            number_customers = reserved['number_customers']
+            total_reserved = reserved['total']
+
+            available_tables = total_tables - total_reserved
+
+            event_list.append({
+                'title': f'Available Tables: {available_tables}',
+                'start': datetime.datetime.combine(date, time).strftime('%Y-%m-%dT%H:%M:%S'),
+                'end': (datetime.datetime.combine(date, time) + datetime.timedelta(hours=2)).strftime(
+                    '%Y-%m-%dT%H:%M:%S'),
+                'color': 'red' if available_tables == 0 else 'transparent',
+                'textColor': 'transparent',
+                'rendering': 'background',
+                'available_tables': available_tables
+            })
+
+        return JsonResponse(event_list, safe=False)
+
 
 @login_required
 def option_action(request):
@@ -266,10 +317,20 @@ def option_action(request):
 @login_required
 @csrf_exempt
 def set_take_out(request):
+    user = request.user
     if request.method == 'POST':
         order_id = request.POST.get('order_id')
         action = request.POST.get('action')
-        print(action)
+
+        OPEN_TIME = datetime.time(10,00,00)
+        CLOSE_TIME = datetime.time(23,00,00)
+        print(datetime.datetime.now().time())
+        if datetime.datetime.now().time() < OPEN_TIME or datetime.datetime.now().time() > CLOSE_TIME:
+            print('Close')
+            return JsonResponse({"success": False, "error_message": "Sorry we are closed now."},
+                                        status=400)
+        else:
+            print('opening')
 
         try:
             order = Order.objects.get(id=order_id)
@@ -280,32 +341,103 @@ def set_take_out(request):
                 if OrderTable.objects.filter(order=order).exists():
                     OrderTable.objects.filter(order=order).delete()
 
-            if action == 'dine-in':
+            elif action == 'dine-in':
                 order.is_takeout = False
                 order.save()
-                if 'table_number' not in request.POST or request.POST['table_number'] == '':
-                    return JsonResponse({"success": False, "error_message": "Please enter a valid table number."},
+                
+                if 'party_size' not in request.POST or request.POST['party_size'] == '':
+                    return JsonResponse({"success": False, "error_message": "Please enter a valid number for your party size."},
                                         status=400)
                 else:
-                    table_number = request.POST['table_number']
-                    try:
-                        table = Table.objects.get(id=table_number)
-                        if OrderTable.objects.filter(order=order).exists():
+                    # check if customer have any reservation 
+                    # customer can order either 30 minutes before their reservation, or 1.5 hour after the reservation start time
+                    user_reservation = Reservation.objects.filter(customer=user, date=datetime.datetime.today(),
+                                                                  time__range=((datetime.datetime.now() - datetime.timedelta(hours=2)).time(),
+                                                                               (datetime.datetime.now() - datetime.timedelta(minutes=30)).time()))
+                    
+                    # check if customer has any not-completed order and it's within the 1 hour 30 min range
+                    user_order = Order.objects.filter(customer=user, order_table__isnull = False, is_paid = True,
+                                                      order_time__lte=((datetime.datetime.now() - datetime.timedelta(hours=1, minutes=30))))
+                    if user_reservation:
+                        print(user_reservation)
+                        reserved_table = user_reservation[0].table
+                        try:
                             order_table = OrderTable.objects.get(order=order)
-                            order_table.table = table
-                            # table.orders.add(order)
+                            order_table.table = reserved_table
                             order_table.save()
                             order.save()
-                            table.save()
-                        else:
-                            new_order_table = OrderTable.objects.create(order=order, table=table)
+                        except OrderTable.DoesNotExist:
+                            new_order_table = OrderTable.objects.create(order=order, table=reserved_table)
                             new_order_table.save()
+                        print('Have reservation at this time')
+                    
+                    elif user_order:
+                        # get the assigned table from the previous order
+                        user_table = user_order[0].order_table.table
+                        try:
+                            order_table = OrderTable.objects.get(order=order)
+                            order_table.table = user_table
+                            order_table.save()
+                            order.save()
+                        except OrderTable.DoesNotExist:
+                            order_table = OrderTable.objects.create(order=order, table=user_table)
+                            order.save()
+                            order_table.save()
+                        print('Have previous submitted order')
 
-                    except Table.DoesNotExist:
-                        return JsonResponse({"success": False, "error_message": "Please enter a valid table number."},
-                                            status=400)
+                    else:
+                        # if no reservation and no previous order, find an available table and assign to this order
+                        party_size = request.POST['party_size']
 
+                        new_filter = {
+                            'date': datetime.date.today(),
+                            'start_time': datetime.datetime.now().time(),
+                            'end_time': (datetime.datetime.now() + datetime.timedelta(hours=2)).time(),
+                            'number_customers': party_size
+                        }
+                        try:
+                            # 1. Filter out the tables by capacity and open/close time
+                            tables = Table.objects.filter(capacity__gte=new_filter['number_customers'])
+                            # tables = tables.filter(open_time__lte=new_filter['start_time'])
+                            # tables = tables.filter(close_time__gte=new_filter['end_time'])
+
+                            # 2. Filter out the tables being reserved within 2 hours before and 2 hours later
+                            reservations = Reservation.objects.filter(
+                            date=new_filter['date'],
+                            time__range=((datetime.datetime.now() - datetime.timedelta(hours=2)).time(),
+                                         (datetime.datetime.now() + datetime.timedelta(hours=2)).time())
+                            )
+                            unavailable_tableid = [reservation.table.id for reservation in reservations]
+                            filtered_tables = tables.exclude(id__in=unavailable_tableid)
+
+                            # 3. Filter out the tables which are occupied right now
+                            orders = Order.objects.filter(is_takeout = False, order_table__isnull = False,
+                                                        order_time__gte=(datetime.datetime.now() - datetime.timedelta(hours=2)))
+                                                                            
+                            unavailable_tableid = [order.order_table.table.id for order in orders]
+                            filtered_tables = filtered_tables.exclude(id__in=unavailable_tableid)
+
+                            if len(filtered_tables) == 0:
+                                return JsonResponse({"success": False, "error_message": "All tables are being reserved or occupied right now."},
+                                                status=400)
+                            else:
+                                assigned_table = filtered_tables[0]
+                            try:
+                                order_table = OrderTable.objects.get(order=order)
+                                order_table.table = assigned_table
+                                order_table.save()
+                                order.save()
+                                print('Assigned by system')
+                            except OrderTable.DoesNotExist:
+                                new_order_table = OrderTable.objects.create(order=order, table=assigned_table)
+                                new_order_table.save()
+                                print('Assigned by system')
+
+                        except Table.DoesNotExist:
+                            return JsonResponse({"success": False, "error_message": "Please enter a valid table number."},
+                                                status=400)
             return JsonResponse({"success": True, 'Cache-Control': 'no-cache'}, status=200)
+        
         except (Order.DoesNotExist):
             return JsonResponse({"success": False}, status=400)
 
@@ -318,21 +450,31 @@ def summary_action(request):
     json_response = json.loads(response.content)
     order_id = json_response['order_id']
 
-    order = Order.objects.get(id=order_id)
-    if not order.is_takeout:
-        order_table = get_object_or_404(OrderTable, order=order)
-        table = order_table.table
-        context['table'] = table
+    try:
+        order = Order.objects.get(id=order_id)
+        if not order.is_takeout:
+            try:
+                order_table = OrderTable.objects.get(order=order)
+                table = order_table.table
+                context['table'] = table
+            except OrderTable.DoesNotExist:
+                message='Something went wrong when assigning table to this order.'
+                messages.error(request, message)
+                return redirect('home')
 
-    food_set = order.foods.all()
-    context['order'] = order
-    context['food_set'] = food_set
-    context['pretax'] = order.total_price
-    context['tax'] = round(order.total_price * 0.07, 2)
-    context['tips'] = round(order.total_price * 0.18, 2)
-    context['total'] = order.total_price + context['tax'] + context['tips']
-
-    return render(request, 'Yummy/summary.html', context)
+        food_set = order.foods.all()
+        context['order'] = order
+        context['food_set'] = food_set
+        context['pretax'] = order.total_price
+        context['tax'] = round(order.total_price * 0.07, 2)
+        context['tips'] = round(order.total_price * 0.18, 2)
+        context['total'] = order.total_price + context['tax'] + context['tips']
+        return render(request, 'Yummy/summary.html', context)
+    
+    except Order.DoesNotExist:
+            message = 'Order ID {} does not exist.'.format(order_id)
+            messages.error(request, message)
+            return redirect('home')
 
 
 @login_required
@@ -345,8 +487,10 @@ def profile_action(request):
     if request.method == "GET":
         context['item'] = profile
         favorite = profile.favorite.all()
+        phone_number = profile.phone_number
         context['favorite'] = favorite
-        context['reservations'] = reservations
+        context['phone_number'] = phone_number
+        context['reservations'] = reservations.order_by('date','time').reverse
         if len(reservations) == 0:
             context['no_reservation_message'] = "You don't have any reservations."
         if len(favorite) == 0:
@@ -355,38 +499,64 @@ def profile_action(request):
             context['no_order_message'] = "You don't have any past orders."
         else:
             context['orders'] = orders.order_by('order_time').reverse
-            context['foodset_list'] = [order.foods.all() for order in orders]
-
+            context['today_date'] = datetime.datetime.today().date()
+            context['today_time'] = datetime.datetime.now().time()
+    else:
+        if 'phone_number' in request.POST:
+            phone_number = request.POST['phone_number']
+            if len(phone_number) != 10:
+                message = 'Invalid phone number'
+                messages.warning(request, message)
+                return redirect('profile')
+            else:
+                profile.phone_number = phone_number
+                profile.save()
+                message = 'Phone number updated successfully. It will take effect from your next reservation.'
+                messages.success(request, message)
+                return redirect('profile')
+        
     return render(request, 'Yummy/profile.html', context)
 
 
 def cancel_reservation_action(request, id):
-    reservation = Reservation.objects.get(id=id)
-    reservation.delete()
-    return redirect('profile')
+    try:
+        reservation = Reservation.objects.get(id=id)
+        reservation.delete()
+        message = 'Reservation canceled.'
+        messages.success(request, message)
+        return redirect('profile')
+    except Reservation.DoesNotExist:
+        message = 'Error happened when canceling this reservation. Please contact the restaurant.'
+        messages.error(request, message)
+        return redirect('profile')
 
 
 def dish_action(request, id):
-    target_food = Food.objects.get(id=id)
-    context = {}
-    context['comment_form'] = CommentForm()
-    context['comments'] = target_food.comments.all().order_by('creation_time').reverse
-    context['f'] = target_food
+    try:
+        target_food = Food.objects.get(id=id)
+        context = {}
+        context['comment_form'] = CommentForm()
+        context['comments'] = target_food.comments.all().order_by('creation_time').reverse
+        context['f'] = target_food
 
-    # get number of user like this dish
-    count = target_food.favoring.count()
-    context['count'] = count
+        # get number of user like this dish
+        count = target_food.favoring.count()
+        context['count'] = count
 
-    if request.user.is_authenticated:
-        profiles = Profile.objects.get(user=request.user)
-        context['favorite_list'] = [x.name for x in profiles.favorite.all()]
+        if request.user.is_authenticated:
+            profiles = Profile.objects.get(user=request.user)
+            context['favorite_list'] = [x.name for x in profiles.favorite.all()]
 
-    if 'text' in request.POST:
-        new_comment = Comment.objects.create(text=request.POST['text'],
-                                             creation_time=timezone.now(),
-                                             creator=request.user, )
-        new_comment.post_under.add(target_food)
-    return render(request, 'Yummy/dish.html', context)
+        if 'text' in request.POST:
+            new_comment = Comment.objects.create(text=request.POST['text'],
+                                                creation_time=timezone.now(),
+                                                creator=request.user, )
+            new_comment.post_under.add(target_food)
+        return render(request, 'Yummy/dish.html', context)
+    except Food.DoesNotExist:
+        message = 'Dish with ID {} does not exist.'.format(id)
+        messages.error(request, message)
+        return redirect('home')
 
 
 def get_comments(request):
@@ -414,29 +584,38 @@ def get_favorite_count(request, item_id):
 @login_required
 def favorite_food_action(request):
     # Get my info first
-    my_info = Profile.objects.get(user=request.user)
+    try:
+        my_info = Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
+        message = 'Profile does not exist.'
+        messages.error(request, message)
+        return redirect('home')
 
     # Get the food_id and action from the request data
     food_id = request.POST.get('food_id')
     action = request.POST.get('action')
 
     # Get the food item
-    curr_food = get_object_or_404(Food, id=food_id)
+    try:
+        curr_food = Food.objects.get(id=food_id)
 
-    if action == 'favorite':
-        my_info.favorite.add(curr_food)
-    elif action == 'unfavorite':
-        my_info.favorite.remove(curr_food)
+        if action == 'favorite':
+            my_info.favorite.add(curr_food)
+        elif action == 'unfavorite':
+            my_info.favorite.remove(curr_food)
 
-    my_info.save()
-    # get number of user like this dish
-    count = curr_food.favoring.count()
+        my_info.save()
+        # get number of user like this dish
+        count = curr_food.favoring.count()
 
-    return JsonResponse({'success': True, 'num_ppl_fav': count})
+        return JsonResponse({'success': True, 'num_ppl_fav': count}, status=200)
+    
+    except Food.DoesNotExist:
+        return JsonResponse({'success': False}, status=400)
 
 
 @login_required
-@staff_member_required
+# @staff_member_required
 def new_dish_action(request):
     context = {}
     user = request.user
@@ -463,7 +642,12 @@ def new_dish_action(request):
             picture = form.cleaned_data['picture']
 
             # get the Category object with var. category
-            category = Category.objects.get(name=category)
+            try:
+                category = Category.objects.get(name=category)
+            except Category.DoesNotExist:
+                message = 'Category does not exist'
+                messages.error(request, message)
+                return redirect('home')
 
             # create new objects
             new_dish = Food.objects.create(name=name, price=price, description=desc, category=category,
@@ -521,26 +705,38 @@ def register_staff_action(request):
 
 @login_required
 def checkout(request):
-    curr_profile = get_object_or_404(Profile, id=request.user.id)
-    context = {"profile": curr_profile}
-    print(curr_profile.phone_number)
-    return render(request, "Yummy/checkout.html", context)
+    try:
+        curr_profile = Profile.objects.get(id=request.user.id)
+        context = {"profile": curr_profile}
+        print(curr_profile.phone_number)
+        return render(request, "Yummy/checkout.html", context)
+    except Profile.DoesNotExist:
+        message='Profile does not exist.'
+        messages.error(request, message)
+        return redirect('summary')
 
 
 @login_required
 def payment_success(request):
     # change the payment status of the most recent order of current user
     # Get the ongoing order for the user (is_paid=False)
-    order = Order.objects.get(customer=request.user, is_paid=False, is_completed=False)
-    order.is_paid = True
-    order.save()
-
-    context = {}
-    return render(request, "Yummy/payment_success.html", context)
+    try:
+        order = Order.objects.get(customer=request.user, is_paid=False, is_completed=False)
+        # update the order time to the time that customer actually paid and submit order
+        order.order_time = datetime.datetime.now()
+        order.is_paid = True
+        order.save()
+        context = {}
+        return render(request, "Yummy/payment_success.html", context)
+    
+    except Order.DoesNotExist:
+        message = 'Order does not exist.'
+        messages.error(request, message)
+        return redirect('home')
 
 
 @login_required
-@staff_member_required
+# @staff_member_required
 def new_tables_actions(request):
     context = {}
     user = request.user
@@ -549,6 +745,7 @@ def new_tables_actions(request):
         messages.error(request, message)
         return redirect('home')
 
+# Display all the tables in the restaurant
     if request.method == "GET":
         results = Table.objects.values('capacity').annotate(dcount=Count('capacity')).order_by()
         context['results'] = results
@@ -571,6 +768,7 @@ def new_tables_actions(request):
             messages.error(request, message)
             return redirect('new_tables')
 
+        # create tables according to the number and capacity user input
         if capacity.is_integer() and number_to_add.is_integer():
             new_tables = []
             for i in range(int(number_to_add)):
@@ -581,16 +779,16 @@ def new_tables_actions(request):
             messages.success(request, message)
             results = Table.objects.values('capacity').annotate(dcount=Count('capacity')).order_by()
             context['results'] = results
-            return render(request, 'yummy/new_tables.html', context)
+            return render(request, 'Yummy/new_tables.html', context)
 
         else:
             message = 'Input must be an integer'
             messages.error(request, message)
             return redirect('new_tables')
 
-                
+
 @login_required
-@staff_member_required
+# @staff_member_required
 def view_orders_action(request):
     context = {}
     user = request.user
@@ -598,18 +796,131 @@ def view_orders_action(request):
         message = 'You are not authorized to do this action.'
         messages.error(request, message)
         return redirect('home')
-    else: 
-        orders = Order.objects.all()
-        foodset_list = [order.foods.all() for order in orders]
+    else:
+        # can only view the submitted orders
+        orders = Order.objects.filter(is_paid=True)
+        context['orders'] = orders.order_by('is_completed', '-order_time')
+        return render(request, 'Yummy/view_orders.html', context)
 
-        context['orders'] = orders.order_by('order_time').reverse
-        context['foodset_list'] = foodset_list
-        return render(request, 'yummy/view_orders.html', context)
-        
-        
-class OrderAPIView(generics.RetrieveAPIView):
-    queryset = Order.objects.all()
-    serializer_class = OrderSerializer
 
-def menu(request):
-    return render(request, 'menu/index.html')
+@login_required
+# @staff_member_required
+def complete_order_action(request, order_id):
+    user = request.user
+    if not user.is_staff:
+        message = 'You are not authorized to do this action.'
+        messages.error(request, message)
+        return redirect('home')
+    else:
+        try:
+            order = Order.objects.get(id=order_id)
+            order.is_completed = True
+            order.save()
+            print(order.is_completed)
+            return redirect('view_orders')
+        except Order.DoesNotExist:
+            message = 'Order ID {} does not exist.'.format(order_id)
+            messages.error(request, message)
+            return redirect('view_orders')
+
+
+@login_required
+# @staff_member_required
+def delete_dish_action(request, dish_id):
+    user = request.user
+    if not user.is_staff:
+        message = 'You are not authorized to do this action.'
+        messages.error(request, message)
+        return redirect('home')
+    else:
+        try:
+            dish = Food.objects.get(id=dish_id)
+            dish_name = dish.name
+            dish.delete()
+            message = 'Dish '+ dish_name + ' deleted.'
+            messages.success(request, message)
+            return redirect('home')
+        except Food.DoesNotExist:
+            message = 'Dish ID {} does not exist.'.format(dish_id)
+            messages.error(request, message)
+            return redirect('home')
+    
+
+
+@login_required
+# @staff_member_required
+def edit_dish_action(request, dish_id):
+    user = request.user
+    context = {}
+    if not user.is_staff:
+        message = 'You are not authorized to do this action.'
+        messages.error(request, message)
+        return redirect('home')
+    else:
+        try:
+            dish = Food.objects.get(id=dish_id)
+            picture_dir = dish.picture_dir
+
+            try:
+                dish_picture = FoodPicture.objects.get(food=dish)
+            except FoodPicture.DoesNotExist:  # create a FoodPicture object for Food does not have this object
+                # get the directory
+                file_path = os.path.abspath(__file__) # /Users/kellyhsieh/s23_team_1/Yummy/views.py
+                base_dir = os.path.abspath(os.path.join(file_path, '../'))
+                file_name =picture_dir[4:]
+                dish_picture = FoodPicture.objects.create(food=dish)
+                with open(base_dir+'/static/'+picture_dir, 'rb') as f:
+                    dish_picture.picture.save(file_name, f, save=True)
+
+            if request.method == "GET":
+                # display form with dish info
+                    initial = {'dish_name': dish.name, 'price': dish.price, 'category': dish.category,
+                    'description': dish.description, 'calories': dish.calories,
+                    'is_spicy': dish.is_spicy, 'is_vegetarian': dish.is_vegetarian}
+
+                    edit_form = FoodForm(initial=initial, disable_clean=True, picture_required=False)
+                    context['form'] = edit_form
+                    context['dish'] = dish
+                    return render(request, 'Yummy/edit_dish.html', context)
+            
+            elif request.method == "POST":
+                # update dish info and save
+                form = FoodForm(data=request.POST, files=request.FILES, disable_clean=True, picture_required=False)
+                if not form.is_valid():
+                    print('form not valid')
+                    context['dish'] = dish
+                    context['form'] = form
+                    context['message'] = form.errors
+                    return render(request, 'Yummy/edit_dish.html', context)
+                
+                context['dish'] = dish
+                category = form.cleaned_data['category']
+                
+                dish.name = form.cleaned_data['dish_name']
+                dish.price = form.cleaned_data['price']
+                dish.description = form.cleaned_data['description']
+                dish.calories = form.cleaned_data['calories']
+                dish.category = get_object_or_404(Category, name=category)
+                dish.is_spicy = form.cleaned_data['is_spicy']
+                dish.is_vegetarian = form.cleaned_data['is_vegetarian']
+                dish.save()
+
+                if form.cleaned_data['picture']:
+                    new_picture = form.cleaned_data['picture']
+                else:
+                    # if no new picture uploaded by user, use the original picture.
+                    new_picture = dish_picture.picture
+
+                dish_picture.picture = new_picture
+                dish.picture_dir = 'img/' + dish_picture.picture.name
+
+                dish.save()
+                dish_picture.save()
+                print('save new picture')
+            
+                return redirect('dish', id=dish.id)  
+            
+        except Food.DoesNotExist:
+            message = 'Dish with ID {} does not exist.'.format(dish_id)
+            messages.error(request, message)
+            return redirect('home')

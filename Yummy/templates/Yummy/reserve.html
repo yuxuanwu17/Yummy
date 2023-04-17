@@ -2,70 +2,140 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="../../static/Yummy/reserve.css">
+    <link rel="stylesheet" href="../../static/Yummy/reserve.css">
 
-<script>
-function hideReservationButton() {
-    console.log('test')
-    var reservation_button = document.getElementById('reservation_button');
-    if (reservation_button.classList.contains('hidden')) {
-        reservation_button.classList.remove('hidden');
-    }
-}
-</script>
+
 
 {% endblock %}
 
+{% block extra_js %}
+    <script src="../../static/Yummy/dist/js/moment.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+    <script>
+        function hideReservationButton() {
+            console.log('test')
+            var reservation_button = document.getElementById('reservation_button');
+            if (reservation_button.classList.contains('hidden')) {
+                reservation_button.classList.remove('hidden');
+            }
+        }
+
+
+        $(document).ready(function () {
+            function fetchEvents(start, end, timezone, callback) {
+                $.ajax({
+                    url: '{% url "fetch_events" %}',
+                    data: {
+                        start: start.format(),
+                        end: end.format(),
+                    },
+                    success: function (events) {
+                        callback(events);
+                    }
+                });
+            }
+
+            $('#calendar').fullCalendar({
+                events: fetchEvents,
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                defaultView: 'agendaWeek',
+                allDaySlot: false,
+                selectable: true,
+                selectHelper: true,
+                editable: false,
+                eventLimit: true,
+                minTime: "10:00:00",
+                maxTime: "21:00:00",
+                slotDuration: "00:30:00",
+                weekends: true,
+                eventMouseover: function (event, jsEvent, view) {
+                    if (event.available_tables > 0) {
+                        $(jsEvent.target).css('background-color', 'rgba(128, 128, 128, 0.7)');
+                        $(jsEvent.target).css('border-color', 'rgba(128, 128, 128, 0.7)');
+                        $(jsEvent.target).css('color', 'white');
+                    }
+                },
+                eventMouseout: function (event, jsEvent, view) {
+                    if (event.available_tables > 0) {
+                        $(jsEvent.target).css('background-color', 'transparent');
+                        $(jsEvent.target).css('border-color', 'transparent');
+                        $(jsEvent.target).css('color', 'transparent');
+                    }
+                }
+            });
+        });
+
+    </script>
+{% endblock %}
+
 {% block posts_header %}
-<section class="py-5 text-center container">
-    <div class="row py-lg-5">
-        <div class="col-lg-6 col-md-8 mx-auto">
-            <h1 class="fw-light">Reserve Your Table</h1>
-            <p class="lead text-muted">
-                Enjoy your food
-            </p>
+    <section class="py-5 text-center container">
+        <div class="row py-lg-5">
+            <div class="col-lg-6 col-md-8 mx-auto">
+                <h1 class="fw-light">Reserve Your Table</h1>
+                <p class="lead text-muted">
+                    Valid time for reservation: 10:00 A.M to 7:00 P.M Everyday
+                    <br>
+                    Valid time for walk-in: 10:00 A.M to 9:00 P.M Everyday
+                </p>
+                <P>
+                    Rules: Dine In reservation would hold for 2 hours
+                </P>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 {% endblock %}
 
 
 {% block content %}
-
-<section class="reservation">
-    <div id="reservation form">
-        <span {% if table_reserved %}
-        class="hidden"
-        {% else %} 
-        class="step-title"
-        {% endif %}> Your Information </span>
-        <form class="reservation_form" method="POST" onsubmit="hideReservationButton()">
-            {% for field in form.visible_fields %}
-            {% csrf_token %}
-            <div>
-                <span>{{field.label_tag}}</span>
-                <span>{{field}}</span>
+    <div class="container">
+        <section class="reservation">
+            <div class="row d-flex align-items-center justify-content-center">
+                <div class="col-md-6">
+                    <div id="reservation form">
+                        <div>
+                            <span {% if table_reserved %}
+                                class="hidden"
+                            {% else %}
+                                class="step-title"
+                            {% endif %}> Your Information </span>
+                            <form class="reservation_form" method="POST" onsubmit="hideReservationButton()">
+                                {% for field in form.visible_fields %}
+                                    {% csrf_token %}
+                                    <div>
+                                        <span>{{ field.label_tag }}</span>
+                                        <span>{{ field }}</span>
+                                    </div>
+                                {% endfor %}
+                                {% csrf_token %}
+                                <p>
+                                    <button action="{% url 'reserve' %}"
+                                            {% if table_reserved %}
+                                            class="hidden"
+                                            {% else %}
+                                            class="btn btn-primary my-2 reserve"
+                                            {% endif %}
+                                            type="submit"
+                                            id="reservation_button"
+                                    >Reserve
+                                    </button>
+                                </p>
+                            </form>
+                            <span class="lead text-muted message">{{ reserve_message }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div id="calendar"></div>
+                </div>
             </div>
-            {% endfor %}
-            {% csrf_token %}
-            <p>
-                <button action="{% url 'reserve' %}" 
-                {% if table_reserved %}
-                class="hidden"
-                {% else %}
-                class="btn btn-primary my-2 reserve"  
-                {% endif %}
-                type="submit"
-                id="reservation_button"
-                >Reserve</button>
-            </p>
-        </form>
-        <span class="lead text-muted message">{{reserve_message}}</span>
-        
+        </section>
     </div>
-    <br>
-
-
-</section>
-
 {% endblock %}

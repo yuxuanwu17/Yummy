@@ -29,7 +29,7 @@ class Food(models.Model):
 
 # a model to save the uploaded dish picture to the file
 class FoodPicture(models.Model):
-    food = models.ForeignKey(Food, on_delete=models.PROTECT)
+    food = models.ForeignKey(Food, on_delete=models.CASCADE)
     picture = models.FileField()
 
     def __str__(self):
@@ -37,7 +37,7 @@ class FoodPicture(models.Model):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, default=None, on_delete=models.PROTECT)
+    user = models.OneToOneField(User, default=None, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=200, editable=True, blank=True)
     favorite = models.ManyToManyField(Food, related_name='favoring', blank=True)
 
@@ -54,10 +54,9 @@ class Comment(models.Model):
 
 # handle quantities of different foods
 class FoodSet(models.Model):
-    food = models.ForeignKey(Food, on_delete=models.PROTECT)
+    food = models.ForeignKey(Food, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     
-
     
 class Order(models.Model):
     foods = models.ManyToManyField(FoodSet, related_name="orders")
@@ -78,8 +77,8 @@ class Order(models.Model):
 class Table(models.Model):
     orders = models.ManyToManyField(Order, related_name="table", blank=True, editable=True)
     # customer = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, editable=True, null=True)
-    open_time = models.TimeField(default='11:00', editable=True)
-    close_time = models.TimeField(default='21:00', editable=True)
+    open_time = models.TimeField(default='10:00', editable=True)
+    close_time = models.TimeField(default='23:00', editable=True)
     capacity = models.IntegerField(editable=True)
 
     def __str__(self):

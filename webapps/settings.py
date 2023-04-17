@@ -76,6 +76,15 @@ WSGI_APPLICATION = 'webapps.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# DATABASES = {
+# 'default': {
+#     'OPTIONS': {'charset': 'utf8mb4'},
+#     'ENGINE': 'django.db.backends.mysql',
+#     'NAME': 'django',
+#     'USER': '',
+#     'PASSWORD': '',
+#     }
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
