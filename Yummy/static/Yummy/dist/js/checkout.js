@@ -31,6 +31,7 @@ function luhnCheck(value) {
     let sum = 0;
     let shouldDouble = false;
     for (let i = value.length - 1; i >= 0; i--) {
+        if (value.charAt(i) === " ") continue
         let digit = parseInt(value.charAt(i), 10);
 
         if (shouldDouble) {
