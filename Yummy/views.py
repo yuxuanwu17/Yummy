@@ -321,7 +321,7 @@ def set_take_out(request):
         action = request.POST.get('action')
 
         OPEN_TIME = datetime.time(10,00,00)
-        CLOSE_TIME = datetime.time(23,00,00)
+        CLOSE_TIME = datetime.time(21,00,00)
         print(datetime.datetime.now().time())
         if datetime.datetime.now().time() < OPEN_TIME or datetime.datetime.now().time() > CLOSE_TIME:
             print('Close')
@@ -451,9 +451,14 @@ def summary_action(request):
     try:
         order = Order.objects.get(id=order_id)
         if not order.is_takeout:
-            order_table = get_object_or_404(OrderTable, order=order)
-            table = order_table.table
-            context['table'] = table
+            try:
+                order_table = OrderTable.objects.get(order=order)
+                table = order_table.table
+                context['table'] = table
+            except OrderTable.DoesNotExist:
+                message='Something went wrong when assigning table to this order.'
+                messages.error(request, message)
+                return redirect('home')
 
         food_set = order.foods.all()
         context['order'] = order
@@ -698,10 +703,15 @@ def register_staff_action(request):
 
 @login_required
 def checkout(request):
-    curr_profile = get_object_or_404(Profile, id=request.user.id)
-    context = {"profile": curr_profile}
-    print(curr_profile.phone_number)
-    return render(request, "Yummy/checkout.html", context)
+    try:
+        curr_profile = Profile.objects.get(id=request.user.id)
+        context = {"profile": curr_profile}
+        print(curr_profile.phone_number)
+        return render(request, "Yummy/checkout.html", context)
+    except Profile.DoesNotExist:
+        message='Profile does not exist.'
+        messages.error(request, message)
+        return redirect('summary')
 
 
 @login_required
