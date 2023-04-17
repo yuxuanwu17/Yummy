@@ -321,7 +321,7 @@ def set_take_out(request):
         action = request.POST.get('action')
 
         OPEN_TIME = datetime.time(10,00,00)
-        CLOSE_TIME = datetime.time(21,00,00)
+        CLOSE_TIME = datetime.time(23,00,00)
         print(datetime.datetime.now().time())
         if datetime.datetime.now().time() < OPEN_TIME or datetime.datetime.now().time() > CLOSE_TIME:
             print('Close')
@@ -348,15 +348,17 @@ def set_take_out(request):
                                         status=400)
                 else:
                     # check if customer have any reservation 
-                    # customer can order either 30 minutes before their reservation, or 1.5 hour after the reservation
+                    # customer can order either 30 minutes before their reservation, or 1.5 hour after the reservation start time
                     user_reservation = Reservation.objects.filter(customer=user, date=datetime.datetime.today(),
                                                                   time__range=((datetime.datetime.now() - datetime.timedelta(hours=2)).time(),
                                                                                (datetime.datetime.now() - datetime.timedelta(minutes=30)).time()))
                     
+                    # check if customer has any not-completed order and it's within the 1 hour 30 min range
+                    user_order = Order.objects.filter(customer=user, order_table__isnull = False, is_paid = True,
+                                                      order_time__lte=((datetime.datetime.now() - datetime.timedelta(hours=1, minutes=30))))
                     if user_reservation:
                         print(user_reservation)
                         reserved_table = user_reservation[0].table
-                        # if OrderTable.objects.filter(order=order).exists():
                         try:
                             order_table = OrderTable.objects.get(order=order)
                             order_table.table = reserved_table
@@ -365,9 +367,24 @@ def set_take_out(request):
                         except OrderTable.DoesNotExist:
                             new_order_table = OrderTable.objects.create(order=order, table=reserved_table)
                             new_order_table.save()
+                        print('Have reservation at this time')
+                    
+                    elif user_order:
+                        # get the assigned table from the previous order
+                        user_table = user_order[0].order_table.table
+                        try:
+                            order_table = OrderTable.objects.get(order=order)
+                            order_table.table = user_table
+                            order_table.save()
+                            order.save()
+                        except OrderTable.DoesNotExist:
+                            order_table = OrderTable.objects.create(order=order, table=user_table)
+                            order.save()
+                            order_table.save()
+                        print('Have previous submitted order')
 
                     else:
-                        # if no reservation, find an available table and assign to this order
+                        # if no reservation and no previous order, find an available table and assign to this order
                         party_size = request.POST['party_size']
 
                         new_filter = {
@@ -376,13 +393,11 @@ def set_take_out(request):
                             'end_time': (datetime.datetime.now() + datetime.timedelta(hours=2)).time(),
                             'number_customers': party_size
                         }
-                        print(new_filter)
                         try:
                             # 1. Filter out the tables by capacity and open/close time
                             tables = Table.objects.filter(capacity__gte=new_filter['number_customers'])
                             # tables = tables.filter(open_time__lte=new_filter['start_time'])
                             # tables = tables.filter(close_time__gte=new_filter['end_time'])
-                            print(tables)
 
                             # 2. Filter out the tables being reserved within 2 hours before and 2 hours later
                             reservations = Reservation.objects.filter(
@@ -405,15 +420,16 @@ def set_take_out(request):
                                                 status=400)
                             else:
                                 assigned_table = filtered_tables[0]
-                            # if OrderTable.objects.filter(order=order).exists():
                             try:
                                 order_table = OrderTable.objects.get(order=order)
                                 order_table.table = assigned_table
                                 order_table.save()
                                 order.save()
+                                print('Assigned by system')
                             except OrderTable.DoesNotExist:
                                 new_order_table = OrderTable.objects.create(order=order, table=assigned_table)
                                 new_order_table.save()
+                                print('Assigned by system')
 
                         except Table.DoesNotExist:
                             return JsonResponse({"success": False, "error_message": "Please enter a valid table number."},
