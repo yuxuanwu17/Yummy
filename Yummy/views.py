@@ -18,6 +18,8 @@ from django.db.models import Count
 import datetime
 from Yummy.models import *
 from .forms import *
+from .serializers import OrderSerializer
+from rest_framework import generics
 from dateutil.parser import parse
 
 
@@ -922,3 +924,10 @@ def edit_dish_action(request, dish_id):
             message = 'Dish with ID {} does not exist.'.format(dish_id)
             messages.error(request, message)
             return redirect('home')
+
+class OrderAPIView(generics.ListAPIView):
+    serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Order.objects.filter(customer=user)
