@@ -924,3 +924,10 @@ def edit_dish_action(request, dish_id):
             message = 'Dish with ID {} does not exist.'.format(dish_id)
             messages.error(request, message)
             return redirect('home')
+
+class OrderAPIView(generics.RetrieveAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+
+def menu(request):
+    return render(request, 'menu/index.html')
