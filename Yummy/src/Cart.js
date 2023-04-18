@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 const Cart = () => {
+  console.log('Cart rendered')
   const [foods, setFoods] = useState([]);
 
   useEffect(() => {
-    fetch('/api/order/')
+    fetch('yummy/api/order/')
       .then((response) => response.json())
       .then((data) => {
         if (data.length > 0) {
