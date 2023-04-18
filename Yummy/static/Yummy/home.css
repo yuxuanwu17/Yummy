@@ -34,6 +34,10 @@ img {
     color: aliceblue;
 }
 
+#total-price-counter {
+  z-index: 15;
+}
+
 
 
 /* GLOBAL STYLES
