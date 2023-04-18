@@ -925,9 +925,9 @@ def edit_dish_action(request, dish_id):
             messages.error(request, message)
             return redirect('home')
 
-class OrderAPIView(generics.RetrieveAPIView):
-    queryset = Order.objects.all()
+class OrderAPIView(generics.ListAPIView):
     serializer_class = OrderSerializer
 
-def menu(request):
-    return render(request, 'menu/index.html')
+    def get_queryset(self):
+        user = self.request.user
+        return Order.objects.filter(customer=user)
