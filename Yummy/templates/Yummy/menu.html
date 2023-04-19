@@ -319,11 +319,12 @@
             {% endfor %}
             {% if user.is_authenticated %}
             <div id="order-div">
-                <div id="shopping-cart">
-                    <span id="shopping-cart-title">Dishes you ordered:</span>
+                <div id="shopping-cart" class="rounded">
+                    <p id="shopping-cart-title">Cart</p>
                     <div id="shopping-cart-items">
                     </div>
                 </div>
+                <br>
                 <button id="total-price-counter" class="btn btn-primary" onclick="redirectToOptionPage();">
                     Total price: $0.00<br>Click Here Check Out
                 </button>
