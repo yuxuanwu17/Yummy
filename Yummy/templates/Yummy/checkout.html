@@ -78,9 +78,9 @@
                             <li class="list-group-item d-flex justify-content-between lh-sm">
                                 <div>
                                     <h6 class="my-0">{{ foodset.food.name }}</h6>
-                                    <small class="text-muted">{{ foodset.food.description }}</small>
+                                    {#                                    <small class="text-muted">{{ foodset.food.description }}</small>#}
                                 </div>
-                                <span class="text-muted">${{ foodset.food.price }}</span>
+                                <span class="text-muted">${{ foodset.food.price }} x {{ foodset.quantity }}</span>
                             </li>
                         {% endfor %}
 
