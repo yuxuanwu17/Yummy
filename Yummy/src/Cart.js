@@ -33,13 +33,13 @@ const Cart = () => {
 
   return (
     <div className="cart">
-      <ul>
+      <div>
         {foods.map((foodSet) => (
           <div key={foodSet.id}>
             {foodSet.food.name} - ${foodSet.food.price} x {foodSet.quantity}
           </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };

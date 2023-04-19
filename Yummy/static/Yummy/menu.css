@@ -9,12 +9,15 @@
 }
 
 #shopping-cart {
-    border: 2px solid black;
+    background-color: rgb(199, 224, 243);
     width: 24vw;
 }
 
 #shopping-cart-title {
-
+    font-weight: bold;
+    text-align: center;
+    margin: auto;
+    padding: 10px;
 }
 
 #shopping-cart-items {
