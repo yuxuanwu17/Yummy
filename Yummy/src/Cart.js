@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 const Cart = () => {
-  console.log('Cart rendered')
+  console.log('Cart rendered');
   const [foods, setFoods] = useState([]);
 
-  useEffect(() => {
-    fetch('yummy/api/order/')
+  const fetchData = () => {
+    fetch('/yummy/api/order/')
       .then((response) => response.json())
       .then((data) => {
         if (data.length > 0) {
@@ -14,22 +14,32 @@ const Cart = () => {
           setFoods([]);
         }
       });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const handleCartChanged = () => {
+      fetchData();
+    };
+
+    document.addEventListener('cartChanged', handleCartChanged);
+    return () => {
+      document.removeEventListener('cartChanged', handleCartChanged);
+    };
   }, []);
 
   return (
     <div className="cart">
-      <h2>Cart</h2>
       <ul>
         {foods.map((foodSet) => (
-          <li key={foodSet.id}>
+          <div key={foodSet.id}>
             {foodSet.food.name} - ${foodSet.food.price} x {foodSet.quantity}
-          </li>
+          </div>
         ))}
       </ul>
-      <h3>
-        Total: $
-        {foods.reduce((total, foodSet) => total + foodSet.food.price * foodSet.quantity, 0)}
-      </h3>
     </div>
   );
 };
