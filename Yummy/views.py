@@ -259,6 +259,7 @@ def reserve_action(request):
     context['table_reserved'] = True
     return render(request, 'Yummy/reserve.html', context)
 
+
 @csrf_exempt
 def fetch_events(request):
     start_date_str = request.GET.get('start', None)
@@ -322,13 +323,13 @@ def set_take_out(request):
         order_id = request.POST.get('order_id')
         action = request.POST.get('action')
 
-        OPEN_TIME = datetime.time(10,00,00)
-        CLOSE_TIME = datetime.time(23,00,00)
+        OPEN_TIME = datetime.time(10, 00, 00)
+        CLOSE_TIME = datetime.time(23, 00, 00)
         print(datetime.datetime.now().time())
         if datetime.datetime.now().time() < OPEN_TIME or datetime.datetime.now().time() > CLOSE_TIME:
             print('Close')
             return JsonResponse({"success": False, "error_message": "Sorry we are closed now."},
-                                        status=400)
+                                status=400)
         else:
             print('opening')
 
@@ -344,20 +345,27 @@ def set_take_out(request):
             elif action == 'dine-in':
                 order.is_takeout = False
                 order.save()
-                
+
                 if 'party_size' not in request.POST or request.POST['party_size'] == '':
-                    return JsonResponse({"success": False, "error_message": "Please enter a valid number for your party size."},
-                                        status=400)
+                    return JsonResponse(
+                        {"success": False, "error_message": "Please enter a valid number for your party size."},
+                        status=400)
                 else:
                     # check if customer have any reservation 
                     # customer can order either 30 minutes before their reservation, or 1.5 hour after the reservation start time
                     user_reservation = Reservation.objects.filter(customer=user, date=datetime.datetime.today(),
-                                                                  time__range=((datetime.datetime.now() - datetime.timedelta(hours=2)).time(),
-                                                                               (datetime.datetime.now() - datetime.timedelta(minutes=30)).time()))
-                    
+                                                                  time__range=((
+                                                                                       datetime.datetime.now() - datetime.timedelta(
+                                                                                   hours=2)).time(),
+                                                                               (
+                                                                                       datetime.datetime.now() - datetime.timedelta(
+                                                                                   minutes=30)).time()))
+
                     # check if customer has any not-completed order and it's within the 1 hour 30 min range
-                    user_order = Order.objects.filter(customer=user, order_table__isnull = False, is_paid = True,
-                                                      order_time__lte=((datetime.datetime.now() - datetime.timedelta(hours=1, minutes=30))))
+                    user_order = Order.objects.filter(customer=user, order_table__isnull=False, is_paid=True,
+                                                      order_time__lte=((
+                                                              datetime.datetime.now() - datetime.timedelta(hours=1,
+                                                                                                           minutes=30))))
                     if user_reservation:
                         print(user_reservation)
                         reserved_table = user_reservation[0].table
@@ -370,7 +378,7 @@ def set_take_out(request):
                             new_order_table = OrderTable.objects.create(order=order, table=reserved_table)
                             new_order_table.save()
                         print('Have reservation at this time')
-                    
+
                     elif user_order:
                         # get the assigned table from the previous order
                         user_table = user_order[0].order_table.table
@@ -403,23 +411,25 @@ def set_take_out(request):
 
                             # 2. Filter out the tables being reserved within 2 hours before and 2 hours later
                             reservations = Reservation.objects.filter(
-                            date=new_filter['date'],
-                            time__range=((datetime.datetime.now() - datetime.timedelta(hours=2)).time(),
-                                         (datetime.datetime.now() + datetime.timedelta(hours=2)).time())
+                                date=new_filter['date'],
+                                time__range=((datetime.datetime.now() - datetime.timedelta(hours=2)).time(),
+                                             (datetime.datetime.now() + datetime.timedelta(hours=2)).time())
                             )
                             unavailable_tableid = [reservation.table.id for reservation in reservations]
                             filtered_tables = tables.exclude(id__in=unavailable_tableid)
 
                             # 3. Filter out the tables which are occupied right now
-                            orders = Order.objects.filter(is_takeout = False, order_table__isnull = False,
-                                                        order_time__gte=(datetime.datetime.now() - datetime.timedelta(hours=2)))
-                                                                            
+                            orders = Order.objects.filter(is_takeout=False, order_table__isnull=False,
+                                                          order_time__gte=(datetime.datetime.now() - datetime.timedelta(
+                                                              hours=2)))
+
                             unavailable_tableid = [order.order_table.table.id for order in orders]
                             filtered_tables = filtered_tables.exclude(id__in=unavailable_tableid)
 
                             if len(filtered_tables) == 0:
-                                return JsonResponse({"success": False, "error_message": "All tables are being reserved or occupied right now."},
-                                                status=400)
+                                return JsonResponse({"success": False,
+                                                     "error_message": "All tables are being reserved or occupied right now."},
+                                                    status=400)
                             else:
                                 assigned_table = filtered_tables[0]
                             try:
@@ -434,10 +444,11 @@ def set_take_out(request):
                                 print('Assigned by system')
 
                         except Table.DoesNotExist:
-                            return JsonResponse({"success": False, "error_message": "Please enter a valid table number."},
-                                                status=400)
+                            return JsonResponse(
+                                {"success": False, "error_message": "Please enter a valid table number."},
+                                status=400)
             return JsonResponse({"success": True, 'Cache-Control': 'no-cache'}, status=200)
-        
+
         except (Order.DoesNotExist):
             return JsonResponse({"success": False}, status=400)
 
@@ -458,7 +469,7 @@ def summary_action(request):
                 table = order_table.table
                 context['table'] = table
             except OrderTable.DoesNotExist:
-                message='Something went wrong when assigning table to this order.'
+                message = 'Something went wrong when assigning table to this order.'
                 messages.error(request, message)
                 return redirect('home')
 
@@ -470,11 +481,11 @@ def summary_action(request):
         context['tips'] = round(order.total_price * 0.18, 2)
         context['total'] = order.total_price + context['tax'] + context['tips']
         return render(request, 'Yummy/summary.html', context)
-    
+
     except Order.DoesNotExist:
-            message = 'Order ID {} does not exist.'.format(order_id)
-            messages.error(request, message)
-            return redirect('home')
+        message = 'Order ID {} does not exist.'.format(order_id)
+        messages.error(request, message)
+        return redirect('home')
 
 
 @login_required
@@ -490,7 +501,7 @@ def profile_action(request):
         phone_number = profile.phone_number
         context['favorite'] = favorite
         context['phone_number'] = phone_number
-        context['reservations'] = reservations.order_by('date','time').reverse
+        context['reservations'] = reservations.order_by('date', 'time').reverse
         if len(reservations) == 0:
             context['no_reservation_message'] = "You don't have any reservations."
         if len(favorite) == 0:
@@ -514,7 +525,7 @@ def profile_action(request):
                 message = 'Phone number updated successfully. It will take effect from your next reservation.'
                 messages.success(request, message)
                 return redirect('profile')
-        
+
     return render(request, 'Yummy/profile.html', context)
 
 
@@ -549,8 +560,8 @@ def dish_action(request, id):
 
         if 'text' in request.POST:
             new_comment = Comment.objects.create(text=request.POST['text'],
-                                                creation_time=timezone.now(),
-                                                creator=request.user, )
+                                                 creation_time=timezone.now(),
+                                                 creator=request.user, )
             new_comment.post_under.add(target_food)
         return render(request, 'Yummy/dish.html', context)
     except Food.DoesNotExist:
@@ -609,7 +620,7 @@ def favorite_food_action(request):
         count = curr_food.favoring.count()
 
         return JsonResponse({'success': True, 'num_ppl_fav': count}, status=200)
-    
+
     except Food.DoesNotExist:
         return JsonResponse({'success': False}, status=400)
 
@@ -705,15 +716,51 @@ def register_staff_action(request):
 
 @login_required
 def checkout(request):
+    context = {}
+    user = request.user
+    response = get_order_total_price(request)
+    json_response = json.loads(response.content)
+    order_id = json_response['order_id']
+
     try:
-        curr_profile = Profile.objects.get(id=request.user.id)
-        context = {"profile": curr_profile}
-        print(curr_profile.phone_number)
-        return render(request, "Yummy/checkout.html", context)
+        curr_profile = Profile.objects.get(id=user.id)
+        context['profile'] = curr_profile
     except Profile.DoesNotExist:
-        message='Profile does not exist.'
+        message = 'Profile does not exist.'
         messages.error(request, message)
         return redirect('summary')
+
+    try:
+        order = Order.objects.get(id=order_id)
+        if not order.is_takeout:
+            try:
+                order_table = OrderTable.objects.get(order=order)
+                table = order_table.table
+                context['table'] = table
+            except OrderTable.DoesNotExist:
+                message = 'Something went wrong when assigning table to this order.'
+                messages.error(request, message)
+                return redirect('home')
+
+        food_set = order.foods.all()
+
+        total_quantity = 0
+        for food in food_set:
+            total_quantity += food.quantity
+
+        context['order'] = order
+        context['food_set'] = food_set
+        context['total_quantity'] = total_quantity
+        context['pretax'] = order.total_price
+        context['tax'] = round(order.total_price * 0.07, 2)
+        context['tips'] = round(order.total_price * 0.18, 2)
+        context['total'] = order.total_price + context['tax'] + context['tips']
+        return render(request, 'Yummy/checkout.html', context)
+
+    except Order.DoesNotExist:
+        message = 'Order ID {} does not exist.'.format(order_id)
+        messages.error(request, message)
+        return redirect('home')
 
 
 @login_required
@@ -728,7 +775,7 @@ def payment_success(request):
         order.save()
         context = {}
         return render(request, "Yummy/payment_success.html", context)
-    
+
     except Order.DoesNotExist:
         message = 'Order does not exist.'
         messages.error(request, message)
@@ -745,7 +792,7 @@ def new_tables_actions(request):
         messages.error(request, message)
         return redirect('home')
 
-# Display all the tables in the restaurant
+    # Display all the tables in the restaurant
     if request.method == "GET":
         results = Table.objects.values('capacity').annotate(dcount=Count('capacity')).order_by()
         context['results'] = results
@@ -837,14 +884,13 @@ def delete_dish_action(request, dish_id):
             dish = Food.objects.get(id=dish_id)
             dish_name = dish.name
             dish.delete()
-            message = 'Dish '+ dish_name + ' deleted.'
+            message = 'Dish ' + dish_name + ' deleted.'
             messages.success(request, message)
             return redirect('home')
         except Food.DoesNotExist:
             message = 'Dish ID {} does not exist.'.format(dish_id)
             messages.error(request, message)
             return redirect('home')
-    
 
 
 @login_required
@@ -865,24 +911,24 @@ def edit_dish_action(request, dish_id):
                 dish_picture = FoodPicture.objects.get(food=dish)
             except FoodPicture.DoesNotExist:  # create a FoodPicture object for Food does not have this object
                 # get the directory
-                file_path = os.path.abspath(__file__) # /Users/kellyhsieh/s23_team_1/Yummy/views.py
+                file_path = os.path.abspath(__file__)  # /Users/kellyhsieh/s23_team_1/Yummy/views.py
                 base_dir = os.path.abspath(os.path.join(file_path, '../'))
-                file_name =picture_dir[4:]
+                file_name = picture_dir[4:]
                 dish_picture = FoodPicture.objects.create(food=dish)
-                with open(base_dir+'/static/'+picture_dir, 'rb') as f:
+                with open(base_dir + '/static/' + picture_dir, 'rb') as f:
                     dish_picture.picture.save(file_name, f, save=True)
 
             if request.method == "GET":
                 # display form with dish info
-                    initial = {'dish_name': dish.name, 'price': dish.price, 'category': dish.category,
-                    'description': dish.description, 'calories': dish.calories,
-                    'is_spicy': dish.is_spicy, 'is_vegetarian': dish.is_vegetarian}
+                initial = {'dish_name': dish.name, 'price': dish.price, 'category': dish.category,
+                           'description': dish.description, 'calories': dish.calories,
+                           'is_spicy': dish.is_spicy, 'is_vegetarian': dish.is_vegetarian}
 
-                    edit_form = FoodForm(initial=initial, disable_clean=True, picture_required=False)
-                    context['form'] = edit_form
-                    context['dish'] = dish
-                    return render(request, 'Yummy/edit_dish.html', context)
-            
+                edit_form = FoodForm(initial=initial, disable_clean=True, picture_required=False)
+                context['form'] = edit_form
+                context['dish'] = dish
+                return render(request, 'Yummy/edit_dish.html', context)
+
             elif request.method == "POST":
                 # update dish info and save
                 form = FoodForm(data=request.POST, files=request.FILES, disable_clean=True, picture_required=False)
@@ -892,10 +938,10 @@ def edit_dish_action(request, dish_id):
                     context['form'] = form
                     context['message'] = form.errors
                     return render(request, 'Yummy/edit_dish.html', context)
-                
+
                 context['dish'] = dish
                 category = form.cleaned_data['category']
-                
+
                 dish.name = form.cleaned_data['dish_name']
                 dish.price = form.cleaned_data['price']
                 dish.description = form.cleaned_data['description']
@@ -917,13 +963,14 @@ def edit_dish_action(request, dish_id):
                 dish.save()
                 dish_picture.save()
                 print('save new picture')
-            
-                return redirect('dish', id=dish.id)  
-            
+
+                return redirect('dish', id=dish.id)
+
         except Food.DoesNotExist:
             message = 'Dish with ID {} does not exist.'.format(dish_id)
             messages.error(request, message)
             return redirect('home')
+
 
 class OrderAPIView(generics.ListAPIView):
     serializer_class = OrderSerializer

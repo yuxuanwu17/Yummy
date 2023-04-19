@@ -195,7 +195,7 @@
         <h1 id="id_page_title" class="fw-light">Cart</h1>
         <p id="id_order_id" class="fs-5 fw-light-bolder" data-orderid="{{ order.id }}">Order Number: {{ order.id }}</p>
         {% if not order.is_takeout %}
-            <p class="fs-5 fw-light-bolder">Your table number is: {{table.id}}</p>
+            <p class="fs-5 fw-light-bolder">Your table number is: {{ table.id }}</p>
         {% else %}
             <p class="fs-5 fw-light-bolder">This is a take-out order</p>
         {% endif %}
@@ -227,7 +227,7 @@
                     <button type="button" class="btn btn-outline-dark minus-btn" data-id="{{ foodset.food.id }}"> -
                     </button>
                 </td>
-                <td><span id="id_quantity_of_{{ foodset.food.id }}" class="quantity_input">{{ foodset.quantity }}</td>
+                <td><span id="id_quantity_of_{{ foodset.food.id }}" class="quantity_input"></span>{{ foodset.quantity }}</td>
                 <td>
                     <button type="button" class="btn btn-outline-dark plus-btn" data-id="{{ foodset.food.id }}"> +
                     </button>
