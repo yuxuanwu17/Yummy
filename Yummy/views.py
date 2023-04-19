@@ -203,60 +203,71 @@ def reserve_action(request):
             'last_name': user.last_name,
             'phone_number': user.profile.phone_number, })
         return render(request, 'Yummy/reserve.html', context)
+    
+    if ReservationForm(request.POST).is_valid():
+        new_filter = {
+            'date': request.POST['date'],
+            'start_time': datetime.datetime.strptime(request.POST['time'], '%H:%M').time(),
+            'end_time': (datetime.datetime.strptime(request.POST['time'], '%H:%M') + datetime.timedelta(hours=2)).time(),
+            'number_customers': request.POST['number_customers']
+        }
 
-    new_filter = {
-        'date': request.POST['date'],
-        'start_time': datetime.datetime.strptime(request.POST['time'], '%H:%M').time(),
-        'end_time': (datetime.datetime.strptime(request.POST['time'], '%H:%M') + datetime.timedelta(hours=2)).time(),
-        'number_customers': request.POST['number_customers']
-    }
+        # tables = Table.objects.filter(
+        #     capacity__gte=new_filter['number_customers'],
+        #     open_time__gte=new_filter['start_time'],
+        #     close_time__lte=new_filter['end_time']
+        # )
+        # Initial tables filtering
+        tables = Table.objects.filter(capacity__gte=new_filter['number_customers'])
+        # Filter by start_time
+        tables = tables.filter(open_time__lte=new_filter['start_time'])
+        # Filter by end_time
+        tables = tables.filter(close_time__gte=new_filter['end_time'])
 
-    # tables = Table.objects.filter(
-    #     capacity__gte=new_filter['number_customers'],
-    #     open_time__gte=new_filter['start_time'],
-    #     close_time__lte=new_filter['end_time']
-    # )
-    # Initial tables filtering
-    tables = Table.objects.filter(capacity__gte=new_filter['number_customers'])
-    # Filter by start_time
-    tables = tables.filter(open_time__lte=new_filter['start_time'])
-    # Filter by end_time
-    tables = tables.filter(close_time__gte=new_filter['end_time'])
+        reservations = Reservation.objects.filter(
+            date=new_filter['date'],
+            time__range=((datetime.datetime.strptime(request.POST['time'], '%H:%M') - datetime.timedelta(hours=2)).time()
+                        , datetime.datetime.strptime(request.POST['time'], '%H:%M').time())
+        )
+        unavailable_tableid = [reservation.table.id for reservation in reservations]
+        filtered_tables = tables.exclude(id__in=unavailable_tableid)
 
-    reservations = Reservation.objects.filter(
-        date=new_filter['date'],
-        time__range=((datetime.datetime.strptime(request.POST['time'], '%H:%M') - datetime.timedelta(hours=2)).time()
-                     , datetime.datetime.strptime(request.POST['time'], '%H:%M').time())
-    )
-    unavailable_tableid = [reservation.table.id for reservation in reservations]
-    filtered_tables = tables.exclude(id__in=unavailable_tableid)
+        if len(filtered_tables) == 0:
+            context['form'] = ReservationForm(initial={
+                'date': new_filter['date'],
+                'time': new_filter['start_time'],
+                'number_customers': new_filter['number_customers'],
+                'first_name': request.POST['first_name'],
+                'last_name': request.POST['last_name'],
+                'phone_number': request.POST['phone_number']
+            })
+            context['reserve_message'] = 'Sorry, no available table at that time. Please try another time.'
+            return render(request, 'Yummy/reserve.html', context)
 
-    if len(filtered_tables) == 0:
-        context['form'] = ReservationForm(initial={
-            'date': new_filter['date'],
-            'time': new_filter['start_time'],
-            'number_customers': new_filter['number_customers'],
-            'first_name': request.POST['first_name'],
-            'last_name': request.POST['last_name'],
-            'phone_number': request.POST['phone_number']
-        })
-        context['reserve_message'] = 'Sorry, no available table at that time. Please try another time.'
-        return render(request, 'Yummy/reserve.html', context)
-
-    new_reservation = Reservation(
-        customer=user,
-        table=filtered_tables[0],
-        date=new_filter['date'],
-        time=new_filter['start_time'],
-        number_customers=new_filter['number_customers'],
-        first_name=request.POST['first_name'],
-        last_name=request.POST['last_name'],
-        phone_number=request.POST['phone_number'],
-        comment=request.POST['comment']
-    )
-    new_reservation.save()
-    context['reserve_message'] = 'You are all set. Enjoy your meal!'
-    context['table_reserved'] = True
+        new_reservation = Reservation(
+            customer=user,
+            table=filtered_tables[0],
+            date=new_filter['date'],
+            time=new_filter['start_time'],
+            number_customers=new_filter['number_customers'],
+            first_name=request.POST['first_name'],
+            last_name=request.POST['last_name'],
+            phone_number=request.POST['phone_number'],
+            comment=request.POST['comment']
+        )
+        new_reservation.save()
+        context['reserve_message'] = 'You are all set. Enjoy your meal!'
+        context['table_reserved'] = True
+    else:
+        context['form'] = ReservationForm()
+        errors_list = []
+        errors = ReservationForm(request.POST).errors
+        for index, field, errors in enumerate(errors.items()):
+                errors_list.append(field + ": ")
+                for error in errors:
+                    errors_list[index] += error + " "
+        context['errors'] = errors_list
+        
     return render(request, 'Yummy/reserve.html', context)
 
 @csrf_exempt

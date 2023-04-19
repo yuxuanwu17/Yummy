@@ -127,8 +127,9 @@
                         if (response.success) {
                             console.log("Food added successfully");
                             $("#total-price-counter").html("Total price: $" + response.total_price.toFixed(2) + "<br>Click Here Check Out");
-
                             updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
+                            const event = new CustomEvent('cartChanged');
+                            document.dispatchEvent(event);
                         } else {
                             console.log("An error occurred while adding the food");
                         }
@@ -171,6 +172,8 @@
                                 console.log("Food removed successfully");
                                 $("#total-price-counter").html("Total price: $" + response.total_price.toFixed(2) + "<br>Click Here Check Out");
                                 updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
+                                const event = new CustomEvent('cartChanged');
+                                document.dispatchEvent(event);
                             } else {
                                 console.log("An error occurred while removing the food");
                             }

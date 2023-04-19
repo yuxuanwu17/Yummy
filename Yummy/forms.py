@@ -1,3 +1,4 @@
+import datetime
 from django import forms
 
 from django.contrib.auth.models import User
@@ -87,14 +88,38 @@ class RegisterForm(forms.Form):
 class ReservationForm(forms.Form):
     date = forms.DateField(label="Date", required=True, widget=forms.DateInput(attrs={'type': 'date'}))
     time = forms.TimeField(label="Time", required=True, widget=forms.DateInput(attrs={'type': 'time'}, format='%H:%M'))
-    number_customers = forms.IntegerField(label="#people", required=True, widget=forms.NumberInput(attrs={'min': 0}))
+    number_customers = forms.IntegerField(label="#people", required=True, widget=forms.NumberInput(attrs={'min': 1}))
     first_name = forms.CharField(max_length=MAX_NAME_LENGTH, label="First Name")
     last_name = forms.CharField(max_length=MAX_NAME_LENGTH, label="Last Name")
     phone_number = forms.CharField(max_length=MAX_PHONE_LENGTH, label="Phone Number")
     comment = forms.CharField(max_length=MAX_COMMENTS_LENGTH, label="Special Comment", required=False)
-    def clean(self):
-        cleaned_data = super().clean()
-        return cleaned_data
+    def clean_date(self):
+        value = self.cleaned_data.get('date')
+        if not isinstance(value, datetime.date):
+            raise forms.ValidationError('Value must be a date')
+        return value
+
+    def clean_time(self):
+        value = self.cleaned_data.get('time')
+        if not isinstance(value, datetime.time):
+            raise forms.ValidationError('Value must be a time')
+        return value
+
+    def clean_number_customers(self):
+        value = self.cleaned_data.get('number_customers')
+        if not isinstance(value, int):
+            raise forms.ValidationError('Value must be an integer')
+        if value <= 1:
+            raise forms.ValidationError('Number of customers must be greater than 1')
+        return value
+
+    def clean_phone_number(self):
+        value = self.cleaned_data.get('phone_number')
+        if not value.isdigit():
+            raise forms.ValidationError('Phone number must be all digits')
+        if len(value) != 10:
+            raise forms.ValidationError('Phone number must be 10 digits long')
+        return value
 
 class CommentForm(forms.Form):
     text = forms.CharField(label="Tell us what you do think about this dish", widget=forms.Textarea(attrs={'class':'form-control','rows':2, 'cols':3}))
