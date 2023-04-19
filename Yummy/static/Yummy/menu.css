@@ -21,5 +21,7 @@
 }
 
 #shopping-cart-items {
-
+    /*margin-left: 4px;*/
+    padding-left: 1vw;
+    padding-bottom: 0.5vw;
 }
