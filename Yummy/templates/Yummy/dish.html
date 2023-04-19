@@ -274,19 +274,30 @@
                     {% endif %}
                     <br>
                     <p id="num_ppl_fav" class="lead fs-5">{{ count }} people like this dish</p>
+
                     {% if user.is_staff %}
-                    <form method="POST" action="{% url 'delete_dish' f.id %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="dish_id" value="{{f.id}}">
-                        <button type="submit" class="btn btn-warning my-3"
-                            id="delete_dish_{{f.id}}">Delete this dish</button>
-                    </form>
+                    <div class="row">
+                        <div class="col-6 text-end">
+                            <a href="{% url 'edit_dish' f.id %}">
+                                <button class="btn btn-warning my-3" type="submit" name="dish_id" value="{{f.id}}">Edit this dish</button>
+                            </a>
+                            
+                        </div>
+
+                        <div class="col-6 text-start">
+                            <form method="POST" action="{% url 'delete_dish' f.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="dish_id" value="{{f.id}}">
+                                <button type="submit" class="btn btn-warning my-3"
+                                    id="delete_dish_{{f.id}}">Delete this dish</button>
+                            </form>
+                        </div>
+                    </div>
                     {% endif %}
                 </div>
             </div>
 
             <div class="col-md-6 col-sm-6">
-                
                 <section class="comments px-4 ">
                     {% if user.is_authenticated %}
                         <form method="POST" class="form-control">

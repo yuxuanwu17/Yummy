@@ -1,3 +1,4 @@
+import datetime
 from django import forms
 
 from django.contrib.auth.models import User
@@ -14,6 +15,7 @@ MAX_PASSWORD_LENGTH = 20
 MAX_NAME_LENGTH = 20
 MAX_PHONE_LENGTH = 20
 MAX_COMMENTS_LENGTH = 100
+MAX_DESCRIPTION_LENGTH = 500
 MAX_UPLOAD_SIZE = 250000000
 
 MAX_DISH_NAME_LENGTH = 50
@@ -86,14 +88,38 @@ class RegisterForm(forms.Form):
 class ReservationForm(forms.Form):
     date = forms.DateField(label="Date", required=True, widget=forms.DateInput(attrs={'type': 'date'}))
     time = forms.TimeField(label="Time", required=True, widget=forms.DateInput(attrs={'type': 'time'}, format='%H:%M'))
-    number_customers = forms.IntegerField(label="#people", required=True, widget=forms.NumberInput(attrs={'min': 0}))
+    number_customers = forms.IntegerField(label="#people", required=True, widget=forms.NumberInput(attrs={'min': 1}))
     first_name = forms.CharField(max_length=MAX_NAME_LENGTH, label="First Name")
     last_name = forms.CharField(max_length=MAX_NAME_LENGTH, label="Last Name")
     phone_number = forms.CharField(max_length=MAX_PHONE_LENGTH, label="Phone Number")
     comment = forms.CharField(max_length=MAX_COMMENTS_LENGTH, label="Special Comment", required=False)
-    def clean(self):
-        cleaned_data = super().clean()
-        return cleaned_data
+    def clean_date(self):
+        value = self.cleaned_data.get('date')
+        if not isinstance(value, datetime.date):
+            raise forms.ValidationError('Value must be a date')
+        return value
+
+    def clean_time(self):
+        value = self.cleaned_data.get('time')
+        if not isinstance(value, datetime.time):
+            raise forms.ValidationError('Value must be a time')
+        return value
+
+    def clean_number_customers(self):
+        value = self.cleaned_data.get('number_customers')
+        if not isinstance(value, int):
+            raise forms.ValidationError('Value must be an integer')
+        if value <= 1:
+            raise forms.ValidationError('Number of customers must be greater than 1')
+        return value
+
+    def clean_phone_number(self):
+        value = self.cleaned_data.get('phone_number')
+        if not value.isdigit():
+            raise forms.ValidationError('Phone number must be all digits')
+        if len(value) != 10:
+            raise forms.ValidationError('Phone number must be 10 digits long')
+        return value
 
 class CommentForm(forms.Form):
     text = forms.CharField(label="Tell us what you do think about this dish", widget=forms.Textarea(attrs={'class':'form-control','rows':2, 'cols':3}))
@@ -106,34 +132,39 @@ class FoodForm(forms.Form):
                              min_value=0,
                              widget=forms.NumberInput(attrs={'class':'form-control'}))
     description = forms.CharField(label='Description', required=True, 
-                                  max_length=MAX_COMMENTS_LENGTH, min_length=20, 
+                                  max_length=MAX_DESCRIPTION_LENGTH, min_length=20, 
                                   widget=forms.Textarea(attrs={'class':'form-control'}))
     category = forms.CharField(label='Category', required=True, 
                                widget=forms.Select(choices=FOOD_CATEGORIES, attrs={'class':'form-control'}))
     calories = forms.FloatField(label='Calroies', required=True, 
                                 min_value=0,
                                 widget=forms.NumberInput(attrs={'class':'form-control'}))
-    
     is_spicy = forms.BooleanField(label='Is this dish spicy?', required=False,
                                   widget=forms.Select(choices=BOOL_CHOICES, attrs={'class':'form-control'}), initial=None)
     is_vegetarian = forms.BooleanField(label='Is this dish vegetarian?', required=False,
                                        widget=forms.Select(choices=BOOL_CHOICES, attrs={'class':'form-control'}), initial=None)
-    picture = forms.ImageField(max_length=MAX_UPLOAD_SIZE, required=True)
+    picture = forms.ImageField(max_length=MAX_UPLOAD_SIZE, required=False)
+
+
+    def __init__(self, *args, **kwargs):
+        disable_clean = kwargs.pop('disable_clean', False)
+        picture_required = kwargs.pop('picture_required', True)
+        super().__init__(*args, **kwargs)
+        self.disable_clean = disable_clean
+        self.fields['picture'].require = picture_required
 
     def clean(self):
         cleaned_data = super().clean()
-
         return cleaned_data
     
     def clean_dish_name(self):
-        # Confirms that the username is not already present in the
-        # User model database.
-        dish_name = self.cleaned_data.get('dish_name')
-        if Food.objects.filter(name__icontains=dish_name):
-            raise forms.ValidationError("This dish is already in the menu.")
+        if self.disable_clean:
+            return self.cleaned_data['dish_name'].title()
+        else:
+            dish_name = self.cleaned_data.get('dish_name')
+            if Food.objects.filter(name__icontains=dish_name):
+                raise forms.ValidationError("This dish is already in the menu.")
 
-        # We must return the cleaned data we got from the cleaned_data
-        # dictionary
-        return dish_name.title()
+            return dish_name.title()
 
- 
+

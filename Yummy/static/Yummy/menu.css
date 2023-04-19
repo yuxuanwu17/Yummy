@@ -1,0 +1,22 @@
+#order-div {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+    margin-bottom: 10vw;
+}
+
+#shopping-cart {
+    border: 2px solid black;
+    width: 24vw;
+}
+
+#shopping-cart-title {
+
+}
+
+#shopping-cart-items {
+
+}

@@ -7,3 +7,5 @@ my_env
 .idea
 !picture.jpg
 README.md
+node_modules
+```

@@ -42,5 +42,6 @@ urlpatterns = [
     path('fetch_events/', views.fetch_events, name='fetch_events'),
     path('complete_order/<int:order_id>/', views.complete_order_action, name='complete_order'),
     path('delete_dish/<int:dish_id>/', views.delete_dish_action, name='delete_dish'),
-
+    path('edit_dish/<int:dish_id>/', views.edit_dish_action, name='edit_dish'),
+    path('api/order/', views.OrderAPIView.as_view(), name='order_api'),
 ]
