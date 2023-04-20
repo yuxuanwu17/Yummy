@@ -262,10 +262,11 @@ def reserve_action(request):
         context['form'] = ReservationForm()
         errors_list = []
         errors = ReservationForm(request.POST).errors
-        for index, field, errors in enumerate(errors.items()):
-                errors_list.append(field + ": ")
-                for error in errors:
-                    errors_list[index] += error + " "
+        for field, errors in errors.items():
+            error_field = field + ": "
+            for error in errors:
+                error_field += error + " "
+            errors_list.append(error_field)
         context['errors'] = errors_list
         
     return render(request, 'Yummy/reserve.html', context)
