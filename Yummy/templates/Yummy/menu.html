@@ -93,6 +93,8 @@
         var itemCounts = {};
         $(document).ready(function () {
             fetchOrderTotalPrice();
+            const event = new CustomEvent('cartChanged');
+            document.dispatchEvent(event);
 
             // Handle clicks on plus sign buttons
             $(".plus-btn").click(function (e) {

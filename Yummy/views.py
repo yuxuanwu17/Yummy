@@ -15,6 +15,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count
+from django.core.exceptions import ObjectDoesNotExist
 import datetime
 from Yummy.models import *
 from .forms import *
@@ -989,4 +990,8 @@ class OrderAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Order.objects.filter(customer=user)
+        try:
+            last_uncompleted_order = Order.objects.filter(customer=user, is_completed=False, is_paid=False).latest('order_time')
+            return [last_uncompleted_order]
+        except ObjectDoesNotExist:
+            return []
