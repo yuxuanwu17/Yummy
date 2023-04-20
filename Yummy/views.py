@@ -743,6 +743,11 @@ def checkout(request):
                 return redirect('home')
 
         food_set = order.foods.all()
+        
+        if len(food_set) == 0:
+            message = 'You do not have any dishes added to your order!'
+            messages.warning(request, message)
+            return redirect('home')
 
         total_quantity = 0
         for food in food_set:

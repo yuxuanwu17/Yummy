@@ -177,6 +177,11 @@
                                 // delete the removed row of food
                                 $('#id_quantity_of_' + itemId).closest('tr').hide()
 
+                                // if the order is empty, should hide the checkout button
+                                if (before_tax_sum == 0) {
+                                    $('#check_out_button_row').hide()
+                                }
+
                             } else {
                                 console.log("An error occurred while removing the food");
                             }
@@ -264,15 +269,18 @@
             <td id="id_order_total_{{ order.id }}" class="fs-4 fw-bold text-center">{{ total }}</td>
             <td></td>
         </tr>
-        <tr>
+        {% if food_set %}
+        <tr id="check_out_button_row">
             <th scope="row"></th>
             <td colspan="6" class="fs-4 fw-bold text-end"></td>
+            
             <td>
                 <a href="{% url 'checkout' %}">
                     <button type="button" class="btn btn-dark btn-lg">Check out</button>
                 </a>
             </td>
         </tr>
+        {% endif %}
         </tbody>
     </table>
 
