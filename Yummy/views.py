@@ -357,7 +357,7 @@ def set_take_out(request):
                 order.is_takeout = False
                 order.save()
 
-                if 'party_size' not in request.POST or request.POST['party_size'] == '':
+                if 'party_size' not in request.POST or request.POST['party_size'] == '' or not request.POST['party_size'].isdigit() or int(request.POST['party_size']) <= 1:
                     return JsonResponse(
                         {"success": False, "error_message": "Please enter a valid number for your party size."},
                         status=400)
