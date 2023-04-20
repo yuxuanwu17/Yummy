@@ -1,0 +1,27 @@
+#order-div {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+    margin-bottom: 10vw;
+}
+
+#shopping-cart {
+    background-color: rgb(199, 224, 243);
+    width: 24vw;
+}
+
+#shopping-cart-title {
+    font-weight: bold;
+    text-align: center;
+    margin: auto;
+    padding: 10px;
+}
+
+#shopping-cart-items {
+    /*margin-left: 4px;*/
+    padding-left: 1vw;
+    padding-bottom: 0.5vw;
+}

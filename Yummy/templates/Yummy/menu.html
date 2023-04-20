@@ -1,6 +1,13 @@
 {% extends "Yummy/base.html" %}
 {% load static %}
 
+{% block extra_css %}
+    <link rel="stylesheet" href="../../static/Yummy/menu.css">
+    <script src="{% static 'Yummy/main.js' %}" defer></script>
+
+
+{% endblock %}
+
 {% block posts_header %}
 
 
@@ -120,8 +127,9 @@
                         if (response.success) {
                             console.log("Food added successfully");
                             $("#total-price-counter").html("Total price: $" + response.total_price.toFixed(2) + "<br>Click Here Check Out");
-
                             updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
+                            const event = new CustomEvent('cartChanged');
+                            document.dispatchEvent(event);
                         } else {
                             console.log("An error occurred while adding the food");
                         }
@@ -164,6 +172,8 @@
                                 console.log("Food removed successfully");
                                 $("#total-price-counter").html("Total price: $" + response.total_price.toFixed(2) + "<br>Click Here Check Out");
                                 updateQuantityDisplay(itemId, itemCounts[itemId]); // Add this line
+                                const event = new CustomEvent('cartChanged');
+                                document.dispatchEvent(event);
                             } else {
                                 console.log("An error occurred while removing the food");
                             }
@@ -229,8 +239,6 @@
         function redirectToOptionPage() {
             window.location.href = '{% url "option" %}';
         }
-
-
     </script>
 
 
@@ -310,10 +318,18 @@
                 </div>
             {% endfor %}
             {% if user.is_authenticated %}
-                <button id="total-price-counter" class="btn btn-primary position-fixed top-50 end-0 translate-middle-y"
-                        onclick="redirectToOptionPage();">
+            <div id="order-div">
+                <div id="shopping-cart" class="rounded">
+                    <p id="shopping-cart-title">Cart</p>
+                    <div id="shopping-cart-items">
+                    </div>
+                </div>
+                <br>
+                <button id="total-price-counter" class="btn btn-primary" onclick="redirectToOptionPage();">
                     Total price: $0.00<br>Click Here Check Out
                 </button>
+            </div>
+
 
                 </div>
             {% endif %}
