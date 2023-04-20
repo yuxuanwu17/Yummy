@@ -129,6 +129,11 @@
                                 </p>
                             </form>
                             <span class="lead text-muted message">{{ reserve_message }}</span>
+                            <span class="lead text-muted message">
+                                {% for error in errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </span>
                         </div>
                     </div>
                 </div>
