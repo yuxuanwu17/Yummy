@@ -202,7 +202,8 @@ def reserve_action(request):
         context['form'] = ReservationForm(initial={
             'first_name': user.first_name,
             'last_name': user.last_name,
-            'phone_number': user.profile.phone_number, })
+            'phone_number': user.profile.phone_number, 
+            'email': user.email})
         return render(request, 'Yummy/reserve.html', context)
     
     if ReservationForm(request.POST).is_valid():
@@ -238,6 +239,7 @@ def reserve_action(request):
                 'date': new_filter['date'],
                 'time': new_filter['start_time'],
                 'number_customers': new_filter['number_customers'],
+                'email': user.email,
                 'first_name': request.POST['first_name'],
                 'last_name': request.POST['last_name'],
                 'phone_number': request.POST['phone_number']
@@ -251,6 +253,7 @@ def reserve_action(request):
             date=new_filter['date'],
             time=new_filter['start_time'],
             number_customers=new_filter['number_customers'],
+            email=request.POST['email'],
             first_name=request.POST['first_name'],
             last_name=request.POST['last_name'],
             phone_number=request.POST['phone_number'],
@@ -545,15 +548,36 @@ def profile_action(request):
 def cancel_reservation_action(request, id):
     try:
         reservation = Reservation.objects.get(id=id)
-        reservation.delete()
-        message = 'Reservation canceled.'
-        messages.success(request, message)
-        return redirect('profile')
+        if reservation in request.user.reservations.all():
+            reservation.delete()
+            message = 'Reservation canceled.'
+            messages.success(request, message)
+            return redirect('profile')
+        else:
+            message = 'You are not allowed to cancel this reservation.'
+            messages.error(request, message)
+            return redirect('profile')
     except Reservation.DoesNotExist:
         message = 'Error happened when canceling this reservation. Please contact the restaurant.'
         messages.error(request, message)
         return redirect('profile')
 
+def delete_comment_action(request, id):
+    try:
+        comment = Comment.objects.get(id=id)
+        if comment in request.user.comments.all():
+            comment.delete()
+            message = 'Comment deleted.'
+            messages.success(request, message)
+            return redirect('profile')
+        else:
+            message = 'You are not allowed to delete this comment.'
+            messages.error(request, message)
+            return redirect('profile')
+    except Comment.DoesNotExist:
+        message = 'Error happened when deleting this comment. Please contact the restaurant.'
+        messages.error(request, message)
+        return redirect('profile')
 
 def dish_action(request, id):
     try:
