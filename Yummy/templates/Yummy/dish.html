@@ -326,6 +326,9 @@
                                     </div>
                                     <span class="badge text-bg-light">{{ comment.creation_time }}</span>
                                 </li>
+                                    <button type="submit" class="btn btn-light my-2 delete_comment"
+                                        id="delete_comment_{{reservation.id}}">Delete</button>
+
                             {% endfor %}
                         </ul>
                     </div>
