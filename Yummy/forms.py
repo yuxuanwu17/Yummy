@@ -98,7 +98,7 @@ class ReservationForm(forms.Form):
         if not isinstance(value, datetime.date):
             raise forms.ValidationError('Value must be a date')
         if value < datetime.date.today():
-            raise forms.ValidationError('Date must be in the future')
+            raise forms.ValidationError('Sorry. Date must be in the future')
         return value
 
     def clean_time(self):
@@ -106,7 +106,7 @@ class ReservationForm(forms.Form):
         if not isinstance(value, datetime.time):
             raise forms.ValidationError('Value must be a time')
         if value < datetime.datetime.now().time():
-            raise forms.ValidationError('Time must be in the future')
+            raise forms.ValidationError('Sorry. Time must be in the future')
         return value
 
     def clean_number_customers(self):
