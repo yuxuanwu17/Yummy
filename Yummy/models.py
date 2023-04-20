@@ -1,7 +1,11 @@
+from smtplib import SMTPAuthenticationError
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.mail import send_mail
+
+from webapps import settings
 
 BOOL_CHOICES = ((None, 'Please Select'), (True, 'Yes'), (False, 'No'))
 
@@ -108,9 +112,36 @@ class Reservation(models.Model):
     first_name = models.CharField(max_length=200, editable=True, blank=False)
     last_name = models.CharField(max_length=200, editable=True, blank=False)
     phone_number = models.CharField(max_length=200, editable=True, blank=False)
+    email = models.EmailField(max_length=200, editable=True, blank=False, null=True)
     comment = models.CharField(max_length=200, editable=True, blank=True)
     date = models.DateField(editable=True, blank=False)
     time = models.TimeField(editable=True, blank=False)
+
+    def save(self, *args, **kwargs):
+        # Check if this is a new reservation
+        if not self.pk:
+            is_new_reservation = True
+        else:
+            is_new_reservation = False
+
+        # Call the original save method
+        super(Reservation, self).save(*args, **kwargs)
+
+        # If this is a new reservation, send an email
+        if is_new_reservation:
+            subject = f'New Reservation for {self.first_name} {self.last_name}'
+            message = f'A new reservation has been made by {self.first_name} {self.last_name} for {self.date} at {self.time}. \n Thank you for your reservation!'
+            from_email = settings.EMAIL_HOST_USER
+            recipient_list = [self.email]
+
+            try:
+                print('Sending email...')
+                send_mail(subject, message, from_email, recipient_list)
+                print('Email sent successfully.')
+            except SMTPAuthenticationError:
+                print("Email could not be sent. Authentication error.")
+            except Exception as e:
+                print(f"Email could not be sent. Error: {e}")
 
 # automatically create a profile for a new user if a new superuser is created
 @receiver(post_save, sender=User)

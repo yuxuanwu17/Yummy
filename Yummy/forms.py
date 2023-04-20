@@ -4,7 +4,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from Yummy.models import *
-from django.core.validators import MinValueValidator
+from django.core.validators import EmailValidator
 
 # from phonenumber_field.modelfields import PhoneNumberField
 
@@ -92,6 +92,7 @@ class ReservationForm(forms.Form):
     first_name = forms.CharField(max_length=MAX_NAME_LENGTH, label="First Name")
     last_name = forms.CharField(max_length=MAX_NAME_LENGTH, label="Last Name")
     phone_number = forms.CharField(max_length=MAX_PHONE_LENGTH, label="Phone Number")
+    email = forms.EmailField(label="Email", required=False)
     comment = forms.CharField(max_length=MAX_COMMENTS_LENGTH, label="Special Comment", required=False)
     def clean_date(self):
         value = self.cleaned_data.get('date')
@@ -105,8 +106,6 @@ class ReservationForm(forms.Form):
         value = self.cleaned_data.get('time')
         if not isinstance(value, datetime.time):
             raise forms.ValidationError('Value must be a time')
-        if value < datetime.datetime.now().time():
-            raise forms.ValidationError('Sorry. Time must be in the future')
         return value
 
     def clean_number_customers(self):
@@ -124,6 +123,17 @@ class ReservationForm(forms.Form):
         if len(value) != 10:
             raise forms.ValidationError('Phone number must be 10 digits long')
         return value
+    
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        email_validator = EmailValidator()
+
+        try:
+            email_validator(email)
+        except forms.ValidationError:
+            raise forms.ValidationError("Invalid email address.")
+
+        return email
 
 class CommentForm(forms.Form):
     text = forms.CharField(label="Tell us what you do think about this dish", widget=forms.Textarea(attrs={'class':'form-control','rows':2, 'cols':3}))
