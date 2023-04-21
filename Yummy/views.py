@@ -202,10 +202,10 @@ def reserve_action(request):
         context['form'] = ReservationForm(initial={
             'first_name': user.first_name,
             'last_name': user.last_name,
-            'phone_number': user.profile.phone_number, 
+            'phone_number': user.profile.phone_number,
             'email': user.email})
         return render(request, 'Yummy/reserve.html', context)
-    
+
     if ReservationForm(request.POST).is_valid():
         new_filter = {
             'date': request.POST['date'],
@@ -272,7 +272,7 @@ def reserve_action(request):
                 error_field += error + " "
             errors_list.append(error_field)
         context['errors'] = errors_list
-        
+
     return render(request, 'Yummy/reserve.html', context)
 
 
@@ -362,7 +362,7 @@ def set_take_out(request):
                 order.is_takeout = False
                 order.save()
 
-                if 'party_size' not in request.POST or request.POST['party_size'] == '' or not request.POST['party_size'].isdigit() or int(request.POST['party_size']) <= 1:
+                if 'party_size' not in request.POST or request.POST['party_size'] == '' or not request.POST['party_size'].isdigit() or int(request.POST['party_size']) < 1:
                     return JsonResponse(
                         {"success": False, "error_message": "Please enter a valid number for your party size."},
                         status=400)
