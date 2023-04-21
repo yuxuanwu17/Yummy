@@ -11,6 +11,9 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
+#BASE_DIR = "/home/ubuntu/s23_team_1/"
+
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'webapps.settings')
 application = get_wsgi_application()
 

@@ -3,12 +3,13 @@ import json
 from django.core.files import File
 from django.core.serializers import deserialize
 from django.apps import apps
+import os
 from django.contrib.auth.models import User
-
 from Yummy.models import Category, Food, Table
 
 
 def import_data_from_json_file(json_file_path):
+    cwd = os.getcwd()
     with open(json_file_path, 'r') as file:
         json_data = json.load(file)
 
