@@ -58,7 +58,7 @@
                                 <h2 class="accordion-header">
                                     <button class="accordion-button bg-light text-bg-light" type="button"
                                             data-bs-toggle="collapse"
-                                            data-bs-target="#collapseOne" aria-expanded="true"
+                                            data-bs-target="#collapse{{reservation.id}}" aria-expanded="true"
                                             aria-controls="collapseOne">
                                         <div class="d-flex w-100 justify-content-between">
                                             <div class="ms-2 me-auto">
@@ -69,7 +69,7 @@
                                         </div>
                                     </button>
                                 </h2>
-                                <div id="collapseOne" class="accordion-collapse collapse"
+                                <div id="collapse{{reservation.id}}" class="accordion-collapse collapse"
                                      data-bs-parent="#accordionReservation">
                                     <div class="accordion-body">
                                         <table class="table table-striped align-middle text-left">
@@ -144,7 +144,7 @@
                                 <h2 class="accordion-header">
                                     <button class="accordion-button bg-light text-bg-light" type="button"
                                             data-bs-toggle="collapse"
-                                            data-bs-target="#collapseOne" aria-expanded="true"
+                                            data-bs-target="#collapse{{order.id}}" aria-expanded="true"
                                             aria-controls="collapseOne">
                                         <div class="d-flex w-100 justify-content-between">
                                             <div class="ms-2 me-auto">
@@ -165,7 +165,7 @@
                                         </div>
                                     </button>
                                 </h2>
-                                <div id="collapseOne" class="accordion-collapse collapse"
+                                <div id="collapse{{order.id}}" class="accordion-collapse collapse"
                                      data-bs-parent="#accordionOrder">
                                     <div class="accordion-body">
                                         <table class="table">
