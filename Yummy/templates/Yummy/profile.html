@@ -187,8 +187,20 @@
                                                 </tr>
                                             {% endfor %}
                                             <tr>
-                                                <th scope="row" colspan="3" class="text-right">Total</th>
+                                                <th scope="row" colspan="3" class="text-right">Subtotal</th>
                                                 <td>${{ order.total_price }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" colspan="3" class="text-right">Tax</th>
+                                                <td>${{ order.tax}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" colspan="3" class="text-right">Tips ({{order.tips_percentage}})</th>
+                                                <td>${{ order.tips }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" colspan="3" class="text-right">Total</th>
+                                                <td>${{ order.total_after_tax_tips }}</td>
                                             </tr>
                                             </tbody>
                                         </table>
