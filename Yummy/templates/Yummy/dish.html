@@ -179,11 +179,13 @@
                         commentDiv.append('<div class="text-start">By ' + comment.creator__first_name + ' ' + comment.creator__last_name + '</div>');
                         listItem.append(commentDiv);
                         listItem.append('<span class="badge text-bg-light">' + comment.formatted_creation_time + '</span>');
-                        var deleteButton = $('<button class="btn btn-danger btn-sm">Delete</button>');
-                        deleteButton.on('click', function () {
-                            deleteComment(comment.id);
-                        });
-                        listItem.append(deleteButton);
+                        if (comment.creator__id == '{{ request.user.id }}') {
+                            var deleteButton = $('<button class="btn btn-danger btn-sm">Delete</button>');
+                            deleteButton.on('click', function () {
+                                deleteComment(comment.id);
+                            });
+                            listItem.append(deleteButton);
+                        }
 
                         commentsList.append(listItem);
                     });
@@ -209,8 +211,9 @@
                     'next': currentUrl
                 },
                 success: function (response) {
-                    // Refresh the page on successful deletion
+                    if (response.user_id == '{{ request.user.id }}') {
                     $('#comment-' + commentId).remove();
+                }
                 },
                 error: function (response) {
                     alert('Error deleting the comment. Please try again.');
