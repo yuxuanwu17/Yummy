@@ -662,7 +662,6 @@ def favorite_food_action(request):
 
 
 @login_required
-# @staff_member_required
 def new_dish_action(request):
     context = {}
     user = request.user
@@ -794,7 +793,8 @@ def checkout(request):
         context['total_quantity'] = total_quantity
         context['pretax'] = order.total_price
         context['tax'] = round(order.total_price * 0.07, 2)
-        context['tips'] = round(order.total_price * 0.18, 2)
+        context['tips_percentage'] = order.tips_percentage*100
+        context['tips'] = round(order.total_price * order.tips_percentage, 2)
         context['total'] = order.total_price + context['tax'] + context['tips']
         return render(request, 'Yummy/checkout.html', context)
 
@@ -824,7 +824,6 @@ def payment_success(request):
 
 
 @login_required
-# @staff_member_required
 def new_tables_actions(request):
     context = {}
     user = request.user
@@ -876,7 +875,6 @@ def new_tables_actions(request):
 
 
 @login_required
-# @staff_member_required
 def view_orders_action(request):
     context = {}
     user = request.user
@@ -892,7 +890,6 @@ def view_orders_action(request):
 
 
 @login_required
-# @staff_member_required
 def complete_order_action(request, order_id):
     user = request.user
     if not user.is_staff:
@@ -913,7 +910,6 @@ def complete_order_action(request, order_id):
 
 
 @login_required
-# @staff_member_required
 def delete_dish_action(request, dish_id):
     user = request.user
     if not user.is_staff:
@@ -935,7 +931,6 @@ def delete_dish_action(request, dish_id):
 
 
 @login_required
-# @staff_member_required
 def edit_dish_action(request, dish_id):
     user = request.user
     context = {}
@@ -1011,6 +1006,22 @@ def edit_dish_action(request, dish_id):
             message = 'Dish with ID {} does not exist.'.format(dish_id)
             messages.error(request, message)
             return redirect('home')
+
+
+def get_tips(request):
+    if request.method == 'POST':
+        order_id = request.POST.get('order_id')
+        tips_percentage = request.POST.get('tips_percentage')
+    
+        try:
+            order = Order.objects.get(id = order_id)
+            order.tips_percentage = tips_percentage
+            order.save()
+
+            return JsonResponse({"success": True}, status=200)
+        except Order.DoesNotExist:
+            message = 'Order with ID {} does not exist.'.format(order_id)
+            return JsonResponse({"success": False, 'error_message': message}, status=200)
 
 
 class OrderAPIView(generics.ListAPIView):

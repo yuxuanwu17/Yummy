@@ -199,6 +199,23 @@
                 var before_tax_sum = $('#id_order_pretax_' + orderId).data('pretax');
                 var tax = before_tax_sum * 0.07
                 var tips = before_tax_sum * 0.15
+                $.ajax({
+                        url: '{% url "get_tips" %}',
+                        method: 'POST',
+                        data: {
+                            order_id: orderId,
+                            tips_percentage: 0.15,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                console.log('Tips saved')
+                            } 
+                        },
+                        error: function (response) {
+                            console.log("An error occurred while changeing the tips");
+                        }
+                    });
                 if (this.checked) {
                     var order_total = Number(before_tax_sum) + Number(tax) + Number(tips)
                     $('#id_order_tips_' + orderId).text(tips.toFixed(2));
@@ -211,6 +228,23 @@
                 var before_tax_sum = $('#id_order_pretax_' + orderId).data('pretax');
                 var tax = before_tax_sum * 0.07
                 var tips = before_tax_sum * 0.18
+                $.ajax({
+                        url: '{% url "get_tips" %}',
+                        method: 'POST',
+                        data: {
+                            order_id: orderId,
+                            tips_percentage: 0.18,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                console.log('Tips saved')
+                            } 
+                        },
+                        error: function (response) {
+                            console.log("An error occurred while changeing the tips");
+                        }
+                    });
                 if (this.checked) {
                     var order_total = Number(before_tax_sum) + Number(tax) + Number(tips)
                     $('#id_order_tips_' + orderId).text(tips.toFixed(2));
@@ -223,6 +257,23 @@
                 var before_tax_sum = $('#id_order_pretax_' + orderId).data('pretax');
                 var tax = before_tax_sum * 0.07;
                 var tips = before_tax_sum * 0.2;
+                $.ajax({
+                        url: '{% url "get_tips" %}',
+                        method: 'POST',
+                        data: {
+                            order_id: orderId,
+                            tips_percentage: 0.2,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                console.log('Tips saved')
+                            } 
+                        },
+                        error: function (response) {
+                            console.log("An error occurred while changeing the tips");
+                        }
+                    });
                 if (this.checked) {
                     var order_total = Number(before_tax_sum) + Number(tax) + Number(tips)
                     console.log(order_total)
@@ -231,11 +282,28 @@
                 }
             })
 
-            $('#tips_other').on('change', function(){
+            $('#no_tip').on('change', function(){
                 var orderId = $('#id_order_id').data('orderid')
                 var before_tax_sum = $('#id_order_pretax_' + orderId).data('pretax');
                 var tax = before_tax_sum * 0.07;
-                var tips = before_tax_sum * 0.2;
+                var tips = 0;
+                $.ajax({
+                        url: '{% url "get_tips" %}',
+                        method: 'POST',
+                        data: {
+                            order_id: orderId,
+                            tips_percentage: 0,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                console.log('Tips saved')
+                            } 
+                        },
+                        error: function (response) {
+                            console.log("An error occurred while changeing the tips");
+                        }
+                    });
                 if (this.checked) {
                     var order_total = Number(before_tax_sum) + Number(tax) + Number(tips)
                     console.log(order_total)
@@ -326,11 +394,11 @@
                     <label class="form-check-label" for="tips_20">20%</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="tips" value="other" id="tips_other">
-                    <label class="form-check-label" for="tips_other">Other</label>
+                    <input class="form-check-input" type="radio" name="tips" value="other" id="no_tip">
+                    <label class="form-check-label" for="no_tip">No Tips</label>
                 </div>
             </td>
-            <td id="id_order_tips_{{ order.id }}" class="fs-5 text-center">{{ tips }}</td>
+            <td id="id_order_tips_{{ order.id }}" class="fs-5 text-center" name="tips">{{ tips }}</td>
             <td></td>
         </tr>
         <tr>

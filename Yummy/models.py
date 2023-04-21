@@ -72,6 +72,7 @@ class Order(models.Model):
     is_paid = models.BooleanField(choices=BOOL_CHOICES, default=False)
     is_completed = models.BooleanField(choices=BOOL_CHOICES, default=False)
     total_price = models.FloatField()
+    tips_percentage = models.FloatField(default=0.18)
 
     def __str__(self):
         return 'Order ' + str(self.id) + ' for ' + self.customer.username

@@ -45,4 +45,5 @@ urlpatterns = [
     path('edit_dish/<int:dish_id>/', views.edit_dish_action, name='edit_dish'),
     path('api/order/', views.OrderAPIView.as_view(), name='order_api'),
     path('delete_comment_action/<int:id>', views.delete_comment_action, name='delete_comment_action'),
+    path('get_tips', views.get_tips, name='get_tips'),
 ]
