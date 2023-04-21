@@ -115,8 +115,8 @@ class ReservationForm(forms.Form):
         value = self.cleaned_data.get('number_customers')
         if not isinstance(value, int):
             raise forms.ValidationError('Value must be an integer')
-        if value <= 1:
-            raise forms.ValidationError('Number of customers must be greater than 1')
+        if value < 1:
+            raise forms.ValidationError('Number of customers must be greater than 0')
         return value
 
     def clean_phone_number(self):
