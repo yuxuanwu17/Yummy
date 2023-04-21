@@ -565,19 +565,16 @@ def cancel_reservation_action(request, id):
 def delete_comment_action(request, id):
     try:
         comment = Comment.objects.get(id=id)
+        redirect_url = 'dish/' + str(comment.post_under.first().id)
         if comment.creator == request.user:
             comment.delete()
-            message = 'Comment deleted.'
-            messages.success(request, message)
-            return redirect('profile')
+            return JsonResponse({'status': 'success'})
         else:
             message = 'You are not allowed to delete this comment.'
-            messages.error(request, message)
-            return redirect('profile')
+            return JsonResponse({'status': 'error', 'message': message})
     except Comment.DoesNotExist:
         message = 'Error happened when deleting this comment. Please contact the restaurant.'
-        messages.error(request, message)
-        return redirect('profile')
+        return JsonResponse({'status': 'error', 'message': message})
 
 def dish_action(request, id):
     try:
