@@ -51,7 +51,7 @@
                             console.log("Food added successfully");
                             var before_tax_sum = response.total_price
                             var tax = before_tax_sum * 0.07
-                            var tips = before_tax_sum * 0.18
+                            var tips = before_tax_sum * response.tips_percentage
                             var order_total = before_tax_sum + tax + tips
                             console.log(order_total.toFixed(2))
                             $('#id_quantity_of_' + itemId).text(response.food_quantity);
@@ -105,7 +105,7 @@
                                 console.log("Food removed successfully");
                                 var before_tax_sum = response.total_price
                                 var tax = before_tax_sum * 0.07
-                                var tips = before_tax_sum * 0.18
+                                var tips = before_tax_sum * response.tips_percentage
                                 var order_total = before_tax_sum + tax + tips
                                 console.log(order_total.toFixed(2))
                                 $('#id_quantity_of_' + itemId).text(response.food_quantity);
@@ -167,12 +167,12 @@
                                 //update order related amount
                                 var before_tax_sum = response.total_price
                                 var tax = before_tax_sum * 0.07
-                                // var tips = before_tax_sum * 0.18
+                                var tips = before_tax_sum * response.tips_percentage
                                 var order_total = before_tax_sum + tax + tips
                                 console.log(order_total.toFixed(2))
                                 $('#id_order_pretax_' + orderId).text(before_tax_sum.toFixed(2));
                                 $('#id_order_tax_' + orderId).text(tax.toFixed(2));
-                                // $('#id_order_tips_' + orderId).text(tips.toFixed(2));
+                                $('#id_order_tips_' + orderId).text(tips.toFixed(2));
                                 $('#id_order_total_' + orderId).text(order_total.toFixed(2));
 
                                 // delete the removed row of food
@@ -196,54 +196,120 @@
 
             $('#tips_15').on('change', function(){
                 var orderId = $('#id_order_id').data('orderid')
-                var before_tax_sum = $('#id_order_pretax_' + orderId).data('pretax');
-                var tax = before_tax_sum * 0.07
-                var tips = before_tax_sum * 0.15
                 if (this.checked) {
-                    var order_total = Number(before_tax_sum) + Number(tax) + Number(tips)
-                    $('#id_order_tips_' + orderId).text(tips.toFixed(2));
-                    $('#id_order_total_' + orderId).text(Number(order_total).toFixed(2));
+                    $.ajax({
+                        url: '{% url "get_tips" %}',
+                        method: 'POST',
+                        data: {
+                            order_id: orderId,
+                            tips_percentage: 0.15,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                console.log('Tips saved')
+                                var before_tax_sum = response.pretax
+                                var tax = before_tax_sum * 0.07
+                                var tips = before_tax_sum * 0.15
+                                var order_total = Number(before_tax_sum) + Number(tax) + Number(tips)
+                                $('#id_order_tips_' + orderId).text(tips.toFixed(2));
+                                $('#id_order_total_' + orderId).text(Number(order_total).toFixed(2));
+                            } 
+                        },
+                        error: function (response) {
+                            console.log("An error occurred while changing the tips");
+                        }
+                    });
                 }
             })
 
             $('#tips_18').on('change', function(){
                 var orderId = $('#id_order_id').data('orderid')
-                var before_tax_sum = $('#id_order_pretax_' + orderId).data('pretax');
-                var tax = before_tax_sum * 0.07
-                var tips = before_tax_sum * 0.18
                 if (this.checked) {
-                    var order_total = Number(before_tax_sum) + Number(tax) + Number(tips)
-                    $('#id_order_tips_' + orderId).text(tips.toFixed(2));
-                    $('#id_order_total_' + orderId).text(Number(order_total).toFixed(2));
+                    $.ajax({
+                        url: '{% url "get_tips" %}',
+                        method: 'POST',
+                        data: {
+                            order_id: orderId,
+                            tips_percentage: 0.18,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                console.log('Tips saved')
+                                var before_tax_sum = response.pretax
+                                var tax = before_tax_sum * 0.07
+                                var tips = before_tax_sum * 0.18
+                                var order_total = Number(before_tax_sum) + Number(tax) + Number(tips)
+                                $('#id_order_tips_' + orderId).text(tips.toFixed(2));
+                                $('#id_order_total_' + orderId).text(Number(order_total).toFixed(2));
+                            } 
+                        },
+                        error: function (response) {
+                            console.log("An error occurred while changing the tips");
+                        }
+                    });
                 }
             })
 
             $('#tips_20').on('change', function(){
                 var orderId = $('#id_order_id').data('orderid')
-                var before_tax_sum = $('#id_order_pretax_' + orderId).data('pretax');
-                var tax = before_tax_sum * 0.07;
-                var tips = before_tax_sum * 0.2;
                 if (this.checked) {
-                    var order_total = Number(before_tax_sum) + Number(tax) + Number(tips)
-                    console.log(order_total)
-                    $('#id_order_tips_' + orderId).text(tips.toFixed(2));
-                    $('#id_order_total_' + orderId).text(Number(order_total).toFixed(2));
+                    $.ajax({
+                        url: '{% url "get_tips" %}',
+                        method: 'POST',
+                        data: {
+                            order_id: orderId,
+                            tips_percentage: 0.2,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                console.log('Tips saved')
+                                var before_tax_sum = response.pretax
+                                var tax = before_tax_sum * 0.07
+                                var tips = before_tax_sum * 0.2
+                                var order_total = Number(before_tax_sum) + Number(tax) + Number(tips)
+                                $('#id_order_tips_' + orderId).text(tips.toFixed(2));
+                                $('#id_order_total_' + orderId).text(Number(order_total).toFixed(2));
+                            } 
+                        },
+                        error: function (response) {
+                            console.log("An error occurred while changing the tips");
+                        }
+                    });
                 }
             })
 
-            $('#tips_other').on('change', function(){
+            $('#no_tip').on('change', function(){
                 var orderId = $('#id_order_id').data('orderid')
-                var before_tax_sum = $('#id_order_pretax_' + orderId).data('pretax');
-                var tax = before_tax_sum * 0.07;
-                var tips = before_tax_sum * 0.2;
                 if (this.checked) {
-                    var order_total = Number(before_tax_sum) + Number(tax) + Number(tips)
-                    console.log(order_total)
-                    $('#id_order_tips_' + orderId).text(tips.toFixed(2));
-                    $('#id_order_total_' + orderId).text(Number(order_total).toFixed(2));
+                    $.ajax({
+                        url: '{% url "get_tips" %}',
+                        method: 'POST',
+                        data: {
+                            order_id: orderId,
+                            tips_percentage: 0,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                console.log('Tips saved')
+                                var before_tax_sum = response.pretax
+                                var tax = before_tax_sum * 0.07
+                                var tips = before_tax_sum * 0
+                                var order_total = Number(before_tax_sum) + Number(tax) + Number(tips)
+                                console.log(order_total)
+                                $('#id_order_tips_' + orderId).text(tips.toFixed(2));
+                                $('#id_order_total_' + orderId).text(Number(order_total).toFixed(2));
+                            } 
+                        },
+                        error: function (response) {
+                            console.log("An error occurred while changing the tips");
+                        }
+                    });
                 }
-            })
-                        
+            })          
         });
     </script>
 
@@ -284,7 +350,7 @@
                     <button type="button" class="btn btn-outline-dark minus-btn" data-id="{{ foodset.food.id }}"> -
                     </button>
                 </td>
-                <td><span id="id_quantity_of_{{ foodset.food.id }}" class="quantity_input"></span>{{ foodset.quantity }}</td>
+                <td id="id_quantity_of_{{ foodset.food.id }}">{{ foodset.quantity }}</td>
                 <td>
                     <button type="button" class="btn btn-outline-dark plus-btn" data-id="{{ foodset.food.id }}"> +
                     </button>
@@ -326,11 +392,11 @@
                     <label class="form-check-label" for="tips_20">20%</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="tips" value="other" id="tips_other">
-                    <label class="form-check-label" for="tips_other">Other</label>
+                    <input class="form-check-input" type="radio" name="tips" value="other" id="no_tip">
+                    <label class="form-check-label" for="no_tip">No Tips</label>
                 </div>
             </td>
-            <td id="id_order_tips_{{ order.id }}" class="fs-5 text-center">{{ tips }}</td>
+            <td id="id_order_tips_{{ order.id }}" class="fs-5 text-center" name="tips">{{ tips }}</td>
             <td></td>
         </tr>
         <tr>
