@@ -173,11 +173,18 @@
 
                     response.forEach(function (comment) {
                         var listItem = $('<li class="list-group-item d-flex justify-content-between align-items-start"></li>');
+                        listItem.attr('id', 'comment-' + comment.id)
                         var commentDiv = $('<div class="ms-2 me-auto"></div>');
                         commentDiv.append('<div class="fw-bold text-start">' + comment.text + '</div>');
                         commentDiv.append('<div class="text-start">By ' + comment.creator__first_name + ' ' + comment.creator__last_name + '</div>');
                         listItem.append(commentDiv);
                         listItem.append('<span class="badge text-bg-light">' + comment.formatted_creation_time + '</span>');
+                        var deleteButton = $('<button class="btn btn-danger btn-sm">Delete</button>');
+                        deleteButton.on('click', function () {
+                            deleteComment(comment.id);
+                        });
+                        listItem.append(deleteButton);
+
                         commentsList.append(listItem);
                     });
                 },
@@ -186,6 +193,31 @@
                 }
             });
         }
+
+        function deleteComment(commentId) {
+            var currentUrl = window.location.href;
+
+            var url = 'yummy/delete_comment_action/' + commentId;
+
+            var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: {
+                    'csrfmiddlewaretoken': csrfToken,
+                    'next': currentUrl
+                },
+                success: function (response) {
+                    // Refresh the page on successful deletion
+                    $('#comment-' + commentId).remove();
+                },
+                error: function (response) {
+                    alert('Error deleting the comment. Please try again.');
+                }
+            });
+        }
+
 
         function updateFavoriteCount(item_id) {
             const baseUrl = "{% url 'favorite_count' 0 %}".slice(0, -1);
