@@ -788,11 +788,11 @@ def checkout(request):
         context['order'] = order
         context['food_set'] = food_set
         context['total_quantity'] = total_quantity
-        context['pretax'] = order.total_price
+        context['pretax'] = round(order.total_price, 2)
         context['tax'] = round(order.total_price * 0.07, 2)
-        context['tips_percentage'] = order.tips_percentage*100
+        context['tips_percentage'] = order.tips_percentage * 100
         context['tips'] = round(order.total_price * order.tips_percentage, 2)
-        context['total'] = order.total_price + context['tax'] + context['tips']
+        context['total'] = round(context['pretax'] + context['tax'] + context['tips'], 2)
         return render(request, 'Yummy/checkout.html', context)
 
     except Order.DoesNotExist:
