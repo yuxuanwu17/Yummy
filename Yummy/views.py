@@ -524,10 +524,9 @@ def profile_action(request):
             context['no_favorite_message'] = "You don't have any favorite dishes."
         if len(orders) == 0:
             context['no_order_message'] = "You don't have any past orders."
-        else:
-            context['orders'] = orders.order_by('order_time').reverse
-            context['today_date'] = datetime.datetime.today().date()
-            context['today_time'] = datetime.datetime.now().time()
+        context['orders'] = orders.order_by('order_time').reverse
+        context['today_date'] = datetime.datetime.today().date()
+        context['today_time'] = datetime.datetime.now().time()
     else:
         if 'phone_number' in request.POST:
             phone_number = request.POST['phone_number']
