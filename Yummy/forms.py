@@ -84,6 +84,12 @@ class RegisterForm(forms.Form):
         # We must return the cleaned data we got from the cleaned_data
         # dictionary
         return username
+    
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get('phone_number')
+        if not phone_number.isdigit():
+            raise forms.ValidationError("Letters and symbols are not allowed in phone number.")
+        return phone_number
 
 class ReservationForm(forms.Form):
     date = forms.DateField(label="Date", required=True, widget=forms.DateInput(attrs={'type': 'date'}))
