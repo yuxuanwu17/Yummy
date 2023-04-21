@@ -568,7 +568,7 @@ def delete_comment_action(request, id):
         redirect_url = 'dish/' + str(comment.post_under.first().id)
         if comment.creator == request.user:
             comment.delete()
-            return JsonResponse({'status': 'success'})
+            return JsonResponse({'status': 'success', 'user_id': request.user.id})
         else:
             message = 'You are not allowed to delete this comment.'
             return JsonResponse({'status': 'error', 'message': message})
@@ -611,7 +611,7 @@ def get_comments(request):
     # 'first_name' and 'last_name', respectively.
     comments = Comment.objects.filter(post_under=request.GET.get('item_id')).values('text', 'creator__first_name',
                                                                                     'creator__last_name',
-                                                                                    'creation_time', 'id')
+                                                                                    'creation_time', 'id', 'creator__id')
 
     # Convert the creation_time to the desired format
     for comment in comments:
