@@ -77,6 +77,18 @@ class Order(models.Model):
     def __str__(self):
         return 'Order ' + str(self.id) + ' for ' + self.customer.username
     
+    @property
+    def tips(self):
+        return round(self.total_price * self.tips_percentage, 2)
+    
+    @property
+    def tax(self):
+        return round(self.total_price * 0.07, 2)
+    
+    @property
+    def total_after_tax_tips(self):
+        return round(self.total_price * (1 + 0.07 + self.tips_percentage), 2)
+    
 
 
 class Table(models.Model):
