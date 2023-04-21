@@ -565,7 +565,7 @@ def cancel_reservation_action(request, id):
 def delete_comment_action(request, id):
     try:
         comment = Comment.objects.get(id=id)
-        if comment in request.user.comments.all():
+        if comment.creator == request.user:
             comment.delete()
             message = 'Comment deleted.'
             messages.success(request, message)
@@ -614,7 +614,7 @@ def get_comments(request):
     # 'first_name' and 'last_name', respectively.
     comments = Comment.objects.filter(post_under=request.GET.get('item_id')).values('text', 'creator__first_name',
                                                                                     'creator__last_name',
-                                                                                    'creation_time')
+                                                                                    'creation_time', 'id')
 
     # Convert the creation_time to the desired format
     for comment in comments:
