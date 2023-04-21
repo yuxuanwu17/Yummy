@@ -162,7 +162,7 @@ def add_food(request):
                 order.total_price -= food.price * quantity
                 order.save()
 
-            return JsonResponse({"success": True, "total_price": order.total_price, "food_quantity": food_set.quantity},
+            return JsonResponse({"success": True, "total_price": order.total_price, "food_quantity": food_set.quantity, 'tips_percentage': order.tips_percentage},
                                 status=200)
 
         except (Food.DoesNotExist, FoodSet.DoesNotExist):
@@ -339,8 +339,8 @@ def set_take_out(request):
         order_id = request.POST.get('order_id')
         action = request.POST.get('action')
 
-        OPEN_TIME = datetime.time(10, 00, 00)
-        CLOSE_TIME = datetime.time(23, 00, 00)
+        OPEN_TIME = datetime.time(00, 00, 00)
+        CLOSE_TIME = datetime.time(23, 59, 00)
         print(datetime.datetime.now().time())
         if datetime.datetime.now().time() < OPEN_TIME or datetime.datetime.now().time() > CLOSE_TIME:
             print('Close')
@@ -1018,7 +1018,7 @@ def get_tips(request):
             order.tips_percentage = tips_percentage
             order.save()
 
-            return JsonResponse({"success": True}, status=200)
+            return JsonResponse({"success": True, 'pretax': order.total_price}, status=200)
         except Order.DoesNotExist:
             message = 'Order with ID {} does not exist.'.format(order_id)
             return JsonResponse({"success": False, 'error_message': message}, status=200)
