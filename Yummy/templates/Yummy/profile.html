@@ -206,6 +206,20 @@
                                         </table>
                                     </div>
                                 </div>
+                                <div>
+                                 <!-- Can direct to the summary page if an order is not paid -->
+                                {% if not order.is_paid %}
+                                <form method="POST"
+                                    action="{% url 'summary' %}">
+                                    {% csrf_token %}
+                                <input type="hidden" name="order_id"
+                                    value="{{ order.id }}">
+                                <button type="submit" class="btn btn-outline-primary my-2"
+                                    id="back_to_summary_{{ order.id }}"> Continue to checkout
+                                </button>
+                                    </form>
+                                {% endif %}
+                                </div>
                             </div>
                         {% endfor %}
                     </div>

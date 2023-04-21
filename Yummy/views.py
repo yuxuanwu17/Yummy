@@ -508,7 +508,7 @@ def summary_action(request):
 def profile_action(request):
     context = {}
     profile = request.user.profile
-    orders = Order.objects.filter(customer=request.user, is_paid = True)
+    orders = Order.objects.filter(customer=request.user)
     reservations = Reservation.objects.filter(customer=request.user)
 
     if request.method == "GET":
