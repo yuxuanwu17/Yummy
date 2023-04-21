@@ -530,10 +530,15 @@ def profile_action(request):
     else:
         if 'phone_number' in request.POST:
             phone_number = request.POST['phone_number']
-            if len(phone_number) != 10:
-                message = 'Invalid phone number'
+            if len(phone_number) != 10 :
+                message = 'Invalid phone number: Phone nmber must be 10 digits.'
                 messages.warning(request, message)
                 return redirect('profile')
+            if not phone_number.isdigit():
+                message = 'Invalid phone number: Only numbers are allowed.'
+                messages.warning(request, message)
+                return redirect('profile')
+
             else:
                 profile.phone_number = phone_number
                 profile.save()
