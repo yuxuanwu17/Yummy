@@ -28,7 +28,7 @@ SECRET_KEY = CONFIG.get("Django", "Secret")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['18.217.68.75','team1.cmu-webapps.com']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
