@@ -1,10 +1,11 @@
 {% extends "Yummy/base.html" %}
+{% load static %}
 {% block content %}
-<div id="id_page_name" class="text-center">
-    <h1 class="fw-light">Register New Staff</h1>
-</div>
+    <div id="id_page_name" class="text-center">
+        <h1 class="fw-light">Register New Staff</h1>
+    </div>
     <div class="text-center">
-        <form method="post" action="register_staff" class="row1">
+        <form method="post" action="yummy/register_staff" class="row1">
             <table class="login_register_table">
                 {{ form }}
             </table>
