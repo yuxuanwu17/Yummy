@@ -216,7 +216,9 @@ def reserve_action(request):
 
         # tables = Table.objects.filter(
         #     capacity__gte=new_filter['number_customers'],
-        #     open_time__gte=new_filter['start_time'],
+        #     
+        
+        time__gte=new_filter['start_time'],
         #     close_time__lte=new_filter['end_time']
         # )
         # Initial tables filtering
@@ -339,8 +341,8 @@ def set_take_out(request):
         order_id = request.POST.get('order_id')
         action = request.POST.get('action')
 
-        OPEN_TIME = datetime.time(00, 00, 00)
-        CLOSE_TIME = datetime.time(23, 59, 00)
+        OPEN_TIME = datetime.time(09, 30, 00)
+        CLOSE_TIME = datetime.time(21, 00, 00)
         print(datetime.datetime.now().time())
         if datetime.datetime.now().time() < OPEN_TIME or datetime.datetime.now().time() > CLOSE_TIME:
             print('Close')
