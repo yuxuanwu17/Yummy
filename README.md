@@ -15,11 +15,19 @@ Our online web system is aiming to allow diners to make reservations to one spec
 
 ## References
 https://fullcalendar.io/
+
 https://getbootstrap.com/docs/5.3/examples/album/
+
 https://en.wikipedia.org/wiki/Luhn_algorithm
+
 https://react.dev/
+
 https://webpack.js.org/
+
 https://www.django-rest-framework.org/
+
 https://pillow.readthedocs.io/en/stable/
+
 https://neapay.com/online-tools/credit-card-number-generator-validator.html
+
 https://validator.w3.org/#validate_by_upload
