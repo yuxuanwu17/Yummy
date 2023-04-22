@@ -226,7 +226,7 @@ def reserve_action(request):
         # Filter by start_time
         tables = tables.filter(open_time__lte=new_filter['start_time'])
         # Filter by end_time
-        tables = tables.filter(close_time__gte=new_filter['end_time'])
+        tables = tables.filter(close_time__gte=new_filter['start_time'])
 
         reservations = Reservation.objects.filter(
             date=new_filter['date'],
