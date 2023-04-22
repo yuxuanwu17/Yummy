@@ -31,3 +31,15 @@ https://pillow.readthedocs.io/en/stable/
 https://neapay.com/online-tools/credit-card-number-generator-validator.html
 
 https://validator.w3.org/#validate_by_upload
+
+https://getbootstrap.com/docs/5.2/components/carousel/
+
+https://getbootstrap.com/docs/5.2/components/accordion/
+
+https://getbootstrap.com/docs/5.2/components/alerts/
+
+https://getbootstrap.com/docs/5.2/components/navbar/
+
+https://getbootstrap.com/docs/5.2/components/scrollspy/
+
+https://getbootstrap.com/docs/5.2/forms/overview/
